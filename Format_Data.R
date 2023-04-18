@@ -9,7 +9,7 @@ data_list <- list()
 # bloque 1 = SALA_GRANDE
 # bloque 2 = SALA_CHICA
 # bloque 3 = SALA_PARLANTES (para todos)
-my_path = "./data-piloto/all_data_13_10_2023/csv/"
+my_path = "./data-piloto/all_data_18_10/csv/"
 
 for (file_name in list.files(path = my_path)) {
   data <- read.csv(paste0(my_path,file_name))
