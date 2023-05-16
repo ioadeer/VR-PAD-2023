@@ -1,0 +1,31 @@
+aca voy a juntar data de pad para tres salas, con tres tamanios
+
+1_11_subject
+
+Aca tenemos los primeros datos recolectados del experimento de PAD con cascos
+de realidad virtual.
+
+Hay tres bloques por sujetos, alternando sala grande, sala chica y la sala con
+parlantes.
+
+Hay un csv que tiene toda esta data junta y que tiene una columna que dice de
+que bloque se trato, indicando la sala que se mostraba  a los participantes.
+
+Esperabamos ver diferencias significativas en las respuestas de distancia del
+sonido de los participantes.
+No paso, no hay diferencias en las respuestas para ningun tipo de condiciones.
+
+
+27_34_subject
+Estos sujetos los pasamos para probar si mostrando aun una sala mas chica que
+la sala chica mostrada para sujetos de 1 a 11 inducia algun efecto en la
+percepcion auditiva de distancia. La sala mostrada es la sala 6 del proyecto
+de unreal, y tiene un metro menos de la mitad de la mitad de la sala.
+
+La idea de este grupo de csv es uitilizarlo para ver si hay diferencias con sala grande.
+
+
+22_26_subject
+Este grupo de datos los juntamos para tener mas participantes que hubieran
+hecho el experimento con la sala grande, con el fin de comparar con la sala
+extra chica, del directorio 27 a 34.
