@@ -23,6 +23,8 @@ tabla.raw_grande_extra <- read.csv('./data-tres-salas/data_sala_grande_extra.csv
 
 tabla.raw <- do.call("rbind", list(tabla.raw_grande_chicos, tabla.raw_extra_chica, tabla.raw_grande_extra))
 
+write.table(tabla_raw, file="./data-piloto/data-tres-salas.csv", row.names = FALSE)
+
 # sacar 5 porque es outlier
 tabla.raw <- tabla.raw %>%
   filter(nbloque == 1) %>%
@@ -95,3 +97,5 @@ plot(g2)
 
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "distancia_poblacional-se-2.png", sep = '')
 ggsave(mi_nombre_de_archivo, plot=g2, width=10, height=10, units="cm", limitsize=FALSE, dpi=300)
+
+g3 <- ggplot()
