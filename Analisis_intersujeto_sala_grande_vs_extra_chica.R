@@ -23,7 +23,7 @@ tabla.raw_grande_extra <- read.csv('./data-tres-salas/data_sala_grande_extra.csv
 
 tabla.raw <- do.call("rbind", list(tabla.raw_grande_chicos, tabla.raw_extra_chica, tabla.raw_grande_extra))
 
-write.table(tabla_raw, file="./data-piloto/data-tres-salas.csv", row.names = FALSE)
+write.table(tabla.raw, file="./data-piloto/data-tres-salas.csv", row.names = FALSE)
 
 # sacar 5 porque es outlier
 tabla.raw <- tabla.raw %>%
