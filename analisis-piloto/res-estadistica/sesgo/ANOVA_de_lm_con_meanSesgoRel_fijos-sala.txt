@@ -1,0 +1,6 @@
+Analysis of Variance Table
+
+Response: mSesgoRel
+               Df  Sum Sq  Mean Sq F value Pr(>F)
+condicion_sala  1 0.07377 0.073769  1.9361 0.1916
+Residuals      11 0.41913 0.038103               

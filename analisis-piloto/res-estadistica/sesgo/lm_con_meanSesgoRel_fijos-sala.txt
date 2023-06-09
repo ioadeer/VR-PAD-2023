@@ -1,0 +1,19 @@
+
+Call:
+lm(formula = mSesgoRel ~ condicion_sala, data = tabla_sesgo)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.29773 -0.01711  0.00228  0.11464  0.28904 
+
+Coefficients:
+                          Estimate Std. Error t value Pr(>|t|)    
+(Intercept)               -0.57684    0.06901  -8.358  4.3e-06 ***
+condicion_salaSALA_GRANDE -0.15484    0.11128  -1.391    0.192    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1952 on 11 degrees of freedom
+Multiple R-squared:  0.1497,	Adjusted R-squared:  0.07236 
+F-statistic: 1.936 on 1 and 11 DF,  p-value: 0.1916
+

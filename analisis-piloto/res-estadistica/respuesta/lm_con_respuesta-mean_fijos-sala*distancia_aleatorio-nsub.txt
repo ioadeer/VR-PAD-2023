@@ -1,0 +1,30 @@
+Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
+Formula: respuesta[, "mean"] ~ condicion_sala * distancia + (1 | nsub)
+   Data: tabla.ind
+
+REML criterion at convergence: 267.5
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.0616 -0.2894  0.0084  0.3547  4.5682 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ nsub     (Intercept) 1.017    1.009   
+ Residual             1.319    1.148   
+Number of obs: 78, groups:  nsub, 13
+
+Fixed effects:
+                                    Estimate Std. Error       df t value Pr(>|t|)    
+(Intercept)                         -0.57141    0.51484 29.67039  -1.110  0.27596    
+condicion_salaSALA_GRANDE            0.76391    0.83015 29.67039   0.920  0.36489    
+distancia                            0.57624    0.06898 63.00000   8.353 8.61e-12 ***
+condicion_salaSALA_GRANDE:distancia -0.35335    0.11123 63.00000  -3.177  0.00231 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+               (Intr) cn_SALA_GRANDE distnc
+cn_SALA_GRANDE -0.620                      
+distancia      -0.645  0.400               
+c_SALA_GRANDE:  0.400 -0.645         -0.620
