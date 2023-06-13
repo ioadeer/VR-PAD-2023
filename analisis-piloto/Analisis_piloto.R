@@ -1,5 +1,6 @@
 # Analisis del piloto
 # Dependencias ------------------------------------------------------------
+library("dplyr")
 library(ggplot2)
 library(quickpsy)
 library(tidyverse)
@@ -142,20 +143,33 @@ ggsave(mi_nombre_de_archivo, plot=fig.sesgo, width=10, height=10, units="cm", li
 # Estadistica -------------------------------------------------------------
 
 # Both tasks
-m.distancia <- lmer(respuesta[,"mean"] ~ condicion_sala*distancia + (1|nsub), 
+tabla.ind <- tabla.ind %>% 
+  mutate(log_respuesta_mean = log(respuesta[,"mean"])) %>%
+  mutate(log_distancia = log(distancia))
+
+# OLD  
+m.distancia <- lmer(respuesta[,"mean"] ~ condicion_sala + distancia + (1|nsub), 
                     data = tabla.ind)
+# LOG LOG
+m.distancia <- lmer(log_respuesta_mean ~ condicion_sala * log_distancia + (1|nsub), 
+                    data = tabla.ind)
+
 summary(m.distancia)
 ggcoefstats(m.distancia, output = "tidy") %>% select(-label)
 anova(m.distancia)
 
-sink("./analisis-piloto/res-estadistica/respuesta/lm_con_respuesta-mean_fijos-sala*distancia_aleatorio-nsub.txt")
+sink("./analisis-piloto/res-estadistica/respuesta/lm_con_log-respuesta-mean_fijos-sala*log-distancia_aleatorio-nsub.txt")
 print(summary(m.distancia))
 sink() 
 
-sink("./analisis-piloto/res-estadistica/respuesta/ANOVA_de_lm_con_respuesta-mean_fijos-sala*distancia_aleatorio-nsub.txt")
+sink("./analisis-piloto/res-estadistica/respuesta/ANOVA_de_lm_con_log-respuesta-mean_fijos-sala*distancia_aleatorio-nsub.txt")
 print(anova(m.distancia))
 sink() 
 
+m.distancia_fixed <- lm(log_respuesta_mean ~ condicion_sala*log_distancia, 
+                 data = tabla.ind)
+
+summary(m.distancia_fixed)
 
 
 # Statistical analysis bias ####
@@ -170,6 +184,9 @@ sink()
 sink("./analisis-piloto/res-estadistica/sesgo/ANOVA_de_lm_con_meanSesgoRel_fijos-sala.txt")
 print(anova(m.Reaching))
 sink()
+
+
+
 
 
 # Graficando estadistica --------------------------------------------------
@@ -194,3 +211,35 @@ figura2 = ggplot(tabla.ind, aes(x=distancia, y=respuesta[,"mean"] ))+
   geom_line(data=data_m1.lm, aes(x=respuesta[,"mean"],group=condicion_sala), color='red')
 
 figura2
+
+#fm1 <- lmer("Reaction ~ Days + (Days | Subject)", sleepstudy)
+
+  ## define n colors
+
+par(mfrow=c(1, 2))
+
+m.distancia_fixed <- lm(log_respuesta_mean ~ condicion_sala, 
+                        data = tabla.ind)
+
+m.distancia <- lmer(log_respuesta_mean ~ condicion_sala * log_distancia + (1|nsub), 
+                    data = tabla.ind)
+
+fe <- fixef(m.distancia)
+re <- ranef(m.distancia)$nsub
+
+clr <- rainbow(nrow(re))
+
+#m.distancia <- lmer(log_respuesta_mean ~ condicion_sala + log_distancia + (1|nsub), 
+#                    data = tabla.ind)
+
+plot(log_respuesta_mean ~  log_distancia , tabla.ind, col=clr[as.numeric(nsub)], main='Pred w/ points')
+lapply(seq_len(nrow(re)), \(x) abline(fe[1] + re[x,1], fe[2] + re[x,1], col=clr[x]))
+
+plot(log_respuesta_mean ~  log_distancia , tabla.ind, col=clr[as.numeric(nsub)], main='Pred w/ points')
+lapply(seq_len(nrow(re)), \(x) abline(fe[1] + re[x,1], fe[3] + re[x,1], col=clr[x]))
+
+summary(m.distancia)
+
+#plot(Reaction ~ Days, sleepstudy, col=clr[as.numeric(Subject)], main='Pred w/o points', type='n')
+#lapply(seq_len(nrow(re)), \(x) abline(fe[1] + re[x, 1], fe[2] + re[x, 2], col=clr[x]))
+
