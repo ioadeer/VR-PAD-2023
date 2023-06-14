@@ -1,4 +1,6 @@
-# Analisis del piloto
+# Analisis de datos del experi 32 sujetos
+# Ek 5 es outlier
+
 # Dependencias ------------------------------------------------------------
 library(dplyr)
 library(ggplot2)
@@ -20,7 +22,28 @@ library(pracma)
 
 # Load data -----------------------------------------------------------------
 
-tabla.raw <- read.csv('./analisis-piloto/data/data-piloto.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+## En este script vamos a analizar todo lo que teniamos
+## Primeros 11
+tabla.primeros_11 <- read.csv('./analisis-pad-main/data/1_11_s/data_1-11.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+# nos quedamos con 1er bloque
+# sacar 5 porque es outlier
+tabla.primeros_11 <- tabla.primeros_11 %>%
+  filter(nbloque == 1) %>%
+  filter(nsub != 5) %>%
+  arrange(nsub)
+
+tabla.12_al_32 <- read.csv('./analisis-pad-main/data/12_32_s/data-s12-32-1-block.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+tabla.12_al_32 <- tabla.12_al_32 %>%
+  filter(nbloque == 1)
+
+tabla.raw <- do.call("rbind", list(tabla.primeros_11, tabla.12_al_32))
+
+write.table(tabla.raw, file="./analisis-pad-main/data/data-1-32-bloque-1.csv", row.names = FALSE)
+
+# DESDE ACA
+
+tabla.raw <- read.csv('./analisis-pad-main/data/data-1-32-bloque-1.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 tabla.raw$SesgoAbs <-  tabla.raw$respuesta - tabla.raw$distancia
 tabla.raw$SesgoRel <- (tabla.raw$respuesta - tabla.raw$distancia) / tabla.raw$distancia
@@ -50,7 +73,7 @@ tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
 
 # Figuras -----------------------------------------------------------------
 
-figures_folder = "./analisis-piloto/figuras/"
+figures_folder = "./analisis-pad-main/figuras/"
 
 #Grafico individual con brutos
 
@@ -138,146 +161,4 @@ fig.sesgo
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "sesgo.png", sep = '')
 ggsave(mi_nombre_de_archivo, plot=fig.sesgo, width=10, height=10, units="cm", limitsize=FALSE, dpi=300)
 
-
-
-# Estadistica -------------------------------------------------------------
-
-# Both tasks
-tabla.ind <- tabla.ind %>% 
-  mutate(log_respuesta_mean = log(respuesta[,"mean"])) %>%
-  mutate(log_distancia = log(distancia))
-
-# OLD  
-m.distancia <- lmer(respuesta[,"mean"] ~ condicion_sala + distancia + (1|nsub), 
-                    data = tabla.ind)
-# LOG LOG
-m.distancia <- lmer(log_respuesta_mean ~ condicion_sala * log_distancia + (1|nsub), 
-                    data = tabla.ind)
-
-summary(m.distancia)
-ggcoefstats(m.distancia, output = "tidy") %>% select(-label)
-anova(m.distancia)
-
-sink("./analisis-piloto/res-estadistica/respuesta/lm_con_log-respuesta-mean_fijos-sala*log-distancia_aleatorio-nsub.txt")
-print(summary(m.distancia))
-sink() 
-
-sink("./analisis-piloto/res-estadistica/respuesta/ANOVA_de_lm_con_log-respuesta-mean_fijos-sala*distancia_aleatorio-nsub.txt")
-print(anova(m.distancia))
-sink() 
-
-m.distancia_fixed <- lm(log_respuesta_mean ~ condicion_sala*log_distancia, 
-                 data = tabla.ind)
-
-summary(m.distancia_fixed)
-
-
-# Statistical analysis bias ####
-
-m.Reaching <- lm(mSesgoRel ~ condicion_sala, 
-                 data = tabla_sesgo)
-
-sink("./analisis-piloto/res-estadistica/sesgo/lm_con_meanSesgoRel_fijos-sala.txt")
-print(summary(m.Reaching))
-sink() 
-
-sink("./analisis-piloto/res-estadistica/sesgo/ANOVA_de_lm_con_meanSesgoRel_fijos-sala.txt")
-print(anova(m.Reaching))
-sink()
-
-
-
-
-
-# Graficando estadistica --------------------------------------------------
-
-data_m1.lm <- tabla.ind %>% mutate(pred = predict(m.distancia), res = resid(m.distancia))
-
-data_m1.lm_sala_chica <- tabla.ind %>% 
-  filter(condicion_sala == "SALA_CHICA") %>%
-  mutate(pred = predict(m.distancia), res = resid(m.distancia))
-
-data_m1.lm <- tabla.ind %>% mutate(pred = predict(m.distancia), res = resid(m.distancia))
-
-figura2 = ggplot(tabla.ind, aes(x=distancia, y=respuesta[,"mean"] ))+
-  geom_point(alpha = 0.3)+
- # facet_grid(condicion_sala)+
-  theme_pubr(base_size = 12, margin = TRUE)+
-  #scale_x_continuous(name= "Tiempo [seg]", breaks=c(0,3500,7000), labels=c("0","3k5","7k")) +
-  #labs(y = "Nivel de presión [dBA]") +
-  geom_point(data=data_m1.lm, aes(x=respuesta[,"mean"])) +
-  theme(legend.position = "top",
-        legend.title = element_blank())+
-  geom_line(data=data_m1.lm, aes(x=respuesta[,"mean"],group=condicion_sala), color='red')
-
-figura2
-
-#fm1 <- lmer("Reaction ~ Days + (Days | Subject)", sleepstudy)
-
-  ## define n colors
-
-par(mfrow=c(1, 2))
-
-m.distancia_fixed <- lm(log_respuesta_mean ~ condicion_sala * log_distancia, 
-                        data = tabla.ind)
-
-coef <- coefficients(m.distancia_fixed)
-
-summary(m.distancia_fixed)
-anova(m.distancia_fixed)
-
-#fe <- fixef(m.distancia_fixed)
-plot(log_respuesta_mean ~  log_distancia , tabla.ind, col=clr[as.numeric(nsub)], main='Pred w/ points')
-abline(coef[1], coef[2], col ="red")
-abline(coef[1], coef[3], col = "green")
-
-abline(coef[1], coef[2]+coef[3], col= "blue")
-
-abline(coef[1], coef[4], col= "blue")
-
-
-
-m.distancia <- lmer(log_respuesta_mean ~ condicion_sala * log_distancia + (1|nsub), 
-                    data = tabla.ind)
-
-
-
-summary(m.distancia)
-
-fe <- fixef(m.distancia)
-re <- ranef(m.distancia)$nsub
-
-clr <- rainbow(nrow(re))
-
-#m.distancia <- lmer(log_respuesta_mean ~ condicion_sala + log_distancia + (1|nsub), 
-#                    data = tabla.ind)
-
-par(mfrow=c(2, 2))
-
-plot1 <- plot(log_respuesta_mean ~  log_distancia , tabla.ind, col=clr[as.numeric(nsub)], main='Pred w/ points')
-lapply(seq_len(nrow(re)), \(x) abline(fe[1] + re[x,1], fe[2] + re[x,1], col=clr[x]))
-
-plot1 <- plot(log_respuesta_mean ~  log_distancia , tabla.ind, col=clr[as.numeric(nsub)], main='Pred w/ points')
-lapply(seq_len(nrow(re)), \(x) abline(fe[1] + re[x,1], fe[3] + re[x,1], col=clr[x]))
-
-plot1 <- plot(log_respuesta_mean ~  log_distancia , tabla.ind, col=clr[as.numeric(nsub)], main='Pred w/ points')
-lapply(seq_len(nrow(re)), \(x) abline(fe[1] + re[x,1], fe[2]+fe[3] + re[x,1], col=clr[x]))
-
-plot1 <- plot(log_respuesta_mean ~  log_distancia , tabla.ind, col=clr[as.numeric(nsub)], main='Pred w/ points')
-lapply(seq_len(nrow(re)), \(x) abline(fe[1] + re[x,1], fe[2]+fe[3]+fe[4] + re[x,1], col=clr[x]))
-
-mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "modelos.png", sep = '')
-ggsave(mi_nombre_de_archivo, plot=plot1, width=10, height=10, units="cm", limitsize=FALSE, dpi=300)
-
-png(file="analisis-piloto/figuras/models.png",
-    width=600, height=350)
-plot1
-dev.off()
-
-lapply(seq_len(nrow(re)), \(x) print("s"))
-
-summary(m.distancia)
-
-#plot(Reaction ~ Days, sleepstudy, col=clr[as.numeric(Subject)], main='Pred w/o points', type='n')
-#lapply(seq_len(nrow(re)), \(x) abline(fe[1] + re[x, 1], fe[2] + re[x, 2], col=clr[x]))
 
