@@ -162,3 +162,21 @@ mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "sesgo.png", se
 ggsave(mi_nombre_de_archivo, plot=fig.sesgo, width=10, height=10, units="cm", limitsize=FALSE, dpi=300)
 
 
+histogram <- ggplot(tabla.ind, aes(x=respuesta[,"mean"])) + geom_histogram()
+
+histogram <- ggplot(tabla_sesgo, aes(x=mDist_perc)) + geom_histogram()
+
+histogram <- ggplot(tabla_sesgo, aes(x=mDist_perc, color=condicion_sala)) + 
+  geom_histogram(fill="white", binwidth=1)
+
+plot(histogram)
+
+ggplot(tabla_sesgo, aes(x=mDist_perc, color=condicion_sala, fill=condicion_sala)) +
+  geom_histogram(aes(y=..density..), position="identity", alpha=0.5)+
+  geom_density(alpha=0.6)+
+  geom_vline(data=mu, aes(xintercept=grp.mean, color=condicion_sala),
+             linetype="dashed")+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  labs(title="Weight histogram plot",x="Weight(kg)", y = "Density")+
+  theme_classic()
