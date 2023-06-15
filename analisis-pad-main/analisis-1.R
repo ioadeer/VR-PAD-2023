@@ -1,5 +1,5 @@
 # Analisis de datos del experi 32 sujetos
-# Ek 5 es outlier
+# El 5 es outlier
 
 # Dependencias ------------------------------------------------------------
 library(dplyr)
@@ -69,6 +69,10 @@ tabla.pob <- tibble(aggregate(cbind(respuesta[,"mean"],SesgoRel[,"mean"]) ~ cond
 tabla.pob = tabla.pob %>% rename(respuestapob = V1)
 tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
 
+# Log Log
+tabla.ind <- tabla.ind %>% 
+  mutate(log_respuesta_mean = log(respuesta[,"mean"])) %>%
+  mutate(log_distancia = log(distancia))
 
 
 # Figuras -----------------------------------------------------------------
@@ -171,12 +175,123 @@ histogram <- ggplot(tabla_sesgo, aes(x=mDist_perc, color=condicion_sala)) +
 
 plot(histogram)
 
-ggplot(tabla_sesgo, aes(x=mDist_perc, color=condicion_sala, fill=condicion_sala)) +
+histograma <- ggplot(tabla_sesgo, aes(x=mDist_perc, color=condicion_sala, fill=condicion_sala)) +
+#ggplot(tabla_sesgo, aes(x=mDist_perc))+
   geom_histogram(aes(y=..density..), position="identity", alpha=0.5)+
   geom_density(alpha=0.6)+
-  geom_vline(data=mu, aes(xintercept=grp.mean, color=condicion_sala),
-             linetype="dashed")+
+ # geom_vline(data=mean(mDist_perc), aes(xintercept=grp.mean, color=condicion_sala),
+#             linetype="dashed")+
   scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
   scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
-  labs(title="Weight histogram plot",x="Weight(kg)", y = "Density")+
+  labs(title="Respuesta histogram plot",x="Distancia", y = "Density")+
   theme_classic()
+
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "histograma.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot=histograma, width=10, height=10, units="cm", limitsize=FALSE, dpi=300)
+
+
+# Estadistica -------------------------------------------------------------
+
+
+
+tabla.test = subset(tabla.ind, select = c(nsub,log_distancia, log_respuesta_mean ))
+
+# Intento con broom    -----------  
+# https://cran.r-project.org/web/packages/broom/vignettes/broom.html
+#  https://cran.r-project.org/web/packages/broom/vignettes/broom_and_dplyr.html
+lmexponent = tabla.test %>% group_by(nsub) %>% do(model = lm(log_respuesta_mean ~ log_distancia, data = .))
+different_curves_per_subject <- tabla.test %>% group_by(nsub) %>% do(model = lm(log_respuesta_mean ~ log_distancia, data = .))
+test <- tidy(lmexponent[1])
+tidy(tabla.test)
+
+augmented = augment(linear_reg, different_curves_per_subject)
+
+augmented = augment(tabla.test)
+
+augmented %>%
+  ggplot(mapping = aes(x = log_distancia)) +
+  geom_point(mapping = aes(y = log_respuesta_mean)) +
+  geom_line(mapping = aes(y = .fitted), color = "red")
+
+
+# otro intento ------------------------------------------------------------
+
+# ref https://r4ds.had.co.nz/many-models.html
+tabla.ind %>%
+  ggplot(aes(log_distancia, log_respuesta_mean, group = nsub)) +
+  geom_line(alpha = 1/3)
+
+# Agrupar por sujeto 
+
+por_sujeto <- tabla.ind %>%
+  group_by(nsub) %>%
+  nest()
+
+modelo_sujeto <- function(df) {
+  lm(log_respuesta_mean ~ log_distancia, data =df)
+}
+
+#modelos <- map(por_sujeto$data, modelo_sujeto)
+
+library(modelr)
+
+por_sujeto <- por_sujeto %>%
+  mutate(model = map(data, modelo_sujeto))
+
+por_sujeto <- por_sujeto %>%
+  mutate(resids = map2(data, model, add_residuals))
+
+resids <- unnest(por_sujeto, resids)
+
+resids %>% 
+  ggplot(aes(log_distancia, resid)) +
+  geom_line(aes(group = nsub), alpha = 1 / 3) + 
+  geom_smooth(se = FALSE)
+
+resids %>% 
+  ggplot(aes(log_distancia,log_respuesta_mean)) +
+  geom_line(aes(group = nsub), alpha = 1 / 3) + 
+  geom_smooth(se = FALSE)
+
+d = coef(por_sujeto$model[[2]])[1][[1]]
+d = coef(por_sujeto$model[[2]])[2][[1]]
+
+d[[1]]
+
+por_sujeto %>% 
+  ggplot(aes(log_distancia, log_respuesta_mean)) +
+  geom_line(aes(group = nsub), alpha = 1 / 3) + 
+  geom_smooth(se = FALSE)
+
+
+
+library(broom)
+  
+por_sujeto_test <- por_sujeto %>%
+  mutate(sum = model[[1]][1]) %>%
+  mutate(intercept = sum[[1]][1]) %>%
+  mutate(slope = sum[[1]][2])
+
+por_sujeto_test_unnested <- unnest(por_sujeto_test,data)
+
+por_sujeto_test_unnested %>% 
+  ggplot(aes(log_distancia, log_respuesta_mean)) +
+  geom_point(aes(y =log_respuesta_mean)) +
+  geom_abline(aes(intercept = intercept, slope = slope)) +
+  geom_smooth(se = FALSE)
+
+por_sujeto_test_unnested %>% 
+  ggplot(aes(log_distancia, log_respuesta_mean)) +
+  geom_point(aes(y =log_respuesta_mean)) +
+  geom_abline(aes(intercept = intercept, slope = slope)) +
+  geom_smooth(se = FALSE)
+
+ajust_sub <- por_sujeto_test_unnested %>% 
+  ggplot(aes(log_distancia, log_respuesta_mean)) +
+  geom_abline(aes(intercept = intercept, slope = slope)) +
+  facet_grid(condicion_sala ~ nsub) +
+  geom_smooth(se = FALSE)
+
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "ajuste_sub.png", sep = '')
+#ggsave(mi_nombre_de_archivo, plot = g1, width=44, height=14, units="cm", limitsize=FALSE, dpi=200)
+ggsave(mi_nombre_de_archivo, plot =ajust_sub, width=100, height=20, units="cm", limitsize=FALSE, dpi=200)
