@@ -381,3 +381,95 @@ plot(predictions)
 
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "prediccion_lineal.png", sep = '')
 ggsave(mi_nombre_de_archivo, plot =predictions, width=100, height=20, units="cm",limitsize=FALSE,  dpi=200)
+
+
+# Modelo lineal de tabla poblacional
+# tabla pob_2 va tener valores log log
+tabla.pob_2 <- tabla.pob %>%
+  mutate(log_respuesta = log(respuestapob[,"mean"])) %>%
+  mutate(log_distancia = log(distancia))
+
+pob_model <- lm(log_respuesta ~ log_distancia, tabla.pob_2)
+
+pob_model <- lm(log_respuesta ~ log_distancia + condicion_sala, tabla.pob_2)
+
+pob_model <- lm(log(respuestapob[,"mean"]) ~ log(distancia), tabla.pob_2)
+
+summary(pob_model)
+anova(pob_model)
+
+intercept = pob_model[[1]][[1]]
+slope = pob_model[[1]][[2]]
+
+tabla.pob_2 <- tabla.pob_2 %>%
+  mutate(predi = predict(pob_model))
+
+tabla.pob_2 <- tabla.pob_2 %>%
+  mutate(predi_linear = exp(predi))
+
+tabla.pob_2 <- tabla.pob_2 %>%
+  mutate(predi_linear2 = exp(intercept)* distancia^slope)
+
+poblacional_model <- tabla.pob_2 %>% 
+  ggplot(aes(distancia, predi),color = condicion_sala, group = condicion_sala) +
+  geom_point(aes(y =respuestapob[,"mean"])) +
+  facet_grid(condicion_sala) +
+  geom_smooth(se = FALSE) +
+  labs(x="", y="", title ='Prediccion hecha con log log pasada lineal')
+
+poblacional_model_log_log <- ggplot(tabla.pob_2, aes(x = log_distancia, y = predi)) +
+  geom_line(color="red", size=1) +
+  scale_x_continuous(name="Distance source (m) log")+#, breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  scale_y_continuous(name="Perceived distance (m) log")+#,  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  #geom_line(aes(x=distancia, y=respuestapob[,"mean"]),color="blue", size = 1) +
+  geom_line(aes(x=log_distancia, y=log_respuesta),color="blue", size = 1) +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  facet_grid(. ~ condicion_sala) + 
+  theme_linedraw(base_size = 9)
+
+plot(poblacional_model_log_log)
+
+
+
+poblacional_model_linear <- ggplot(tabla.pob_2, aes(x = distancia, y = predi_linear2)) +
+  geom_line(color="red", size=1) +
+  geom_errorbar(data=tabla.pob_2, color="black",alpha = 0.5, width=0.75, size=0.75,
+                mapping=aes(ymin = respuestapob[,"mean"] - respuestapob[,"sem"],
+                            ymax = respuestapob[,"mean"] + respuestapob[,"sem"]))+
+  scale_x_continuous(name="Distance source (m)")+#, breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  scale_y_continuous(name="Perceived distance (m)")+#,  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  geom_line(aes(x=distancia, y=respuestapob[,"mean"]),color="blue", size = 1) +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  facet_grid(. ~ condicion_sala) + 
+  theme_linedraw(base_size = 9)
+
+plot(poblacional_model_linear)
+
+
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "prediccion_por_salas.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot =poblacional_model_linear,limitsize=FALSE,  dpi=200)
+
+## Guardando resultados de modelos estadisticos
+
+pob_model <- lm(log_respuesta ~ log_distancia, tabla.pob_2)
+pob_model <- lm(log(respuestapob[,"mean"]) ~ log(distancia), tabla.pob_2)
+
+sink("./analisis-pad-main/resutlados_estadisticos/22-junio-2023/lm_simple/lm_log-dist-percibida_log-dis-real.png")
+print(summary(pob_model))
+sink()
+
+sink("./analisis-pad-main/resutlados_estadisticos/22-junio-2023/lm_simple/lm_log-dist-percibida_log-dis-real-ANOVA.png")
+anova(pob_model)
+sink()
+
+## Modelos con 2 predictores (condicion sala)
+
+pob_model_2_pred <- lm(log_respuesta ~ log_distancia + condicion_sala, tabla.pob_2)
+
+sink("./analisis-pad-main/resutlados_estadisticos/22-junio-2023/lm_simple/lm_log-dist-percibida_log-dis-real.png")
+print(summary(pob_model))
+sink()
+
+sink("./analisis-pad-main/resutlados_estadisticos/22-junio-2023/lm_simple/lm_log-dist-percibida_log-dis-real-ANOVA.png")
+anova(pob_model)
+sink()

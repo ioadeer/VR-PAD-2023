@@ -1,0 +1,21 @@
+
+Call:
+lm(formula = log_respuesta ~ log_distancia + condicion_sala, 
+    data = tabla.pob_2)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.28497 -0.12026  0.03931  0.10212  0.17849 
+
+Coefficients:
+                          Estimate Std. Error t value Pr(>|t|)    
+(Intercept)               -0.69957    0.14930  -4.686  0.00114 ** 
+log_distancia              0.97947    0.09239  10.601  2.2e-06 ***
+condicion_salaSALA_GRANDE -0.01227    0.09485  -0.129  0.89989    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1643 on 9 degrees of freedom
+Multiple R-squared:  0.9259,	Adjusted R-squared:  0.9094 
+F-statistic:  56.2 on 2 and 9 DF,  p-value: 8.223e-06
+

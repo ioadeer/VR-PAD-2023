@@ -1,0 +1,19 @@
+
+Call:
+lm(formula = log(respuestapob[, "mean"]) ~ log(distancia), data = tabla.pob_2)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.27883 -0.11719  0.03318  0.10519  0.18463 
+
+Coefficients:
+               Estimate Std. Error t value Pr(>|t|)    
+(Intercept)    -0.70571    0.13443   -5.25 0.000373 ***
+log(distancia)  0.97947    0.08773   11.16 5.74e-07 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.156 on 10 degrees of freedom
+Multiple R-squared:  0.9257,	Adjusted R-squared:  0.9183 
+F-statistic: 124.6 on 1 and 10 DF,  p-value: 5.742e-07
+
