@@ -466,10 +466,10 @@ sink()
 
 pob_model_2_pred <- lm(log_respuesta ~ log_distancia + condicion_sala, tabla.pob_2)
 
-sink("./analisis-pad-main/resutlados_estadisticos/22-junio-2023/lm_simple/lm_log-dist-percibida_log-dis-real.png")
-print(summary(pob_model))
+sink("./analisis-pad-main/resutlados_estadisticos/22-junio-2023/lm_2_predictors/lm_log-dist-percibida_log-dis-real_+_cond-sala.png")
+print(summary(pob_model_2_pred))
 sink()
 
-sink("./analisis-pad-main/resutlados_estadisticos/22-junio-2023/lm_simple/lm_log-dist-percibida_log-dis-real-ANOVA.png")
-anova(pob_model)
+sink("./analisis-pad-main/resutlados_estadisticos/22-junio-2023/lm_2_predictors/lm_log-dist-percibida_log-dis-real_+_cond-sala-ANOVA.png")
+anova(pob_model_2_pred)
 sink()
