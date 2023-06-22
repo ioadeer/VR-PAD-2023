@@ -12,7 +12,6 @@ library(lmerTest)
 library(broom)
 library(broom.mixed)
 library(ggpubr)
-library(palmerpenguins)
 library(Routliers)
 library(ggbeeswarm)
 library(ggthemes)
@@ -213,6 +212,56 @@ augmented %>%
   geom_point(mapping = aes(y = log_respuesta_mean)) +
   geom_line(mapping = aes(y = .fitted), color = "red")
 
+# Intento dos con broom
+tabla.ind <- tabla.ind %>%
+  arrange(nsub)
+
+lmfit <- lm(log_respuesta_mean ~ log_distancia, tabla.ind)
+
+summary(lmfit)
+tidy(lmfit)
+broom_augemnted_tibble <- augment(lmfit, tabla.ind)
+
+log_fit <- ggplot(broom_augemnted_tibble, aes(x=.fitted, y=log_respuesta_mean)) +
+  geom_point(aes(color = nsub), alpha =0.6) +
+  geom_smooth(method="loess", alpha = 0.2, color = "#20948b") +
+  labs(x = '', y = '', title = "Fitted vs valores reales log log")
+
+plot(log_fit)
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "broom/fit_log_log.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot =log_fit, dpi=200)
+
+log_resid <- ggplot(broom_augemnted_tibble, aes(x=.resid)) +
+  geom_histogram(bins = 15, fill="#20948b") +
+  labs(x="", y="", title ='Distribucion residuos modelo log log')
+
+plot(log_resid)
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "broom/resi_log_log.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot =log_resid, dpi=200)
+
+# Linealizando modelo
+
+broom_augemnted_tibble <- broom_augemnted_tibble %>% 
+  mutate(fitted_lineal = exp(.fitted)) %>%
+  mutate(resid_lineal = exp(.resid))
+
+linear_fit <- ggplot(broom_augemnted_tibble, aes(x=fitted_lineal, y=respuesta[,"mean"])) +
+  geom_point(aes(color = nsub), alpha =0.6) +
+  geom_smooth(method="loess", alpha = 0.2, color = "#20948b") +
+  labs(x = '', y = '', title = "Fitted vs valores reales linear")
+
+plot(linear_fit)
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "broom/fit_linear.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot =linear_fit, dpi=200)
+
+linear_resid <- ggplot(broom_augemnted_tibble, aes(x=resid_lineal)) +
+  geom_histogram(bins = 15, fill="#20948b") +
+  labs(x="", y="", title ='Distribucion residuos modelo lienal')
+
+plot(linear_resid)
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "broom/resid_linear.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot =linear_resid, dpi=200)
+
 
 # otro intento ------------------------------------------------------------
 
@@ -263,8 +312,6 @@ por_sujeto %>%
   geom_line(aes(group = nsub), alpha = 1 / 3) + 
   geom_smooth(se = FALSE)
 
-
-
 library(broom)
   
 por_sujeto_test <- por_sujeto %>%
@@ -286,12 +333,51 @@ por_sujeto_test_unnested %>%
   geom_abline(aes(intercept = intercept, slope = slope)) +
   geom_smooth(se = FALSE)
 
+# Ajustes individuales
+
 ajust_sub <- por_sujeto_test_unnested %>% 
   ggplot(aes(log_distancia, log_respuesta_mean)) +
   geom_abline(aes(intercept = intercept, slope = slope)) +
   facet_grid(condicion_sala ~ nsub) +
   geom_smooth(se = FALSE)
 
+plot(ajust_sub)
+
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "ajuste_sub.png", sep = '')
 #ggsave(mi_nombre_de_archivo, plot = g1, width=44, height=14, units="cm", limitsize=FALSE, dpi=200)
 ggsave(mi_nombre_de_archivo, plot =ajust_sub, width=100, height=20, units="cm", limitsize=FALSE, dpi=200)
+
+# Histograma de exponentes de respuesta
+
+histograma_exponentes <- ggplot(por_sujeto_test_unnested, aes(x=slope)) +
+  geom_histogram(aes(y=..density..), position="identity", alpha=0.5)+
+  geom_density(alpha=0.6)+
+  # geom_vline(data=mean(mDist_perc), aes(xintercept=grp.mean, color=condicion_sala),
+  #             linetype="dashed")+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  labs(title="Respuesta histogram plot",x="Exponentes", y = "Density")+
+  theme_classic()
+
+plot(histograma_exponentes)
+
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "histogramas_exponentes_sub.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot =histograma_exponentes, dpi=200)
+
+por_sujeto_test_2 <- por_sujeto_test_unnested %>%
+  mutate(predi = predict(model[[1]]))
+
+por_sujeto_test_2 <- por_sujeto_test_2 %>%
+  mutate(predi_linear = exp(predi))
+
+predictions  <- por_sujeto_test_2 %>% 
+  ggplot(aes(distancia, predi_linear)) +
+  geom_point(aes(y =respuesta[,1])) +
+  facet_grid(condicion_sala ~ nsub) +
+  geom_smooth(se = FALSE) +
+  labs(x="", y="", title ='Prediccion hecha con log log pasada lineal')
+
+plot(predictions)  
+
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "prediccion_lineal.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot =predictions, width=100, height=20, units="cm",limitsize=FALSE,  dpi=200)
