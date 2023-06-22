@@ -493,3 +493,16 @@ sink()
 sink("./analisis-pad-main/resutlados_estadisticos/22-junio-2023/lm_2_predictors/lm_log-dist-percibida_log-dis-real_+_cond-sala-ANOVA.png")
 anova(pob_model_2_pred)
 sink()
+
+
+boxplot <- ggplot(por_sujeto_test_2, aes(x=nsub, y=slope))+
+  geom_boxplot() 
+  #geom_jitter(shape=1, position=position_jitter(0.2))
+
+plot(boxplot)
+
+# Correlacion 
+# Distancia de la sala
+# maxima distancia reportada
+# esto esta en
+
