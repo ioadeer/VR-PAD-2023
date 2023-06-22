@@ -429,15 +429,17 @@ poblacional_model_log_log <- ggplot(tabla.pob_2, aes(x = log_distancia, y = pred
 
 plot(poblacional_model_log_log)
 
-
-
 poblacional_model_linear <- ggplot(tabla.pob_2, aes(x = distancia, y = predi_linear2)) +
   geom_line(color="red", size=1) +
   geom_errorbar(data=tabla.pob_2, color="black",alpha = 0.5, width=0.75, size=0.75,
                 mapping=aes(ymin = respuestapob[,"mean"] - respuestapob[,"sem"],
                             ymax = respuestapob[,"mean"] + respuestapob[,"sem"]))+
-  scale_x_continuous(name="Distance source (m)")+#, breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
-  scale_y_continuous(name="Perceived distance (m)")+#,  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  limitado
+  scale_x_continuous(name="Distance source (m)" ) + #, breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  scale_y_continuous(name="Perceived distance (m)")  +#,  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  # entero
+  #scale_x_continuous(name="Distance source (m)" , breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,8)) +
+  #scale_y_continuous(name="Perceived distance (m)",  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,8)) +
   geom_line(aes(x=distancia, y=respuestapob[,"mean"]),color="blue", size = 1) +
   geom_abline(intercept = 0, slope = 1, linetype="dashed") +
   facet_grid(. ~ condicion_sala) + 
@@ -445,9 +447,27 @@ poblacional_model_linear <- ggplot(tabla.pob_2, aes(x = distancia, y = predi_lin
 
 plot(poblacional_model_linear)
 
+poblacional_model_linear_en_uno <- ggplot(tabla.pob_2, aes(x = distancia, y = predi_linear2)) +
+  geom_line(color="red", size=1) +
+  geom_errorbar(data=tabla.pob_2, color="black",alpha = 0.5, width=0.25, size=0.75,
+                mapping=aes(ymin = respuestapob[,"mean"] - respuestapob[,"sem"],
+                            ymax = respuestapob[,"mean"] + respuestapob[,"sem"]))+
+  #limitado
+  #scale_x_continuous(name="Distance source (m)" ) + #, breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  #scale_y_continuous(name="Perceived distance (m)")  +#,  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  # entero
+  scale_x_continuous(name="Distance source (m)" , breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,10)) +
+  scale_y_continuous(name="Perceived distance (m)",  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,10)) +
+  geom_line(aes(x=distancia, y=respuestapob[,"mean"], color=condicion_sala, group= condicion_sala), size = 1) +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  #facet_grid(. ~ condicion_sala) + 
+  theme_linedraw(base_size = 9) +
+  labs(x="", y="", title ='Prediccion hecha con log log pasada lineal, vista con dos salas')
 
-mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "prediccion_por_salas.png", sep = '')
-ggsave(mi_nombre_de_archivo, plot =poblacional_model_linear,limitsize=FALSE,  dpi=200)
+plot(poblacional_model_linear_en_uno)
+
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "prediccion_dos_salas_en_uno-entero.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot =poblacional_model_linear_en_uno,limitsize=FALSE,  dpi=200)
 
 ## Guardando resultados de modelos estadisticos
 
