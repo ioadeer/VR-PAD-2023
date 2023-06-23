@@ -1,6 +1,10 @@
 # Analisis de datos del experi 32 sujetos
 # El 5 es outlier
 
+# Paran outliers
+
+install.packages("Routliers")
+
 # Dependencias ------------------------------------------------------------
 library(dplyr)
 library(ggplot2)
@@ -18,6 +22,7 @@ library(ggthemes)
 library(ggstatsplot)
 library(gmodels)
 library(pracma)
+library(Routliers)
 
 # Load data -----------------------------------------------------------------
 
@@ -47,6 +52,8 @@ tabla.raw <- read.csv('./analisis-pad-main/data/data-1-32-bloque-1.csv', header 
 tabla.raw$SesgoAbs <-  tabla.raw$respuesta - tabla.raw$distancia
 tabla.raw$SesgoRel <- (tabla.raw$respuesta - tabla.raw$distancia) / tabla.raw$distancia
 
+tabla.raw <- tabla.raw %>%
+  filter(nsub != 22 & nsub != 28)
 
 f_promedio <- function(x) c(mean = mean(x),
                             sd   = sd(x),
@@ -72,6 +79,51 @@ tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
 tabla.ind <- tabla.ind %>% 
   mutate(log_respuesta_mean = log(respuesta[,"mean"])) %>%
   mutate(log_distancia = log(distancia))
+
+# Remocion de outliers
+# Original
+#res3 <- outliers_mad(x = filter(tabla_ADP.ind.Blind.VR,Bloque == "verbal report" & BlindCat == "Blind")$mSesgoRel ,na.rm=TRUE)
+#plot_outliers_mad(res3,x=tabla_ADP.ind.Blind.VR$mSesgoRel,pos_display=TRUE)
+#tabla_ADP.ind.Blind.VR[res3$outliers_pos,]
+
+# Copia
+# Hacer una nueva tabla que tiene sesgo de cada sujeto sin distancia
+
+tabla.outlier <- tabla.ind %>% 
+  #filter(Bloque == "verbal report" & BlindCat == "Blind") %>% 
+  group_by(nsub, condicion_sala) %>%
+  summarise(mSesgoRel  = mean(SesgoRel[,"mean"],na.rm=TRUE))  %>%
+  ungroup()
+
+
+res3 <- outliers_mad(x = filter(tabla.outlier,condicion_sala == 'SALA_GRANDE')$mSesgoRel ,na.rm=TRUE)
+
+plot_outliers_mad(res3,x=filter(tabla.outlier,condicion_sala == 'SALA_GRANDE')$mSesgoRel,pos_display=TRUE)
+
+res3$outliers_pos
+
+res3
+
+filter(tabla.outlier, condicion_sala == 'SALA_GRANDE')[res3$outliers_pos,]
+
+# Deteccion outliers condicion sala grande
+# A tibble: 2 × 3
+#nsub condicion_sala mSesgoRel
+#<int> <fct>              <dbl>
+#  1    22 SALA_GRANDE        0.465
+#  2    28 SALA_GRANDE        0.111
+
+res3 <- outliers_mad(x = filter(tabla.outlier,condicion_sala == 'SALA_CHICA')$mSesgoRel ,na.rm=TRUE)
+
+plot_outliers_mad(res3,x=filter(tabla.outlier,condicion_sala == 'SALA_CHICA')$mSesgoRel,pos_display=TRUE)
+
+res3$outliers_pos
+
+res3
+
+filter(tabla.outlier, condicion_sala == 'SALA_CHICA')[res3$outliers_pos,]
+
+# SALA Condicion sala chica
 
 
 # Figuras -----------------------------------------------------------------
@@ -216,7 +268,7 @@ augmented %>%
 tabla.ind <- tabla.ind %>%
   arrange(nsub)
 
-lmfit <- lm(log_respuesta_mean ~ log_distancia, tabla.ind)
+lmfit <- lmer(log_respuesta_mean ~ log_distancia * condicion_sala+ (1|nsub), tabla.ind)
 
 summary(lmfit)
 tidy(lmfit)
@@ -277,7 +329,7 @@ por_sujeto <- tabla.ind %>%
   nest()
 
 modelo_sujeto <- function(df) {
-  lm(log_respuesta_mean ~ log_distancia, data =df)
+  lmer(log_respuesta_mean ~ log_distancia * condicion_sala+ (1|nsub), tabla.ind)
 }
 
 #modelos <- map(por_sujeto$data, modelo_sujeto)
@@ -292,15 +344,23 @@ por_sujeto <- por_sujeto %>%
 
 resids <- unnest(por_sujeto, resids)
 
-resids %>% 
+resids_modelr <- resids %>% 
   ggplot(aes(log_distancia, resid)) +
   geom_line(aes(group = nsub), alpha = 1 / 3) + 
   geom_smooth(se = FALSE)
 
-resids %>% 
+model_modelr <- resids %>% 
   ggplot(aes(log_distancia,log_respuesta_mean)) +
   geom_line(aes(group = nsub), alpha = 1 / 3) + 
-  geom_smooth(se = FALSE)
+  geom_smooth(se = FALSE) +
+  label()
+
+graphs <- ggarrange(model_modelr,resids_modelr,
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
+plot(graphs)
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "broom/adjust-and-resids_modelr.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot =graphs, dpi=200)
 
 d = coef(por_sujeto$model[[2]])[1][[1]]
 d = coef(por_sujeto$model[[2]])[2][[1]]
@@ -383,6 +443,7 @@ mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "prediccion_lin
 ggsave(mi_nombre_de_archivo, plot =predictions, width=100, height=20, units="cm",limitsize=FALSE,  dpi=200)
 
 
+#lm 
 # Modelo lineal de tabla poblacional
 # tabla pob_2 va tener valores log log
 tabla.pob_2 <- tabla.pob %>%
@@ -447,6 +508,25 @@ poblacional_model_linear <- ggplot(tabla.pob_2, aes(x = distancia, y = predi_lin
 
 plot(poblacional_model_linear)
 
+poblacional_model_log_en_uno <- ggplot(tabla.pob_2, aes(x = log_distancia, y = predi)) +
+  geom_line(color="red", size=1) +
+  #limitado
+  #scale_x_continuous(name="Distance source (m)" ) + #, breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  #scale_y_continuous(name="Perceived distance (m)")  +#,  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  # entero
+  #scale_x_log10(name="Distance source (m)" , breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,10)) +
+  #scale_y_log10(name="Perceived distance (m)",  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,10)) +
+  geom_line(aes(x=log_distancia, y=log_respuesta, color=condicion_sala, group= condicion_sala), size = 1) +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  #facet_grid(. ~ condicion_sala) + 
+  theme_linedraw(base_size = 9) +
+  labs(x="", y="", title ='Prediccion hecha con log log, vista con dos salas')
+
+plot(poblacional_model_log_en_uno)
+
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "prediccion_dos_salas_en_uno-entero.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot =poblacional_model_linear_en_uno,limitsize=FALSE,  dpi=200)
+
 poblacional_model_linear_en_uno <- ggplot(tabla.pob_2, aes(x = distancia, y = predi_linear2)) +
   geom_line(color="red", size=1) +
   geom_errorbar(data=tabla.pob_2, color="black",alpha = 0.5, width=0.25, size=0.75,
@@ -466,8 +546,8 @@ poblacional_model_linear_en_uno <- ggplot(tabla.pob_2, aes(x = distancia, y = pr
 
 plot(poblacional_model_linear_en_uno)
 
-mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "prediccion_dos_salas_en_uno-entero.png", sep = '')
-ggsave(mi_nombre_de_archivo, plot =poblacional_model_linear_en_uno,limitsize=FALSE,  dpi=200)
+
+
 
 ## Guardando resultados de modelos estadisticos
 
@@ -506,3 +586,14 @@ plot(boxplot)
 # maxima distancia reportada
 # esto esta en
 
+# modelo de efectos mixtos 
+m.distancia <- lmer(log_respuesta_mean ~ condicion_sala * log_distancia + (1|nsub), 
+                    data = tabla.ind)
+
+sink("./analisis-pad-main/resutlados_estadisticos/22-junio-2023/lm_2_predictors/lmer_log-dist-percibida_log-dis-real_+_cond-sala.png")
+print(summary(m.distancia))
+sink()
+
+sink("./analisis-pad-main/resutlados_estadisticos/22-junio-2023/lm_2_predictors/lmer_log-dist-percibida_log-dis-real_+_cond-sala-ANOVA.png")
+anova(m.distancia)
+sink()
