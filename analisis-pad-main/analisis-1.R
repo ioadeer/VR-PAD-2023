@@ -359,7 +359,7 @@ graphs <- ggarrange(model_modelr,resids_modelr,
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
 plot(graphs)
-mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "broom/adjust-and-resids_modelr.png", sep = '')
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "adjust-and-resids_modelr.png", sep = '')
 ggsave(mi_nombre_de_archivo, plot =graphs, dpi=200)
 
 d = coef(por_sujeto$model[[2]])[1][[1]]
