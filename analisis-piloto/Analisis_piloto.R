@@ -17,7 +17,7 @@ library(ggthemes)
 library(ggstatsplot)
 library(gmodels)
 library(pracma)
-
+library(Routliers)
 # Load data -----------------------------------------------------------------
 
 tabla.raw <- read.csv('./analisis-piloto/data/data-piloto.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
@@ -45,6 +45,45 @@ tabla.pob <- tibble(aggregate(cbind(respuesta[,"mean"],SesgoRel[,"mean"]) ~ cond
 
 tabla.pob = tabla.pob %>% rename(respuestapob = V1)
 tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
+
+
+#
+# Copia
+# Hacer una nueva tabla que tiene sesgo de cada sujeto sin distancia
+
+tabla.outlier <- tabla.ind %>% 
+  #filter(Bloque == "verbal report" & BlindCat == "Blind") %>% 
+  group_by(nsub, condicion_sala) %>%
+  summarise(mSesgoRel  = mean(SesgoRel[,"mean"],na.rm=TRUE))  %>%
+  ungroup()
+
+
+res3 <- outliers_mad(x = filter(tabla.outlier,condicion_sala == 'SALA_CHICA')$mSesgoRel ,na.rm=TRUE)
+
+plot_outliers_mad(res3,x=filter(tabla.outlier,condicion_sala == 'SALA_CHICA')$mSesgoRel,pos_display=TRUE)
+
+res3$outliers_pos
+
+res3
+
+filter(tabla.outlier, condicion_sala == 'SALA_GRANDE')[res3$outliers_pos,]
+
+# Deteccion outliers condicion sala grande
+# A tibble: 2 × 3
+#nsub condicion_sala mSesgoRel
+#<int> <fct>              <dbl>
+#  1    22 SALA_GRANDE        0.465
+#  2    28 SALA_GRANDE        0.111
+
+res3 <- outliers_mad(x = filter(tabla.outlier,condicion_sala == 'SALA_CHICA')$mSesgoRel ,na.rm=TRUE)
+
+plot_outliers_mad(res3,x=filter(tabla.outlier,condicion_sala == 'SALA_CHICA')$mSesgoRel,pos_display=TRUE)
+
+res3$outliers_pos
+
+res3
+
+filter(tabla.outlier, condicion_sala == 'SALA_CHICA')[res3$outliers_pos,]
 
 
 

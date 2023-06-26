@@ -461,6 +461,7 @@ anova(pob_model)
 
 intercept = pob_model[[1]][[1]]
 slope = pob_model[[1]][[2]]
+slope2 = pob_model[[1]][[3]]
 
 tabla.pob_2 <- tabla.pob_2 %>%
   mutate(predi = predict(pob_model))
@@ -495,7 +496,7 @@ poblacional_model_linear <- ggplot(tabla.pob_2, aes(x = distancia, y = predi_lin
   geom_errorbar(data=tabla.pob_2, color="black",alpha = 0.5, width=0.75, size=0.75,
                 mapping=aes(ymin = respuestapob[,"mean"] - respuestapob[,"sem"],
                             ymax = respuestapob[,"mean"] + respuestapob[,"sem"]))+
-  limitado
+  #limitado
   scale_x_continuous(name="Distance source (m)" ) + #, breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
   scale_y_continuous(name="Perceived distance (m)")  +#,  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
   # entero
@@ -511,8 +512,8 @@ plot(poblacional_model_linear)
 poblacional_model_log_en_uno <- ggplot(tabla.pob_2, aes(x = log_distancia, y = predi)) +
   geom_line(color="red", size=1) +
   #limitado
-  #scale_x_continuous(name="Distance source (m)" ) + #, breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
-  #scale_y_continuous(name="Perceived distance (m)")  +#,  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  scale_x_continuous(name="Distance source (m)" ) + #, breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
+  scale_y_continuous(name="Perceived distance (m)")  +#,  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,20)) +
   # entero
   #scale_x_log10(name="Distance source (m)" , breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,10)) +
   #scale_y_log10(name="Perceived distance (m)",  breaks=c(0,2.4,3.6,4.8,6,7), labels=c(0,2.4,3.6,4.8,6,7), minor_breaks=NULL, limits = c(0,10)) +
@@ -528,7 +529,8 @@ mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "prediccion_dos
 ggsave(mi_nombre_de_archivo, plot =poblacional_model_linear_en_uno,limitsize=FALSE,  dpi=200)
 
 poblacional_model_linear_en_uno <- ggplot(tabla.pob_2, aes(x = distancia, y = predi_linear2)) +
-  geom_line(color="red", size=1) +
+  geom_line(aes(x = distancia, y = predi_linear2),color="red", size=1) +
+  geom_line(aes(x = distancia, y = predi_linear3),color="green", size =1) +
   geom_errorbar(data=tabla.pob_2, color="black",alpha = 0.5, width=0.25, size=0.75,
                 mapping=aes(ymin = respuestapob[,"mean"] - respuestapob[,"sem"],
                             ymax = respuestapob[,"mean"] + respuestapob[,"sem"]))+
