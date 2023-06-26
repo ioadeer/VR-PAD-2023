@@ -17,7 +17,7 @@ library(ggthemes)
 library(ggstatsplot)
 library(gmodels)
 library(pracma)
-library(Routliers)
+
 # Load data -----------------------------------------------------------------
 
 tabla.raw <- read.csv('./analisis-piloto/data/data-piloto.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
@@ -211,6 +211,11 @@ m.distancia_fixed <- lm(log_respuesta_mean ~ condicion_sala*log_distancia,
 summary(m.distancia_fixed)
 
 
+# Analisis de potencia ------------------------------------------------
+
+
+
+
 # Statistical analysis bias ####
 
 m.Reaching <- lm(mSesgoRel ~ condicion_sala, 
@@ -269,9 +274,7 @@ anova(m.distancia_fixed)
 plot(log_respuesta_mean ~  log_distancia , tabla.ind, col=clr[as.numeric(nsub)], main='Pred w/ points')
 abline(coef[1], coef[2], col ="red")
 abline(coef[1], coef[3], col = "green")
-
 abline(coef[1], coef[2]+coef[3], col= "blue")
-
 abline(coef[1], coef[4], col= "blue")
 
 
