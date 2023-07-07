@@ -213,6 +213,9 @@ summary(m.distancia_fixed)
 
 # Analisis de potencia ------------------------------------------------
 
+install.packages("devtools")
+devtools::install_github("arcaldwell49/Superpower")
+install.packages("simr")
 
 library(Superpower)
 library(simr)
@@ -230,11 +233,15 @@ summary(m.distancia)
 ggcoefstats(m.distancia, output = "tidy") %>% select(-label)
 anova(m.distancia)
 
+# Aca se le agranda el effect size a la interaccion
+# El valor es 0.3 ? 
 xtabs(~ condicion_sala , data=getData(m.distancia))
 fixef(m.distancia)["condicion_salaSALA_GRANDE:log_distancia"] <- -0.30048
 
+# se calcula el poder estadistico con este nuevo modelo
 power_condicion = powerSim(m.distancia, fixed("condicion_sala:log_distancia", "f"), nsim = 50, seed = 2021)
 power_condicion
+
 
 m.BPM2 <- extend(m.distancia, along = "nsub" , n=39)
 xtabs(~ condicion_sala, data=getData(m.BPM2))

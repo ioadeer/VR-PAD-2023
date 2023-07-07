@@ -24,6 +24,7 @@ library(gmodels)
 library(pracma)
 library(Routliers)
 
+
 # Load data -----------------------------------------------------------------
 
 ## En este script vamos a analizar todo lo que teniamos
@@ -49,62 +50,7 @@ write.table(tabla.raw, file="./analisis-pad-main/data/data-1-32-bloque-1.csv", r
 
 tabla.raw <- read.csv('./analisis-pad-main/data/data-1-32-bloque-1.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
-tabla.raw$SesgoAbs <-  tabla.raw$respuesta - tabla.raw$distancia
-tabla.raw$SesgoRel <- (tabla.raw$respuesta - tabla.raw$distancia) / tabla.raw$distancia
 
-tabla.raw <- tabla.raw %>%
-  filter(nsub != 22 & nsub != 28)
-
-f_promedio <- function(x) c(mean = mean(x),
-                            sd   = sd(x),
-                            var  = var(x),
-                            sem  = sd(x)/sqrt(length(x)),
-                            n    = length(x))
-
-tabla.ind <- tibble(aggregate(cbind(respuesta,SesgoRel) ~ nsub*condicion_sala*distancia*nbloque,
-                              data = tabla.raw,
-                              FUN  = f_promedio,na.action = NULL))
-
-# - Nivel poblacional
-
-tabla.pob <- tibble(aggregate(cbind(respuesta[,"mean"],SesgoRel[,"mean"]) ~ condicion_sala*distancia,
-                              data <- tabla.ind,
-                              FUN  <- f_promedio,na.action = NULL))
-
-
-tabla.pob = tabla.pob %>% rename(respuestapob = V1)
-tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
-
-# Log Log
-tabla.ind <- tabla.ind %>% 
-  mutate(log_respuesta_mean = log(respuesta[,"mean"])) %>%
-  mutate(log_distancia = log(distancia))
-
-# Remocion de outliers
-# Original
-#res3 <- outliers_mad(x = filter(tabla_ADP.ind.Blind.VR,Bloque == "verbal report" & BlindCat == "Blind")$mSesgoRel ,na.rm=TRUE)
-#plot_outliers_mad(res3,x=tabla_ADP.ind.Blind.VR$mSesgoRel,pos_display=TRUE)
-#tabla_ADP.ind.Blind.VR[res3$outliers_pos,]
-
-# Copia
-# Hacer una nueva tabla que tiene sesgo de cada sujeto sin distancia
-
-tabla.outlier <- tabla.ind %>% 
-  #filter(Bloque == "verbal report" & BlindCat == "Blind") %>% 
-  group_by(nsub, condicion_sala) %>%
-  summarise(mSesgoRel  = mean(SesgoRel[,"mean"],na.rm=TRUE))  %>%
-  ungroup()
-
-
-res3 <- outliers_mad(x = filter(tabla.outlier,condicion_sala == 'SALA_GRANDE')$mSesgoRel ,na.rm=TRUE)
-
-plot_outliers_mad(res3,x=filter(tabla.outlier,condicion_sala == 'SALA_GRANDE')$mSesgoRel,pos_display=TRUE)
-
-res3$outliers_pos
-
-res3
-
-filter(tabla.outlier, condicion_sala == 'SALA_GRANDE')[res3$outliers_pos,]
 
 # Deteccion outliers condicion sala grande
 # A tibble: 2 × 3
@@ -328,8 +274,20 @@ por_sujeto <- tabla.ind %>%
   group_by(nsub) %>%
   nest()
 
+#  Estp de modelo para aplicar como funcion tiene que ser asi no 
+#  como el que use en modelo_sujeto
+# country_model <- function(df) {
+#   lm(lifeExp ~ year, data = df)
+# }
+
+# ASI NO
 modelo_sujeto <- function(df) {
   lmer(log_respuesta_mean ~ log_distancia * condicion_sala+ (1|nsub), tabla.ind)
+}
+
+# ASI SI
+modelo_sujeto  <- function(df) {
+  lmer(log_respuesta_mean ~ log_distancia , data = df)
 }
 
 #modelos <- map(por_sujeto$data, modelo_sujeto)
