@@ -6,6 +6,7 @@
 install.packages("Routliers")
 
 # Dependencias ------------------------------------------------------------
+
 library(dplyr)
 library(ggplot2)
 library(quickpsy)
@@ -25,7 +26,7 @@ library(pracma)
 library(Routliers)
 
 
-# Load data -----------------------------------------------------------------
+# Load data old -----------------------------------------------------------------
 
 ## En este script vamos a analizar todo lo que teniamos
 ## Primeros 11
@@ -46,11 +47,11 @@ tabla.raw <- do.call("rbind", list(tabla.primeros_11, tabla.12_al_32))
 
 write.table(tabla.raw, file="./analisis-pad-main/data/data-1-32-bloque-1.csv", row.names = FALSE)
 
-# DESDE ACA
+
+
+# load data new -----------------------------------------------------------
 
 tabla.raw <- read.csv('./analisis-pad-main/data/data-1-32-bloque-1.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
-
-
 
 # Deteccion outliers condicion sala grande
 # A tibble: 2 × 3
@@ -70,6 +71,7 @@ res3
 filter(tabla.outlier, condicion_sala == 'SALA_CHICA')[res3$outliers_pos,]
 
 # SALA Condicion sala chica
+
 
 
 # Figuras -----------------------------------------------------------------
@@ -188,8 +190,6 @@ ggsave(mi_nombre_de_archivo, plot=histograma, width=10, height=10, units="cm", l
 
 
 # Estadistica -------------------------------------------------------------
-
-
 
 tabla.test = subset(tabla.ind, select = c(nsub,log_distancia, log_respuesta_mean ))
 
