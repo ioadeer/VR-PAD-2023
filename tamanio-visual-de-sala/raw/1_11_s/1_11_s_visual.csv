@@ -1,0 +1,23 @@
+Piloto,Número de Sujeto,Nombre,Edad,Género,Altura (Oídos),Problemas de Audición,Problemas de Visión,Estudios Musicales,Orden,,"Medida Sala Grande (Ancho, Largo, Alto)","Medida Sala Chica (Ancho, Largo, Alto)","Medida Sala Real (Ancho, Largo, Alto)"
+Si,1,Alejandro,41,Masculino,1.71,No,No,Si,Sala Grande,Sala Chica,5x10x2.8,5x7x2.5,6x12x2.8
+Si,2,Bernabe,22,Masculino,1.66,No,Si,No,Sala Chica,Sala Grande,6.5x11x4 ,6x8x4.5,6x12x4
+Si,3,Ayelen,21,Femenino,1.53,No,No,No,Sala Grande,Sala Chica,5x10x4,3x6x3,4x10x3
+Si,4,Manuel,19,Masculino,1.54,No,No,Si,Sala Chica,Sala Grande,20x25x5,15x15x5,15x25x4
+Si,5,Camila,18,Femenino,1.47,No,Si,No,Sala Grande,Sala Chica,12x15x4,14x10x4,10x20x3.5
+Si,6,Joaquin,19,Masculino,1.58,No,No,Si,Sala Chica,Sala Grande,3x8x3,2x5x3,4x6.5x3
+Si,7,Matias,31,Masculino,1.73,No,No,Si,Sala Grande,Sala Chica,4x7x3,4x5x3,4x8x3.5
+Si,8,Rodrigo,21,Masculino,1.58,No,No,No,Sala Chica,Sala Grande,8x11x4,7x7x4.3,5x9x4
+Si,9,Leonel,18,Masculino,1.60,No,No,No,Sala Grande,Sala Chica,7x8x5,5x8x5,7x7x5
+Si,10,Kevin ,20,Masculino ,1.68,No,No,No,Sala Chica,Sala Grande,12x9.5x3.5,10x8x5,8x11x3.5
+Si,11,Matias,22,Masculino,1.63,No,Si,Si,Sala Grande,Sala Chica,5x8x3.5,5x4.5x3.5,4.5x8x3.5
+,12,a,,,,,,,Sala Extra Chica,,3m largo,,
+,13,B,,,,,,,Sala Extra Chica,,4m,,
+,14,C,,,,,,,Sala Extra Chica,,1.2m,,
+,15,d,,,,,,,Sala Extra Chica,,2.1m,,
+,16,e,,,,,,,Sala Extra Chica,,2.5,,
+,17,f,,,,,,,Sala Extra Chica,,2,,
+,18,g,,,,,,,Sala Extra Chica,,2,,
+,19,h,,,,,,,Sala Extra Chica,,3,,
+,20,,,,,,,,Sala Extra Chica,,5,,
+,20,,,,,,,,Sala Extra Chica,,2,,
+,21,,,,,,,,Sala Extra Chica,,3,,
