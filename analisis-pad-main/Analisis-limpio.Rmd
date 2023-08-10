@@ -1,0 +1,91 @@
+---
+title: "Analisis-1-32"
+author: "Joaquin Cervino"
+date: "2023-08-10"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r dependencies,  include=FALSE} 
+# Dependencias ------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(quickpsy)
+library(tidyverse)
+library(lme4)
+library(nlme)
+library(lmerTest)
+library(broom)
+library(broom.mixed)
+library(ggpubr)
+library(Routliers)
+library(ggbeeswarm)
+library(ggthemes)
+library(ggstatsplot)
+library(gmodels)
+library(pracma)
+library(Routliers)
+```
+
+## Analisis de primeros sujeto 1 a 32
+
+En este documento se va hacer un análisis de los sujetos.
+El análisis es parcial.
+
+```{r load_data, include=FALSE}
+
+tabla.raw <- read.csv('./data/data-1-32-bloque-1-sin-outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+tabla.raw$SesgoAbs <-  tabla.raw$respuesta - tabla.raw$distancia
+tabla.raw$SesgoRel <- (tabla.raw$respuesta - tabla.raw$distancia) / tabla.raw$distancia
+
+
+f_promedio <- function(x) c(mean = mean(x),
+                            sd   = sd(x),
+                            var  = var(x),
+                            sem  = sd(x)/sqrt(length(x)),
+                            n    = length(x))
+
+tabla.ind <- tibble(aggregate(cbind(respuesta,SesgoRel) ~ nsub*condicion_sala*distancia*nbloque,
+                              data = tabla.raw,
+                              FUN  = f_promedio,na.action = NULL))
+
+# - Nivel poblacional
+
+tabla.pob <- tibble(aggregate(cbind(respuesta[,"mean"],SesgoRel[,"mean"]) ~ condicion_sala*distancia,
+                              data <- tabla.ind,
+                              FUN  <- f_promedio,na.action = NULL))
+
+
+tabla.pob = tabla.pob %>% rename(respuestapob = V1)
+tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
+
+
+```
+
+## Figuras
+
+```{r individual con brutos}
+g1 <- ggplot() +
+  geom_line(data= tabla.ind, aes(x = distancia, y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
+  geom_line(data= tabla.pob, aes(x = distancia, y = respuestapob[,"mean"], group = condicion_sala, col = condicion_sala), alpha = 1)+
+  geom_errorbar(data=tabla.pob, aes(x = distancia, y = respuestapob[,"mean"], 
+                                    ymin = respuestapob[,"mean"] - respuestapob[,"sem"], 
+                                    ymax = respuestapob[,"mean"] + respuestapob[,"sem"],
+                                    col = condicion_sala),
+                alpha = 0.7, width=0.3, size=0.75,
+                )+
+  scale_x_continuous(name="Distance source (m)")+
+  scale_y_continuous(name="Perceived distance (m)")+
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+ 
+  theme_linedraw(base_size = 9)
+
+plot(g1)
+
+```
+

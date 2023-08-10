@@ -73,7 +73,6 @@ filter(tabla.outlier, condicion_sala == 'SALA_CHICA')[res3$outliers_pos,]
 # SALA Condicion sala chica
 
 
-
 # Figuras -----------------------------------------------------------------
 
 figures_folder = "./analisis-pad-main/figuras/"
