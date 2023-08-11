@@ -58,27 +58,7 @@ tabla.volumen <- tabla.volumen %>%
 
 write.table(tabla.volumen, file="./analisis-pad-main/data/volumen_sin_outliers_1_32.csv", row.names = FALSE)
 
-# Sacar distancia maxima reportada
 
-tabla.raw <- read.csv('./analisis-pad-main/data/data-1-32-bloque-1-sin-outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
-
-nsub_list <- unique(tabla.raw$nsub)
-
-tabla.dist_max <- tabla.raw %>%
-  group_by(nsub) %>%
-  summarise(distanca_max = max(respuesta))
-
-tabla.volumen_max_dist = merge(x =tabla.volumen, y = tabla.dist_max, by= "nsub")
-
-write.table(tabla.volumen_max_dist, file="./analisis-pad-main/data/volumen_max_dist_1_32.csv", row.names = FALSE)
-
-tabla.dist_max <- tabla.raw %>%
-  group_by(nsub) %>%
-  summarise(distanca_max = max(respuesta))
-
-tabla.volumen_max_dist = merge(x =tabla.volumen, y = tabla.dist_max, by= "nsub")
-
-write.table(tabla.volumen_max_dist, file="./analisis-pad-main/data/volumen_max_dist_1_32.csv", row.names = FALSE)
 
 
 # analisis volumen de aca salen figuras -------------------------------------------------------
