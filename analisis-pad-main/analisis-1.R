@@ -53,6 +53,30 @@ write.table(tabla.raw, file="./analisis-pad-main/data/data-1-32-bloque-1.csv", r
 
 tabla.raw <- read.csv('./analisis-pad-main/data/data-1-32-bloque-1.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
+tabla.raw$SesgoAbs <-  tabla.raw$respuesta - tabla.raw$distancia
+tabla.raw$SesgoRel <- (tabla.raw$respuesta - tabla.raw$distancia) / tabla.raw$distancia
+
+
+f_promedio <- function(x) c(mean = mean(x),
+                            sd   = sd(x),
+                            var  = var(x),
+                            sem  = sd(x)/sqrt(length(x)),
+                            n    = length(x))
+
+tabla.ind <- tibble(aggregate(cbind(respuesta,SesgoRel) ~ nsub*condicion_sala*distancia*nbloque,
+                              data = tabla.raw,
+                              FUN  = f_promedio,na.action = NULL))
+
+# - Nivel poblacional
+
+tabla.pob <- tibble(aggregate(cbind(respuesta[,"mean"],SesgoRel[,"mean"]) ~ condicion_sala*distancia,
+                              data <- tabla.ind,
+                              FUN  <- f_promedio,na.action = NULL))
+
+
+tabla.pob = tabla.pob %>% rename(respuestapob = V1)
+tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
+
 # Deteccion outliers condicion sala grande
 # A tibble: 2 × 3
 #nsub condicion_sala mSesgoRel
@@ -309,13 +333,14 @@ resids_modelr <- resids %>%
 model_modelr <- resids %>% 
   ggplot(aes(log_distancia,log_respuesta_mean)) +
   geom_line(aes(group = nsub), alpha = 1 / 3) + 
-  geom_smooth(se = FALSE) +
-  label()
+  geom_smooth(se = FALSE) 
+  #label()
 
 graphs <- ggarrange(model_modelr,resids_modelr,
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
 plot(graphs)
+
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "adjust-and-resids_modelr.png", sep = '')
 ggsave(mi_nombre_de_archivo, plot =graphs, dpi=200)
 
@@ -546,6 +571,13 @@ plot(boxplot)
 # esto esta en
 
 # modelo de efectos mixtos 
+tabla.ind <- tabla.ind %>%
+  mutate(
+    log_respuesta_mean = log(respuesta[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+
 m.distancia <- lmer(log_respuesta_mean ~ condicion_sala * log_distancia + (1|nsub), 
                     data = tabla.ind)
 

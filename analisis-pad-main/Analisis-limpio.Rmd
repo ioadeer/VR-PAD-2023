@@ -12,21 +12,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r dependencies,  include=FALSE} 
 # Dependencias ------------------------------------------------------------
+library(broom)
+library(broom.mixed)
 library(dplyr)
+library(ggbeeswarm)
+library(gmodels)
 library(ggplot2)
+library(ggthemes)
+library(ggpubr)
+library(ggstatsplot)
 library(quickpsy)
 library(tidyverse)
 library(lme4)
 library(nlme)
 library(lmerTest)
-library(broom)
-library(broom.mixed)
-library(ggpubr)
+library(modelr)
 library(Routliers)
-library(ggbeeswarm)
-library(ggthemes)
-library(ggstatsplot)
-library(gmodels)
 library(pracma)
 library(Routliers)
 ```
@@ -68,8 +69,9 @@ tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
 ```
 
 ## Figuras
+### Individual con brutos
 
-```{r individual con brutos}
+```{r individual con brutos, echo=FALSE, message=FALSE, warning=FALSE}
 g1 <- ggplot() +
   geom_line(data= tabla.ind, aes(x = distancia, y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
   geom_line(data= tabla.pob, aes(x = distancia, y = respuestapob[,"mean"], group = condicion_sala, col = condicion_sala), alpha = 1)+
@@ -77,7 +79,7 @@ g1 <- ggplot() +
                                     ymin = respuestapob[,"mean"] - respuestapob[,"sem"], 
                                     ymax = respuestapob[,"mean"] + respuestapob[,"sem"],
                                     col = condicion_sala),
-                alpha = 0.7, width=0.3, size=0.75,
+                alpha = 0.7, width=0.3, linewidth=0.75,
                 )+
   scale_x_continuous(name="Distance source (m)")+
   scale_y_continuous(name="Perceived distance (m)")+
@@ -89,3 +91,205 @@ plot(g1)
 
 ```
 
+### Sesgo
+
+```{r sesgo, echo=FALSE, message=FALSE, warning=FALSE}
+## Sesgo
+tabla_sesgo <- tabla.ind %>% 
+  group_by(condicion_sala,nsub) %>%
+  summarise(mDist_perc = mean(respuesta[,"mean"]),
+            mSesgoRel  = mean(SesgoRel[,"mean"]))  %>%
+  ungroup()
+
+tabla_sesgo.pob <- tabla_sesgo  %>% 
+  group_by(condicion_sala) %>%
+  summarise(MSesgoRel = mean(mSesgoRel),
+            N = n()) %>%
+  ungroup()
+
+fig.sesgo <- ggplot(tabla_sesgo, aes(x = condicion_sala,
+                                     y = mSesgoRel,
+                                     colour = condicion_sala))+
+geom_point(size = 4,alpha = 1,
+           position = position_jitterdodge(jitter.width = .1,
+                                           jitter.height = 0,
+                                           dodge.width = .1)) +
+  # stat_summary(fun.data = "mean_se",
+  #              geom = "bar",
+  #              alpha = .4,
+  #              size = 1,
+  #              position = position_dodge(width = 1)) +
+  stat_summary(fun.data = "mean_se",
+               geom = "line") +
+  stat_summary(fun.data = "mean_se",
+               geom = "bar",
+               alpha = .4,
+               size=2,
+               position = position_dodge(width = 1)) +
+  labs(x = "Condition de sala",
+       y = "Bias") +
+  theme_pubr(base_size = 9, margin = TRUE)
+# theme(legend.position = "none")
+fig.sesgo
+
+histogram <- ggplot(tabla.ind, aes(x=respuesta[,"mean"])) + geom_histogram()
+histogram <- ggplot(tabla_sesgo, aes(x=mDist_perc)) + geom_histogram()
+histogram <- ggplot(tabla_sesgo, aes(x=mDist_perc, color=condicion_sala)) + 
+  geom_histogram(fill="white", binwidth=1)
+
+histogram
+```
+
+### Histograma
+```{r histograma, echo=FALSE}
+histograma <- ggplot(tabla_sesgo, aes(x=mDist_perc, color=condicion_sala, fill=condicion_sala)) +
+#ggplot(tabla_sesgo, aes(x=mDist_perc))+
+  geom_histogram(aes(y=after_stat(density)),bins = 10, position="identity", alpha=0.5)+
+  geom_density(alpha=0.6)+
+ # geom_vline(data=mean(mDist_perc), aes(xintercept=grp.mean, color=condicion_sala),
+#             linetype="dashed")+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  labs(title="Respuesta histogram plot",x="Distancia", y = "Density")+
+  theme_classic()
+
+plot(histograma)
+
+```
+
+## Estadistica
+### Modelo de efectos mixtos y anova.
+```{r lmer, echo=FALSE, warning=TRUE}
+
+m.distancia <- lmer(log(respuesta[,"mean"]) ~ condicion_sala * log(distancia) + (1|nsub), 
+                    data = tabla.ind)
+
+summary(m.distancia)
+anova(m.distancia)
+
+```
+
+
+### Obteniendo coeficiente por sujeto
+```{r many models, echo=FALSE, message=FALSE, warning=FALSE}
+# ref https://r4ds.had.co.nz/many-models.html
+tabla.ind <- tabla.ind %>%
+  mutate(
+    log_distancia = log(distancia),
+    log_respuesta_mean = log(respuesta[,"mean"])
+  )
+
+tabla.ind %>%
+  ggplot(aes(log_distancia, log_respuesta_mean, group = nsub, col= condicion_sala)) +
+  geom_line(alpha = 1/3)
+
+# Agrupar por sujeto 
+
+por_sujeto <- tabla.ind %>%
+  group_by(nsub) %>%
+  nest()
+
+#  Estp de modelo para aplicar como funcion tiene que ser asi no 
+#  como el que use en modelo_sujeto
+# country_model <- function(df) {
+#   lm(lifeExp ~ year, data = df)
+# }
+
+# ASI SI
+modelo_sujeto  <- function(df) {
+  lm(log_respuesta_mean ~ log_distancia, data = df)
+}
+
+#modelos <- map(por_sujeto$data, modelo_sujeto)
+
+
+por_sujeto <- por_sujeto %>%
+  mutate(model = map(data, modelo_sujeto))
+
+por_sujeto <- por_sujeto %>%
+  mutate(resids = map2(data, model, add_residuals))
+
+resids <- unnest(por_sujeto, resids)
+
+resids_modelr <- resids %>% 
+  ggplot(aes(log_distancia, resid)) +
+  geom_line(aes(group = nsub), alpha = 1 / 3) + 
+  geom_smooth(se = FALSE)
+
+model_modelr <- resids %>%
+  ggplot(aes(log_distancia,log_respuesta_mean)) +
+  geom_line(aes(group = nsub), alpha = 1 / 3) +
+  geom_smooth(se = FALSE) 
+  #label()
+
+graphs <- ggarrange(model_modelr,resids_modelr,
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
+
+plot(graphs)
+
+d = coef(por_sujeto$model[[2]])[1][[1]]
+d = coef(por_sujeto$model[[2]])[2][[1]]
+
+# 
+# por_sujeto %>% 
+#   ggplot(aes(log_distancia, log_respuesta_mean)) +
+#   geom_line(aes(group = nsub), alpha = 1 / 3) + 
+#   geom_smooth(se = FALSE)
+
+por_sujeto_test <- por_sujeto %>%
+  mutate(sum = model[[1]][1]) %>%
+  mutate(intercept = sum[[1]][1]) %>%
+  mutate(slope = sum[[1]][2])
+
+por_sujeto_test_unnested <- unnest(por_sujeto_test,data)
+
+
+por_sujeto_test_unnested %>% 
+  ggplot(aes(log_distancia, log_respuesta_mean)) +
+  geom_point(aes(y =log_respuesta_mean, ), alpha =0.4) +
+  geom_abline(aes(intercept = intercept, slope = slope), alpha =0.4) +
+  geom_smooth(se = FALSE)
+
+# Ajustes individuales
+
+# ajust_sub <- por_sujeto_test_unnested %>% 
+#   ggplot(aes(log_distancia, log_respuesta_mean), group=nsub) +
+#   geom_abline(aes(intercept = intercept, slope = slope)) +
+#   facet_grid(condicion_sala ~ nsub) +
+#   geom_smooth(se = FALSE)
+# 
+# plot(ajust_sub)
+
+# Histograma de exponentes de respuesta
+
+histograma_exponentes <- ggplot(por_sujeto_test_unnested, aes(x=slope)) +
+  geom_histogram(aes(y=..density..), position="identity", alpha=0.5)+
+  geom_density(alpha=0.6)+
+  # geom_vline(data=mean(mDist_perc), aes(xintercept=grp.mean, color=condicion_sala),
+  #             linetype="dashed")+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  labs(title="Respuesta histogram plot",x="Exponentes", y = "Density")+
+  theme_classic()
+
+plot(histograma_exponentes)
+
+
+por_sujeto_test_2 <- por_sujeto_test_unnested %>%
+  mutate(predi = predict(model[[1]]))
+
+
+predictions  <- por_sujeto_test_2 %>% 
+  ggplot(aes(distancia, predi_linear)) +
+  geom_point(aes(y =respuesta[,1])) +
+  facet_grid(condicion_sala ~ nsub) +
+  geom_smooth(se = FALSE) +
+  labs(x="", y="", title ='Prediccion hecha con log log pasada lineal')
+
+#plot(predictions)  
+
+```
+
+```{r}
+```
