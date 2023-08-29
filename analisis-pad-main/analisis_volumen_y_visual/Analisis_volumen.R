@@ -63,7 +63,8 @@ write.table(tabla.volumen, file="./analisis-pad-main/data/volumen_sin_outliers_1
 
 # analisis volumen de aca salen figuras -------------------------------------------------------
 
-dimensions.raw  <- read.csv('./analisis-pad-main/data/volumen_sin_outliers_1_32.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+dimensions.raw  <- read.csv('./analisis-pad-main/data/dimensiones_de_sala_visual_1_32_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 colnames(dimensions.raw)
 

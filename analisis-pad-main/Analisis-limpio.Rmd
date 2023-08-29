@@ -2,7 +2,9 @@
 title: "Analisis-1-32"
 author: "Joaquin Cervino"
 date: "2023-08-10"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 
@@ -289,6 +291,39 @@ predictions  <- por_sujeto_test_2 %>%
 
 #plot(predictions)  
 
+```
+
+
+## Análisis de correlación
+
+```{r correlación, echo=FALSE, message=FALSE, warning=FALSE}
+
+tabla.analisis_cor <- read.csv("./data/analisis_correlacion_1_32.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.analisis_cor <- select(tabla.analisis_cor, c(nsub, 
+                                               block_1, 
+                                               SV_depth,
+                                               distanca_max
+                                              ))
+# LOG LOG
+
+tabla.analisis_cor <- tabla.analisis_cor %>%
+  mutate(
+    log_distancia_max = log(distanca_max),
+    log_SV_depth = log(SV_depth)
+  )
+
+correlation_plot <- ggplot(tabla.analisis_cor, 
+                              aes(x =log_SV_depth, y = log_distancia_max,
+                                  colour = block_1)) +
+  geom_point() +
+  geom_smooth(alpha=0.3, method= "lm")+
+  stat_cor(method = "pearson")+
+  ggtitle("Correlacion ambas salas (log log)") +
+  xlab("Profundidad de sala visual") +
+  theme(legend.title =element_blank(), legend.position = 'none')+
+  ylab("Maxima distancia auditiva")
+
+plot(correlation_plot)
 ```
 
 ```{r}
