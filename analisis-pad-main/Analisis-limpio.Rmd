@@ -7,12 +7,11 @@ output:
   html_document: default
 ---
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r dependencies,  include=FALSE} 
+```{r dependencies,  include=FALSE}
 # Dependencias ------------------------------------------------------------
 library(broom)
 library(broom.mixed)
@@ -23,6 +22,7 @@ library(ggplot2)
 library(ggthemes)
 library(ggpubr)
 library(ggstatsplot)
+library(htmlwidgets)
 library(quickpsy)
 library(tidyverse)
 library(lme4)
@@ -32,13 +32,13 @@ library(modelr)
 library(pracma)
 library(plotly)
 library(Routliers)
-library(webshot)
+library(processx)
+library(orca)
 ```
 
 ## Analisis de primeros sujeto 1 a 32
 
-En este documento se va hacer un análisis de los sujetos.
-El análisis es parcial.
+En este documento se va hacer un análisis de los sujetos. El análisis es parcial.
 
 ```{r load_data, include=FALSE}
 
@@ -72,6 +72,7 @@ tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
 ```
 
 ## Figuras
+
 ### Individual con brutos
 
 ```{r individual con brutos, echo=FALSE, message=FALSE, warning=FALSE}
@@ -144,6 +145,7 @@ histogram
 ```
 
 ### Histograma
+
 ```{r histograma, echo=FALSE}
 histograma <- ggplot(tabla_sesgo, aes(x=mDist_perc, color=condicion_sala, fill=condicion_sala)) +
 #ggplot(tabla_sesgo, aes(x=mDist_perc))+
@@ -161,7 +163,9 @@ plot(histograma)
 ```
 
 ## Estadistica
+
 ### Modelo de efectos mixtos y anova.
+
 ```{r lmer, echo=FALSE, warning=TRUE}
 
 m.distancia <- lmer(log(respuesta[,"mean"]) ~ condicion_sala * log(distancia) + (1|nsub), 
@@ -172,8 +176,8 @@ anova(m.distancia)
 
 ```
 
-
 ### Obteniendo coeficiente por sujeto
+
 ```{r many models, echo=FALSE, message=FALSE, warning=FALSE}
 # ref https://r4ds.had.co.nz/many-models.html
 tabla.ind <- tabla.ind %>%
@@ -294,7 +298,6 @@ predictions  <- por_sujeto_test_2 %>%
 
 ```
 
-
 ## Análisis de correlación
 
 ```{r correlación, echo=FALSE, message=FALSE, warning=FALSE}
@@ -332,7 +335,7 @@ plot(correlation_plot)
 ```{r}
 ```
 
-```{r sala_3d, echo=FALSE, message=FALSE, warning=FALSE}
+```{r sala_3d_make, echo=FALSE, message=FALSE, warning=FALSE}
 
 
 dimensions.raw  <- read.csv('./data/dimensiones_de_sala_visual_1_32_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
@@ -395,7 +398,7 @@ for (i in 1: 1:nrow(dimensions.raw)) {
                 j = c(3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3),
                 k = c(0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6),
                 opacity = 0.1,
-                color = I("red"),
+                color = I("blue"),
                 intensity = 10,
                 showlegend= FALSE,
                 showscale = FALSE
@@ -412,7 +415,7 @@ for (i in 1: 1:nrow(dimensions.raw)) {
                  j = c(3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3),
                  k = c(0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6),
                  opacity = 0.1,
-                 color = I("red"),
+                 color = I("blue"),
                  intensity = 10,
                  showlegend= FALSE,
                  showscale = FALSE
@@ -436,12 +439,12 @@ axx <- list(
 fig <- subplot(fig1, fig2) %>% 
   layout(title = "3D Subplots", 
          scene1 = list(#domain = list(x = c(0,0.5),y = c(0.5,1)),
-                      #title="Sala real",
+                      title="Sala real",
                       #xaxis = axx, yaxis = axx, zaxis = axx,
                       showscale = FALSE,
                       aspectmode = 'auto'),
          scene2 = list(#domain = list(x = c(0.5,1),y = c(0.5,1)),
-                       #title="Sala virtual",
+                       title="Sala virtual",
                        #xaxis = axx, yaxis = axx, zaxis = axx,
                        showscale = FALSE,
                        aspectmode = 'auto')
@@ -452,5 +455,20 @@ fig <- subplot(fig1, fig2) %>%
 # fig$x$layout$scene1
 
 fig <- plotly_build(fig)
+#fig
+#orca(fig, "test.svg", args=c('--disable-gpu'))
+
+# En este miniconda se instalo plotly y kaleido
+reticulate::use_miniconda('r-reticulate')
+save_image(fig, "imgs/two_rooms.png", scale = 0.9, width = 500, height = 500,)
+
+```
+
+
+```{r sala_3d_render, echo=FALSE, message=FALSE, warning=FALSE}
+#setwd("path/to/your/folder/with/these/bars")
+#saveWidget(fig, "p1.html", selfcontained = F, libdir = "lib")
 fig
+#save_image(fig, "imgs/two_rooms.png", scale = 0.9, width = 1000, height = 900)
+#knitr::include_graphics("imgs/two_rooms.png")
 ```
