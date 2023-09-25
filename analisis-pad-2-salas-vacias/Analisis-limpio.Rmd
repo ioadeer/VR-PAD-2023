@@ -349,7 +349,7 @@ for (i in 1: 1:nrow(dimensions.raw)) {
   height = dimensions.raw$SR_height[i]
   
   if (i==1) {
-    p = plot_ly(type = "mesh3d",
+    a = plot_ly(type = "mesh3d",
                 scene = 'scene1',
                 x = c(0, 0, depth, depth, 0, 0, depth, depth),
                 y = c(0, width, width, 0, 0, width, width, 0),
@@ -365,7 +365,7 @@ for (i in 1: 1:nrow(dimensions.raw)) {
     )
   } 
   else {
-    p = add_mesh(p = p,
+    a = add_mesh(p = a,
                  scene = 'scene1',
                  x = c(0, 0, depth, depth, 0, 0, depth, depth),
                  y = c(0, width, width, 0, 0, width, width, 0),
@@ -380,7 +380,8 @@ for (i in 1: 1:nrow(dimensions.raw)) {
                  showscale = FALSE
     )
   }
-  fig1 <-  p %>% 
+  #a$scene = 'scene1'
+  fig1 <- a %>% 
     hide_colorbar()
   
   # Sala grande realidad virtual
@@ -389,7 +390,7 @@ for (i in 1: 1:nrow(dimensions.raw)) {
   height = dimensions.raw$SG_RV_height[i]
   
   if (i==1) {
-    p = plot_ly(type = "mesh3d",
+   b = plot_ly(type = "mesh3d",
                 scene = 'scene2',
                 x = c(0, 0, depth, depth, 0, 0, depth, depth),
                 y = c(0, width, width, 0, 0, width, width, 0),
@@ -406,7 +407,7 @@ for (i in 1: 1:nrow(dimensions.raw)) {
    
   } 
   else {
-    p = add_mesh(p = p,
+    b = add_mesh(p = b,
                  scene = 'scene2',
                  x = c(0, 0, depth, depth, 0, 0, depth, depth),
                  y = c(0, width, width, 0, 0, width, width, 0),
@@ -421,12 +422,14 @@ for (i in 1: 1:nrow(dimensions.raw)) {
                  showscale = FALSE
     )
   }
-  fig2 <-  p %>% 
+  #b$scene = 'scene2'
+  fig2 <- b %>% 
     hide_colorbar()
 }
 
 # https://plotly.com/r/reference/layout/
 # https://plotly.com/r/reference/layout/scene/
+# https://stackoverflow.com/questions/74206526/adding-a-scene-information-after-a-plot-ly-object-has-been-created
 axx <- list(
   gridcolor='rgb(255, 255, 255)',
   zerolinecolor='rgb(255, 255, 255)',
@@ -434,25 +437,49 @@ axx <- list(
   backgroundcolor='rgb(230, 230,230)'
 )
 
+fig1$x$layout$scene = 'scene1'
 
+fig2$x$layout$scene = 'scene2'
 
 fig <- subplot(fig1, fig2) %>% 
   layout(title = "3D Subplots", 
-         scene1 = list(#domain = list(x = c(0,0.5),y = c(0.5,1)),
-                      title="Sala real",
-                      #xaxis = axx, yaxis = axx, zaxis = axx,
-                      showscale = FALSE,
-                      aspectmode = 'auto'),
-         scene2 = list(#domain = list(x = c(0.5,1),y = c(0.5,1)),
-                       title="Sala virtual",
-                       #xaxis = axx, yaxis = axx, zaxis = axx,
+         # estos se tienen q llama scene y scene2 etc.
+         scene = list(domain = list(x = c(0,1),y = c(0,0.5)),
+                      xaxis = axx, yaxis = axx, zaxis = axx,
+                      showscale = TRUE,
+                      aspectmode = 'cube'),
+         scene2 = list(domain = list(x = c(0,1),y = c(0.5,1)),
+                       xaxis = axx, yaxis = axx, zaxis = axx,
                        showscale = FALSE,
-                       aspectmode = 'auto')
+                       aspectmode = 'cube')
          )
 
 # fig
 # fig$x$layout$showlegend = FALSE
-# fig$x$layout$scene1
+#fig$x$layout$scene2
+annotations = list( 
+  list( 
+    x = 0.25,  
+    y = 0,  
+    text = "Sala Real",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.25,  
+    y = 0.5,  
+    text = "Sala virtual",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ))
+
+fig <- fig %>%layout(annotations = annotations) 
 
 fig <- plotly_build(fig)
 #fig
@@ -460,15 +487,18 @@ fig <- plotly_build(fig)
 
 # En este miniconda se instalo plotly y kaleido
 reticulate::use_miniconda('r-reticulate')
-save_image(fig, "imgs/two_rooms.png", scale = 0.9, width = 500, height = 500,)
+#save_image(fig, "imgs/two_rooms.png", scale = 0.9, width = 500, height = 500,)
 
 ```
 
 
 ```{r sala_3d_render, echo=FALSE, message=FALSE, warning=FALSE}
+
 #setwd("path/to/your/folder/with/these/bars")
 #saveWidget(fig, "p1.html", selfcontained = F, libdir = "lib")
 #fig
-#save_image(fig, "imgs/two_rooms.png", scale = 0.9, width = 1000, height = 900)
-#knitr::include_graphics("imgs/two_rooms.png")
+#file.show("imgs/two_rooms.png")
+save_image(fig, "imgs/two_rooms.png", scale = 1.0, width = 500, height = 800)
+knitr::include_graphics("imgs/two_rooms.png")
 ```
+
