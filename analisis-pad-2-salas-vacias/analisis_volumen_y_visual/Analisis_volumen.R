@@ -1,4 +1,4 @@
-# Analisis de datos del experi 32 sujetos
+# Analisis de datos del experi 50 sujetos
 # Analisis de volumen de sala percibida
 
 # Dependencias ------------------------------------------------------------
@@ -28,10 +28,10 @@ library(reshape2)
 
 tabla_volumen_1_11 <- read.csv("./tamanio-visual-de-sala/data/data_1_11_s.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 tabla_volumen_12_32 <- read.csv("./tamanio-visual-de-sala/data/data_12_32_s.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla_volumen_33_50 <- read.csv("./tamanio-visual-de-sala/data/data_33_50_s.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.volumen <- do.call("rbind", list(tabla_volumen_1_11, tabla_volumen_12_32, tabla_volumen_33_50))
 
-tabla.volumen <- do.call("rbind", list(tabla_volumen_1_11, tabla_volumen_12_32))
-
-tabla.raw = read.csv("./analisis-pad-main/data/data-1-32-bloque-1-sin-outliers.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.raw = read.csv("analisis-pad-2-salas-vacias/data/data-1-50-bloque-1-sin-outliers.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 colnames(tabla.volumen)
 
@@ -56,7 +56,7 @@ nsub_list <- unique(tabla.raw$nsub)
 tabla.volumen <- tabla.volumen %>%
   filter(nsub %in% unique(tabla.raw$nsub))
 
-write.table(tabla.volumen, file="./analisis-pad-main/data/volumen_sin_outliers_1_32.csv", row.names = FALSE)
+write.table(tabla.volumen, file="analisis-pad-2-salas-vacias/data/volumen_sin_outliers_1_50.csv", row.names = FALSE)
 
 
 
@@ -64,7 +64,7 @@ write.table(tabla.volumen, file="./analisis-pad-main/data/volumen_sin_outliers_1
 # analisis volumen de aca salen figuras -------------------------------------------------------
 
 
-dimensions.raw  <- read.csv('./analisis-pad-main/data/dimensiones_de_sala_visual_1_32_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+dimensions.raw  <- read.csv('analisis-pad-2-salas-vacias/data/volumen_sin_outliers_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 colnames(dimensions.raw)
 
@@ -86,7 +86,7 @@ dimensions.volume <- dimensions.volume %>%
 box_plot_volumenes <- ggplot(dimensions.volume) +
   geom_boxplot(aes(x=variable, y=value, color=variable)) +
   #scale_x_discrete(labels = c("Virtual", "Real"))+
-  ggtitle("Volumen virtual y real") +
+  ggtitle("Volumen virtual y real (N=50)") +
   xlab("Condicion de sala") +
   theme(legend.title =element_blank(), legend.position = 'none')+
   ylab("Volumen reportado (m3)")
@@ -116,7 +116,7 @@ graph <- ggplot()+
                                                 alpha = 1, width=0.5, size=1.1) +
   geom_jitter(data= dimensions.volume, aes(x = variable, y =value, col = variable),
               width = 0.25, alpha= 0.6)+
-  ggtitle("Volumen virtual y real") +
+  ggtitle("Volumen virtual y real (N=50)") +
   xlab("Condicion de sala") +
   theme(legend.title =element_blank(), legend.position = 'none')+
   ylab("Mean de volumen reportado (m3)")
