@@ -1,5 +1,5 @@
 ---
-title: "Analisis-1-50"
+title: "Experimento tamaño de sala virtual (N=50)"
 author: "Joaquin Cervino"
 date: "2023-08-10"
 output:
@@ -36,9 +36,32 @@ library(processx)
 library(orca)
 ```
 
-## Analisis de primeros sujeto 1 a 32
+## Introducción
 
-En este documento se va hacer un análisis de los sujetos. El análisis es parcial.
+La motivación de este experimento consiste en probar lo aseverado en Calcagno et al. que sugiere que la modalidad visual tiene una influencia en la percepeción auditiva de distancia. 
+
+H1: El tamaño de sala afecta la percepción auditiva de distancia.
+
+H2: El tamaño máximo de sala percibido visualmente se correlaciona positivamente con la mayor distancia reportada para la percepción auditiva de distancia.
+ 
+## Materiales y métodos
+
+Para probar estas hipótesis se realizó un setup experimental mixto. En este coexisten entornos virtuales visuales (mediante un casco de realidad virtual) y fuentes reales ubicadas en el mismo entorno acústico (sala del Lapso).
+
+El uso del casco de realidad virtual consiste de una aplicación en UE 5.0 que permite situar al sujeto en entornos virtuales para realizar una manipulación experimental en la modalidad visual. Esta manipulación consiste de dos condiciones. Por un lado, una sala virtual equivalente en tamaño y aspecto a la sala real en la cual el participante realiza la tarea. Por otro lado, una sala que es la mitad en tamaño de profundidad, esto es, la pared situada en frente del participante.
+
+En lo que respecta a la parte auditiva, se utilizó una configuración de parlantes clásicas para relevar curvas de distancia. Esta configuración consiste en situar parlantes a distintas distancias en el plano frontal del sujeto a lo largo del eje anetoro posterior. Las distancias utilizadas fueron: 2 m, 2.7 m, 3.65 m, 4.9 m, 6.65 m y 9 m. De los parlantes se emite un estimulo sonoro, un burst de ruido blanco de duración de 500 ms. El estímulo se emite con intensidad equivalente desde los distintos parlantes para inducir el cue o pista mas significativo del la percepción auditiva de distancia que es la variación de la intensidad del estímulo en función de la distancia.
+
+Para realizar el experimento, los participantes fueron divididos en dos grupos. A cada grupo se lo exponía a un entorno virtual diferente. Un grupo veía en primer instancia en el entorno virtual una sala congruente con la sala real en la que se encontraba. El otro grupo, era expuesto a una sala de mitad del tamaño en profundidad.
+Los participantes fueron introducidos en la sala experimental con los ojos vendados para que no conocieran el entorno real de forma visual. Una vez dentro de la sala experimental, se sentaban en una silla y se les colocaba el casco de realidad virtual procurando que no vieran la sala real. Con el casco ya colocado se les mostraba una sala virtual congruente o no congruente, dependiendo del grupo al que pertenecieran. Luego de exponer a los participantes al entorno virtual durante unos instantes, se apagaba el estímulo visual y debían dar un reporte verbal a ciegas de la distancia a la cual percibiían estímulos sonoros. En un segundo bloque, se les mostraba la sala que no habían visto previamente, y luego realizaban la misma tarea de reporte verbal de localización de estiímulos sonoros. 
+
+Este diseño fue motivado para poder observar la existencia de un efecto tanto entre sujetos como intra sujetos.
+
+## Participantes
+
+Del experimento participaron 50 sujetos. *SACAR DATOS POBLACIONALES*
+      
+## Análisis de datos
 
 ```{r load_data, include=FALSE}
 
