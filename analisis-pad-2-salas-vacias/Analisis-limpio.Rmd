@@ -22,6 +22,7 @@ library(ggplot2)
 library(ggthemes)
 library(ggpubr)
 library(ggstatsplot)
+library(gridExtra)
 library(htmlwidgets)
 library(quickpsy)
 library(tidyverse)
@@ -29,6 +30,7 @@ library(lme4)
 library(nlme)
 library(lmerTest)
 library(modelr)
+library(scales) 
 library(pracma)
 library(plotly)
 library(Routliers)
@@ -36,7 +38,7 @@ library(processx)
 library(orca)
 ```
 
-## Introducción
+# Introducción
 
 La motivación de este experimento consiste en probar lo aseverado en Calcagno et al. que sugiere que la modalidad visual tiene una influencia en la percepeción auditiva de distancia. 
 
@@ -44,7 +46,7 @@ H1: El tamaño de sala afecta la percepción auditiva de distancia.
 
 H2: El tamaño máximo de sala percibido visualmente se correlaciona positivamente con la mayor distancia reportada para la percepción auditiva de distancia.
  
-## Materiales y métodos
+# Materiales y métodos
 
 Para probar estas hipótesis se realizó un setup experimental mixto. En este coexisten entornos virtuales visuales (mediante un casco de realidad virtual) y fuentes reales ubicadas en el mismo entorno acústico (sala del Lapso).
 
@@ -57,11 +59,11 @@ Los participantes fueron introducidos en la sala experimental con los ojos venda
 
 Este diseño fue motivado para poder observar la existencia de un efecto tanto entre sujetos como intra sujetos.
 
-## Participantes
+# Participantes
 
 Del experimento participaron 50 sujetos. *SACAR DATOS POBLACIONALES*
       
-## Análisis de datos
+# Análisis de datos
 
 ```{r load_data, include=FALSE}
 
@@ -159,30 +161,6 @@ geom_point(size = 4,alpha = 1,
 # theme(legend.position = "none")
 fig.sesgo
 
-histogram <- ggplot(tabla.ind, aes(x=respuesta[,"mean"])) + geom_histogram()
-histogram <- ggplot(tabla_sesgo, aes(x=mDist_perc)) + geom_histogram()
-histogram <- ggplot(tabla_sesgo, aes(x=mDist_perc, color=condicion_sala)) + 
-  geom_histogram(fill="white", binwidth=1)
-
-histogram
-```
-
-### Histograma
-
-```{r histograma, echo=FALSE}
-histograma <- ggplot(tabla_sesgo, aes(x=mDist_perc, color=condicion_sala, fill=condicion_sala)) +
-#ggplot(tabla_sesgo, aes(x=mDist_perc))+
-  geom_histogram(aes(y=after_stat(density)),bins = 10, position="identity", alpha=0.5)+
-  geom_density(alpha=0.6)+
- # geom_vline(data=mean(mDist_perc), aes(xintercept=grp.mean, color=condicion_sala),
-#             linetype="dashed")+
-  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
-  scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
-  labs(title="Respuesta histogram plot",x="Distancia", y = "Density")+
-  theme_classic()
-
-plot(histograma)
-
 ```
 
 ## Estadistica
@@ -198,130 +176,162 @@ summary(m.distancia)
 anova(m.distancia)
 
 ```
+### Analisis de funcion de potencia
+
+``` {r power function sala chica, echo=FALSE, message=FALSE, warning=FALSE}
+tabla.chica.ind <- tabla.ind %>%
+  filter(condicion_sala =="SALA_CHICA")
+
+tabla.chica.pob <- tabla.pob %>%
+  filter(condicion_sala == "SALA_CHICA")
+
+tabla.chica.pob <- tabla.chica.pob %>%
+  mutate(
+    log_respuesta = log(respuestapob[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+tabla.chica.ind <- tabla.chica.ind %>%
+  mutate(
+    log_respuesta = log(respuesta[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+m.distancia.sala_chica <- lm(log_respuesta ~ log_distancia, 
+                    data = tabla.chica.pob)
+
+
+tabla.chica.pob <- tabla.chica.pob %>%
+  mutate(
+    predi = predict(m.distancia.sala_chica),
+  )
+
+eqn <- sprintf(
+  "italic(k) == %.3g * ',' ~~ italic(a) == %.3g  * ',' ~~ italic(r)^2 ~ '=' ~ %.2g",
+  coef(m.distancia.sala_chica)[1],
+  coef(m.distancia.sala_chica)[2],
+  summary(m.distancia.sala_chica)$r.squared
+)
+
+g1 <- ggplot() +
+  #geom_line(data= tabla.ind, aes(x = log(distancia), y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
+  geom_line(data= tabla.chica.pob, aes(x = log_distancia, y = predi), alpha = 0.9)+
+  geom_point(data = tabla.chica.pob, mapping = aes(x=log_distancia, y=log_respuesta))+
+  geom_point(data = tabla.chica.ind, mapping = aes(x=log_distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  #geom_point(data = tabla.chica.ind, mapping = aes(x=log_distancia, y=log_respuesta), 
+  #           color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  xlab("Distancia real (log)")+
+  ylab("Distancia percibida (log)") +
+  ggtitle("Ajuste con funcion de potencia (log log)") +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  annotate("text",x = 1.1, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+
+g2 <- ggplot() +
+  geom_line(data= tabla.chica.pob, aes(x = distancia, y = exp(predi)))+
+  geom_point(data = tabla.chica.pob, mapping = aes(x=distancia, y=respuestapob[,"mean"]))+
+  geom_point(data = tabla.chica.ind, mapping = aes(x=distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_continuous(name="Distance source (m)", breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  scale_y_continuous(name="Perceived distance (m)",  breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  ggtitle("Sala chica ajuste con funcion de potencia") +
+  annotate("text",x = 5, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+grid.arrange(g1, g2, nrow = 1)
+
+```
+
+``` {r power function sala grande, echo=FALSE, message=FALSE, warning=FALSE}
+tabla.grande.ind <- tabla.ind %>%
+  filter(condicion_sala =="SALA_GRANDE")
+
+tabla.grande.pob <- tabla.pob %>%
+  filter(condicion_sala == "SALA_GRANDE")
+
+tabla.grande.pob <- tabla.grande.pob %>%
+  mutate(
+    log_respuesta = log(respuestapob[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+tabla.grande.ind <- tabla.grande.ind %>%
+  mutate(
+    log_respuesta = log(respuesta[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+m.distancia.sala_grande <- lm(log_respuesta ~ log_distancia, 
+                    data = tabla.grande.pob)
+
+
+tabla.grande.pob <- tabla.grande.pob %>%
+  mutate(
+    predi = predict(m.distancia.sala_grande),
+  )
+
+eqn <- sprintf(
+  "italic(k) == %.3g * ',' ~~ italic(a) == %.3g  * ',' ~~ italic(r)^2 ~ '=' ~ %.2g",
+  coef(m.distancia.sala_grande)[1],
+  coef(m.distancia.sala_grande)[2],
+  summary(m.distancia.sala_grande)$r.squared
+)
+
+g1 <- ggplot() +
+  #geom_line(data= tabla.ind, aes(x = log(distancia), y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
+  geom_line(data= tabla.grande.pob, aes(x = log_distancia, y = predi), alpha = 0.9)+
+  geom_point(data = tabla.grande.pob, mapping = aes(x=log_distancia, y=log_respuesta))+
+  geom_point(data = tabla.grande.ind, mapping = aes(x=log_distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  #geom_point(data = tabla.grande.ind, mapping = aes(x=log_distancia, y=log_respuesta), 
+  #           color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  xlab("Distancia real (log)")+
+  ylab("Distancia percibida (log)") +
+  ggtitle("Sala grande ajuste con funcion de potencia (log log)") +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  annotate("text",x = 1.1, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+g2 <- ggplot() +
+  geom_line(data= tabla.grande.pob, aes(x = distancia, y = exp(predi)))+
+  geom_point(data = tabla.grande.pob, mapping = aes(x=distancia, y=respuestapob[,"mean"]))+
+  geom_point(data = tabla.grande.ind, mapping = aes(x=distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_continuous(name="Distance source (m)", breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  scale_y_continuous(name="Perceived distance (m)",  breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  ggtitle("Sala grande ajuste con funcion de potencia") +
+  annotate("text",x = 5, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+grid.arrange(g1, g2, nrow = 1)
+
+```
+
 
 ### Obteniendo coeficiente por sujeto
 
 ```{r many models, echo=FALSE, message=FALSE, warning=FALSE}
-# ref https://r4ds.had.co.nz/many-models.html
-tabla.ind <- tabla.ind %>%
-  mutate(
-    log_distancia = log(distancia),
-    log_respuesta_mean = log(respuesta[,"mean"])
-  )
 
-tabla.ind %>%
-  ggplot(aes(log_distancia, log_respuesta_mean, group = nsub, col= condicion_sala)) +
-  geom_line(alpha = 1/3)
-
-# Agrupar por sujeto 
-
-por_sujeto <- tabla.ind %>%
-  group_by(nsub) %>%
-  nest()
-
-#  Estp de modelo para aplicar como funcion tiene que ser asi no 
-#  como el que use en modelo_sujeto
-# country_model <- function(df) {
-#   lm(lifeExp ~ year, data = df)
-# }
-
-# ASI SI
-modelo_sujeto  <- function(df) {
-  lm(log_respuesta_mean ~ log_distancia, data = df)
-}
-
-#modelos <- map(por_sujeto$data, modelo_sujeto)
-
-
-por_sujeto <- por_sujeto %>%
-  mutate(model = map(data, modelo_sujeto))
-
-por_sujeto <- por_sujeto %>%
-  mutate(resids = map2(data, model, add_residuals))
-
-resids <- unnest(por_sujeto, resids)
-
-resids_modelr <- resids %>% 
-  ggplot(aes(log_distancia, resid)) +
-  geom_line(aes(group = nsub), alpha = 1 / 3) + 
-  geom_smooth(se = FALSE)
-
-model_modelr <- resids %>%
-  ggplot(aes(log_distancia,log_respuesta_mean)) +
-  geom_line(aes(group = nsub), alpha = 1 / 3) +
-  geom_smooth(se = FALSE) 
-  #label()
-
-graphs <- ggarrange(model_modelr,resids_modelr,
-          labels = c("A", "B"),
-          ncol = 2, nrow = 1)
-
-plot(graphs)
-
-d = coef(por_sujeto$model[[2]])[1][[1]]
-d = coef(por_sujeto$model[[2]])[2][[1]]
-
-# 
-# por_sujeto %>% 
-#   ggplot(aes(log_distancia, log_respuesta_mean)) +
-#   geom_line(aes(group = nsub), alpha = 1 / 3) + 
-#   geom_smooth(se = FALSE)
-
-por_sujeto_test <- por_sujeto %>%
-  mutate(sum = model[[1]][1]) %>%
-  mutate(intercept = sum[[1]][1]) %>%
-  mutate(slope = sum[[1]][2])
-
-por_sujeto_test_unnested <- unnest(por_sujeto_test,data)
-
-
-por_sujeto_test_unnested %>% 
-  ggplot(aes(log_distancia, log_respuesta_mean)) +
-  geom_point(aes(y =log_respuesta_mean, ), alpha =0.4) +
-  geom_abline(aes(intercept = intercept, slope = slope), alpha =0.4) +
-  geom_smooth(se = FALSE)
-
-# Ajustes individuales
-
-# ajust_sub <- por_sujeto_test_unnested %>% 
-#   ggplot(aes(log_distancia, log_respuesta_mean), group=nsub) +
-#   geom_abline(aes(intercept = intercept, slope = slope)) +
-#   facet_grid(condicion_sala ~ nsub) +
-#   geom_smooth(se = FALSE)
-# 
-# plot(ajust_sub)
-
-# Histograma de exponentes de respuesta
-
-histograma_exponentes <- ggplot(por_sujeto_test_unnested, aes(x=slope)) +
-  geom_histogram(aes(y=..density..), position="identity", alpha=0.5)+
-  geom_density(alpha=0.6)+
-  # geom_vline(data=mean(mDist_perc), aes(xintercept=grp.mean, color=condicion_sala),
-  #             linetype="dashed")+
-  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
-  scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
-  labs(title="Respuesta histogram plot",x="Exponentes", y = "Density")+
-  theme_classic()
-
-plot(histograma_exponentes)
-
-
-por_sujeto_test_2 <- por_sujeto_test_unnested %>%
-  mutate(predi = predict(model[[1]]))
-
-
-predictions  <- por_sujeto_test_2 %>% 
-  ggplot(aes(distancia, predi_linear)) +
-  geom_point(aes(y =respuesta[,1])) +
-  facet_grid(condicion_sala ~ nsub) +
-  geom_smooth(se = FALSE) +
-  labs(x="", y="", title ='Prediccion hecha con log log pasada lineal')
-
-#plot(predictions)  
 
 ```
 
-## Análisis de correlación
+
+
+
+
+### Análisis de correlación
 
 ```{r correlación, echo=FALSE, message=FALSE, warning=FALSE}
 

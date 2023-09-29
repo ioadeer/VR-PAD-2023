@@ -24,6 +24,7 @@ library(ggstatsplot)
 library(gmodels)
 library(pracma)
 library(Routliers)
+library(rstatix)
 
 
 # load data new -----------------------------------------------------------
@@ -237,3 +238,30 @@ cond <- cond %>%
 coefs <- merge(x=coefs, y=cond, by='nsub')
 
 write.table(coefs, file="analisis-pad-2-salas-vacias/data/coeficientes_por_sujeto.csv", row.names = FALSE)
+
+
+
+# T-test de coeficientes --------------------------------------------------
+
+
+data.clean <-  read.csv('analisis-pad-2-salas-vacias/data/coeficientes_por_sujeto.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+p <- ggboxplot(data.clean, x = "condicion_sala", y = "coef",
+               color = "condicion_sala", palette = "jco",
+               add = "jitter", ylab="coef a (non-linear compresison)",
+               title="T-test de coeficientes")
+#  Add p-value
+p + stat_compare_means()
+# Change method
+p + stat_compare_means(method = "t.test")
+
+
+# k linear compression
+p2 <- ggboxplot(data.clean, x = "condicion_sala", y = "intercept",
+               color = "condicion_sala", palette = "jco",
+               add = "jitter", ylab="coef k (linear compresison)",
+               title="T-test de coeficiente k")
+#  Add p-value
+p2 + stat_compare_means()
+# Change method
+p2 + stat_compare_means(method = "t.test")
