@@ -2,7 +2,9 @@
 title: "Analisis-control-limpio"
 author: "Joaquin Cervino"
 date: "2023-10-06"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -151,7 +153,7 @@ tabla_sesgo %>%
     geom_boxplot() +
     scale_fill_viridis(discrete = TRUE, alpha=0.6) +
     geom_jitter(color="black", size=0.4, alpha=0.9) +
-    theme_ipsum() +
+   # theme_ipsum() +
     theme(
       legend.position="none",
       plot.title = element_text(size=11)
@@ -167,7 +169,7 @@ tabla_sesgo %>%
     geom_boxplot() +
     scale_fill_viridis(discrete = TRUE, alpha=0.6) +
     geom_jitter(color="black", size=0.4, alpha=0.9) +
-    theme_ipsum() +
+    #theme_ipsum() +
     theme(
       legend.position="none",
       plot.title = element_text(size=11)
@@ -183,7 +185,7 @@ tabla_sesgo %>%
     geom_boxplot() +
     scale_fill_viridis(discrete = TRUE, alpha=0.6) +
     geom_jitter(color="black", size=0.4, alpha=0.9) +
-    theme_ipsum() +
+ #   theme_ipsum() +
     theme(
       legend.position="none",
       plot.title = element_text(size=11)
