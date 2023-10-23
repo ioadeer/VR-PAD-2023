@@ -137,9 +137,35 @@ tabla.volumen_max_dist <- read.csv("./analisis-pad-main/data/volumen_max_dist_1_
 
 
 
+
+
+# multiple plot config ----------------------------------------------------
+
+layout(matrix(c(1, 2, 3, 4), nrow = 2, 
+              ncol = 2, byrow = TRUE)) 
+
 # t-test y barchart de volumen  --------------------------------------------------------
 
 # https://ggplot2tutor.com/tutorials/barchart_simple
+
+dimensions.raw  <- read.csv('analisis-pad-2-salas-vacias/data/volumen_sin_outliers_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+colnames(dimensions.raw)
+
+dimensions.volume <- melt(dimensions.raw, id.vars='nsub',
+                          measure.vars=c("SG_RV_volumen", "SR_volumen"))
+
+dimensions.volume <- dimensions.volume %>%
+  mutate(
+    variable = case_when(
+      variable == "SG_RV_volumen" ~ "Sala Virtual",
+      variable == "SR_volumen" ~ "Sala Real",
+    )
+  )
+
+# Voy a remover outliers, valores superior 1000 m3
+dimensions.volume <- dimensions.volume %>%
+  filter(!value >= 1000)
 
 dimensions.volume_aggr <- dimensions.volume %>%
   group_by(variable) %>%
@@ -175,10 +201,10 @@ dim_barchart <- dimensions.volume_aggr %>%
   #theme(legend.position="none") +
   #theme_minimal() +
   labs(
-    x = "Condición",
-    y = "Volumen de sala percibido",
-    title = "Volumen de sala real vs virtual",
-    caption = "Barra de errores indica desviación estándar"
+    #x = "Condición",
+    y = "Volumen percibido (m3)",
+    #title = "Volumen de sala real vs virtual",
+    #caption = "Barra de errores indica desviación estándar"
   )
 
 
@@ -384,3 +410,24 @@ plot(violin_height)
 figures_folder = "./analisis-pad-2-salas-vacias/analisis_volumen_y_visual"
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "violin_alto.png", sep = '')
 ggsave(mi_nombre_de_archivo, plot = violin_height, limitsize=FALSE, dpi=200)
+
+# ggarrange(
+#   lp,                # First row with line plot
+#   # Second row with box and dot plots
+#   ggarrange(bxp, dp, ncol = 2, labels = c("B", "C")), 
+#   nrow = 2, 
+#   labels = "A"       # Label of the line plot
+# ) 
+
+figure <- ggarrange(dim_barchart, 
+                    ggarrange(violin_depth, violin_width,violin_height,
+                    ncol = 3, labels = c("B", "C", "D")),
+                    nrow = 2, 
+                    labels ="A",
+                    heights = c(1, 0.75))
+figure
+
+figures_folder = "./analisis-pad-2-salas-vacias/analisis_volumen_y_visual"
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "multiple.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot = figure, limitsize=FALSE, dpi=200)
+
