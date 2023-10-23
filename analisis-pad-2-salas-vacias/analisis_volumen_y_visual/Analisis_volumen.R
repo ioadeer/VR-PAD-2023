@@ -21,6 +21,8 @@ library(gmodels)
 library(pracma)
 library(Routliers)
 library(reshape2)
+library(ggpubr)
+library(rstatix)
 
 
 
@@ -133,3 +135,252 @@ ggsave(mi_nombre_de_archivo, plot = graph, limitsize=FALSE, dpi=200)
 tabla.volumen_max_dist <- read.csv("./analisis-pad-main/data/volumen_max_dist_1_32.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 
+
+
+# t-test y barchart de volumen  --------------------------------------------------------
+
+# https://ggplot2tutor.com/tutorials/barchart_simple
+
+dimensions.volume_aggr <- dimensions.volume %>%
+  group_by(variable) %>%
+  summarize(
+    mean_volume = mean(value),
+    sd_volume = sd(value)
+  )
+
+dimensions.volume <- dimensions.volume %>%
+  ungroup()
+
+dimensions.volume <- dimensions.volume %>%
+  rename("volume" = "value",
+         "condicion" = "variable")
+
+stat.test <- dimensions.volume  %>% 
+  t_test(volume~condicion) %>%
+  add_significance()
+
+stat.test
+
+dim_barchart <- dimensions.volume_aggr %>%
+  ggplot(aes(variable, mean_volume)) +
+  geom_col(aes(fill = variable), color ="black", width =0.85) +
+  geom_errorbar(aes(ymin=mean_volume - sd_volume,
+                    ymax=mean_volume + sd_volume),
+                color = "#22292F",
+                width = .1) +
+  #scale_fill_grey(start = 0.3) +
+  #ylim = c(0, 300) +
+  scale_y_continuous(limits = c(0, 300), expand = c(0, 0)) +
+  guides(fill = "none") +
+  #theme(legend.position="none") +
+  #theme_minimal() +
+  labs(
+    x = "Condición",
+    y = "Volumen de sala percibido",
+    title = "Volumen de sala real vs virtual",
+    caption = "Barra de errores indica desviación estándar"
+  )
+
+
+stat.test <- stat.test %>% add_xy_position(x = "condicion", fun = "mean", step.increase = 28)
+
+dim_barchart <- dim_barchart + 
+  stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01)
+  #scale_y_continuous(expand = expansion(mult = c(0.05, 0.1)))
+
+plot(dim_barchart)
+
+# https://www.datanovia.com/en/blog/how-to-add-p-values-onto-a-grouped-ggplot-using-the-ggpubr-r-package/
+
+
+figures_folder = "./analisis-pad-2-salas-vacias/analisis_volumen_y_visual"
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "barchart.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot = dim_barchart, limitsize=FALSE, dpi=200)
+
+
+# t test y barchart dos ---------------------------------------------------
+
+colnames(dimensions.volume)
+
+dimensions.volume <- dimensions.volume %>%
+  rename("volume" = "value",
+         "condicion" = "variable")
+
+dimensions.volume <- dimensions.volume %>%
+  ungroup()
+
+t_test(volume~condicion, data = dimensions.volume)
+
+stat.test <- dimensions.volume  %>% 
+  t_test(volume~condicion) %>%
+  add_significance()
+
+
+
+
+
+
+
+
+
+
+
+
+
+bxp <- ggpaired(data.async_pre_post_summarized, x = "stimuli", y = "mean", 
+                order = c("pre_stimuli", "post_stimuli"),
+                ylab = "Mean", xlab = "Condition")
+
+pre_post_async_sound_data_plot <- data.async_pre_post_summarized %>%
+  #ggplot(aes(condition, mean)) +
+  ggplot(aes(factor(stimuli, level=c("pre_stimuli", "post_stimuli")), mean)) +
+  geom_boxplot() +
+  geom_point()+
+  geom_line(aes(group=ID)) +
+  theme(legend.position = "none")
+
+stat.test <- stat.test %>% add_xy_position(x = "stimuli")
+
+t_test_fig_async <- pre_post_async_sound_data_plot + 
+  stat_pvalue_manual(stat.test, tip.length = 0) +
+  labs(subtitle = get_test_label(stat.test, detailed= TRUE))
+
+plot(t_test_fig_async)  %>% 
+  t_test(dist ~ stimuli, paired = FALSE) %>%
+  add_significance()
+
+data.async_pre_post_summarized <- data.async_sound %>%
+  group_by(ID, stimuli) %>%
+  summarise_at(vars(dist), list(mean = mean))
+
+bxp <- ggpaired(data.async_pre_post_summarized, x = "stimuli", y = "mean", 
+                order = c("pre_stimuli", "post_stimuli"),
+                ylab = "Mean", xlab = "Condition")
+
+pre_post_async_sound_data_plot <- data.async_pre_post_summarized %>%
+  #ggplot(aes(condition, mean)) +
+  ggplot(aes(factor(stimuli, level=c("pre_stimuli", "post_stimuli")), mean)) +
+  geom_boxplot() +
+  geom_point()+
+  geom_line(aes(group=ID)) +
+  theme(legend.position = "none")
+
+stat.test <- stat.test %>% add_xy_position(x = "stimuli")
+
+t_test_fig_async <- pre_post_async_sound_data_plot + 
+  stat_pvalue_manual(stat.test, tip.length = 0) +
+  labs(subtitle = get_test_label(stat.test, detailed= TRUE))
+
+plot(t_test_fig_async)
+
+
+
+# d,w, h comparasion ------------------------------------------------------
+#DEPTH
+dimensions.depth <- melt(dimensions.raw, id.vars='nsub',
+                         measure.vars=c("SG_RV_depth", "SR_depth"))
+
+dimensions.depth <- dimensions.depth %>%
+  mutate(
+    variable = case_when(
+      variable == "SG_RV_depth" ~ "Sala Virtual",
+      variable == "SR_depth" ~ "Sala Real",
+    )
+  )
+dimensions.depth <- dimensions.depth %>%
+  rename("Profundidad" = "value",
+         "Condición" = "variable")
+
+dimensions.depth <- dimensions.depth %>%
+  filter(!Profundidad >= 20)
+
+# Use single color
+violin_depth <- ggplot(dimensions.depth, aes(x=Condición, y=Profundidad,  fill=Condición)) +
+  #geom_violin(trim=FALSE, fill='#A4A4A4', color="darkred")+
+  geom_violin(trim=FALSE)+
+  geom_boxplot(width=0.1) + 
+  theme_minimal() +
+  guides(fill = "none") +
+  scale_fill_brewer(palette="PuRd")+
+  #geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
+  geom_hline(yintercept=12,linetype="dashed")
+
+
+figures_folder = "./analisis-pad-2-salas-vacias/analisis_volumen_y_visual"
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "violin_profundidad.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot = violin_depth, limitsize=FALSE, dpi=200)
+
+# ANCHO 
+
+dimensions.width <- melt(dimensions.raw, id.vars='nsub',
+                          measure.vars=c("SG_RV_width", "SR_width"))
+
+dimensions.width <- dimensions.width %>%
+  mutate(
+    variable = case_when(
+      variable == "SG_RV_width" ~ "Sala Virtual",
+      variable == "SR_width" ~ "Sala Real",
+    )
+  )
+
+dimensions.width <- dimensions.width %>%
+  rename("Ancho" = "value",
+         "Condición" = "variable")
+
+dimensions.width <- dimensions.width %>%
+  filter(!Ancho >= 10)
+
+# Use single color
+violin_width <- ggplot(dimensions.width, aes(x=Condición, y=Ancho,  fill=Condición)) +
+  #geom_violin(trim=FALSE, fill='#A4A4A4', color="darkred")+
+  geom_violin(trim=FALSE)+
+  geom_boxplot(width=0.1) + 
+  theme_minimal() +
+  guides(fill = "none") +
+  scale_fill_brewer(palette="PuRd")+
+  #geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
+  geom_hline(yintercept=7,linetype="dashed")
+
+plot(violin_width)
+
+figures_folder = "./analisis-pad-2-salas-vacias/analisis_volumen_y_visual"
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "violin_ancho.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot = violin_width, limitsize=FALSE, dpi=200)
+
+
+# ALTO
+
+dimensions.height <- melt(dimensions.raw, id.vars='nsub',
+                         measure.vars=c("SG_RV_height", "SR_height"))
+
+dimensions.height <- dimensions.height %>%
+  mutate(
+    variable = case_when(
+      variable == "SG_RV_height" ~ "Sala Virtual",
+      variable == "SR_height" ~ "Sala Real",
+    )
+  )
+
+dimensions.height <- dimensions.height %>%
+  rename("Alto" = "value",
+         "Condición" = "variable")
+
+dimensions.height <- dimensions.height %>%
+  filter(!Alto >= 6)
+
+# Use single color
+violin_height <- ggplot(dimensions.height, aes(x=Condición, y=Alto,  fill=Condición)) +
+  #geom_violin(trim=FALSE, fill='#A4A4A4', color="darkred")+
+  geom_violin(trim=FALSE)+
+  geom_boxplot(width=0.1) + 
+  theme_minimal() +
+  guides(fill = "none") +
+  scale_fill_brewer(palette="PuRd")+
+  #geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
+  geom_hline(yintercept=3,linetype="dashed")
+
+plot(violin_height)
+
+figures_folder = "./analisis-pad-2-salas-vacias/analisis_volumen_y_visual"
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "violin_alto.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot = violin_height, limitsize=FALSE, dpi=200)

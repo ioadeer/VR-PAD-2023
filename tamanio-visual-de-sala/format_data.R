@@ -10,15 +10,15 @@ library(tidyverse)
 file_name_1_11 = "./tamanio-visual-de-sala/raw/1_11_s/1_11_s_visual.csv"
 data_12_32 <- read.csv(file_name_1_11)
 
-data_12_32 <- data_12_32 %>%
+data_1_11 <- data_1_11 %>%
   slice(1:11)
 
-colnames(data_12_32)
+colnames(data_1_11)
 
 # Renombro SG_RV_wdh es sala grande realidad virtual width depth height
 # Renombro SC_RV_wdh es sala chica realidad virtual width depth height
 # Renombro SR_wdh es sala chica realidad virtual width depth height
-data_12_32 <- data_12_32 %>%
+data_1_11 <- data_1_11 %>%
   rename(
          SG_RV_wdh = Medida.Sala.Grande..Ancho..Largo..Alto.,
          SC_RV_wdh = Medida.Sala.Chica..Ancho..Largo..Alto.,
@@ -45,7 +45,7 @@ data_12_32 <- data_12_32 %>%
 # print(data_processed)
 
 
-data_12_32 <- data_12_32 %>%
+data_1_11 <- data_1_11 %>%
   separate(SG_RV_wdh, into = c("value1", "value2", "value3"), sep = "x") %>%
   mutate(
     SG_RV_volumen = as.numeric(value1) * as.numeric(value2) * as.numeric(value3),
@@ -68,18 +68,18 @@ data_12_32 <- data_12_32 %>%
     SR_height = as.numeric(value3)
   ) 
 
-data_12_32 <- data_12_32 %>%
+data_1_11 <- data_1_11 %>%
   rename(
     nsub = Número.de.Sujeto
   )
 
-data_12_32 <- data_12_32 %>%
+data_1_11 <- data_1_11 %>%
   rename(
     block_1 = Orden,
     block_2 = X
   )
 
-data_12_32 <- select(data_12_32, -c(Piloto, 
+data_1_11 <- select(data_1_11, -c(Piloto, 
                                   Nombre,
                                   Género,
                                   Edad,
@@ -92,9 +92,9 @@ data_12_32 <- select(data_12_32, -c(Piloto,
                                   Estudios.Musicales
                                   ))
 
-print(data_12_32)
+print(data_1_11)
 
-write.table(data_12_32, file="./tamanio-visual-de-sala/data/data_12_32_s.csv", row.names = FALSE)
+write.table(data_1_11, file="./tamanio-visual-de-sala/data/data_1_11_s.csv", row.names = FALSE)
 
 
 
@@ -265,3 +265,115 @@ print(data_33_50)
 write.table(data_33_50, file="./tamanio-visual-de-sala/data/data_33_50_s.csv", row.names = FALSE)
 
 
+
+
+
+# Datos poblacionales del 1 al 50 -----------------------------------------
+
+file_name_1_11 = "./tamanio-visual-de-sala/raw/1_11_s/1_11_s_visual.csv"
+data_1_11 <- read.csv(file_name_1_11)
+
+data_1_11 <- data_1_11 %>%
+  slice(1:11)
+
+data_1_11 <- data_1_11 %>%
+  rename(
+    nsub = Número.de.Sujeto
+  )
+
+data_1_11 <- select(data_1_11, c("nsub",
+                                 "Género",
+                                 "Edad",
+                                 "Problemas.de.Audición",
+                                 "Problemas.de.Visión",
+))
+
+
+file_name_12_32 = "./tamanio-visual-de-sala/raw/12_32_s/12_32_s_visual.csv"
+data_12_32 <- read.csv(file_name_12_32)
+
+data_12_32 <- data_12_32 %>%
+  slice(1:21)
+
+data_12_32 <- data_12_32 %>%
+  rename(
+    nsub = Número.de.Sujeto
+  )
+
+data_12_32 <- data_12_32 %>%
+  mutate(nsub = nsub+11)
+
+data_12_32 <- select(data_12_32, c("nsub",
+                                 "Género",
+                                 "Edad",
+                                 "Problemas.de.Audición",
+                                 "Problemas.de.Visión",
+))
+
+
+file_name_33_50 = "./tamanio-visual-de-sala/raw/33_50_s/33_50_s_visual.csv"
+data_33_50 <- read.csv(file_name_33_50)
+
+data_33_50 <- data_33_50 %>%
+  slice(1:18)
+
+data_33_50 <- data_33_50 %>%
+  rename(
+    nsub = Número.de.Sujeto
+  )
+
+data_33_50 <- data_33_50 %>%
+  mutate(nsub = nsub+32)
+
+data_33_50 <- select(data_33_50, c("nsub",
+                                   "Género",
+                                   "Edad",
+                                   "Problemas.de.Audición",
+                                   "Problemas.de.Visión",
+))
+
+data_1_50 <- rbind(data_1_11,data_12_32,data_33_50)
+
+data_1_50 <- select(data_1_50, -c(
+                                   "Problemas.de.Audición",
+))
+
+data_1_50 <- data_1_50 %>%
+  rename(
+    sex = "Género",
+    vision = "Problemas.de.Visión",
+    age = Edad
+  )
+
+data_1_50 <- data_1_50 %>%
+  mutate(
+   sex = case_when(
+      sex == "Femenino" ~ "F",
+      sex == "Mujer" ~ "F",
+      sex == "Masculino" ~ "M",
+      sex == "Masculino " ~ "M",
+      sex == "Hombre" ~ "M",
+      sex == "Hombres" ~ "M"
+    )
+  )
+
+write.table(data_1_50, file="./analisis-pad-2-salas-vacias/data/demografico_1_50_s.csv", row.names = FALSE)
+
+data_1_50 <- data_1_50 %>% 
+  mutate(mean_age = mean(age),
+         max_age = max(age),
+         min_age = min(age))
+
+# mean age = 22.2
+# min age = 18
+# max age = 41
+
+data_1_50 %>% group_by(sex) %>% count
+
+#1 F        22
+#2 M        28
+
+data_1_50 %>% group_by(vision) %>% count
+
+#1 No        41
+#2 Si         9
