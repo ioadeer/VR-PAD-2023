@@ -171,6 +171,9 @@ dimensions.volume <- dimensions.volume %>%
 dimensions.volume <- dimensions.volume %>%
   filter(!value >= 1000)
 
+dimensions.volume <- dimensions.volume %>%
+  filter(!nsub == 18)
+
 dimensions.volume_aggr <- dimensions.volume %>%
   group_by(variable) %>%
   summarize(
@@ -194,7 +197,7 @@ stat.test
 # # A tibble: 1 × 9
 # .y.    group1    group2          n1    n2 statistic    df     p p.signif
 # <chr>  <chr>     <chr>        <int> <int>     <dbl> <dbl> <dbl> <chr>   
-#   1 volume Sala Real Sala Virtual    41    40    -0.194  76.9 0.847 ns     
+# volume Sala Real Sala Virtual    40    40    -0.203  76.7  0.84 ns   
 
 dim_barchart <- dimensions.volume_aggr %>%
   ggplot(aes(variable, mean_volume)) +
@@ -222,6 +225,8 @@ dim_barchart <- dimensions.volume_aggr %>%
       axis.title.y = element_text(hjust = 0),
       text=element_text(family="Times New Roman", size=10)) 
 
+# paired <- ggpaired(dimensions.volume, x = "condicion" , y = "volume")
+# plot(paired)
 
 stat.test <- stat.test %>% add_xy_position(x = "condicion", fun = "mean", step.increase = 28)
 
@@ -229,6 +234,7 @@ dim_barchart <- dim_barchart +
   stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01, size = 3)
   #scale_y_continuous(expand = expansion(mult = c(0.05, 0.1)))
 
+#dim_barchart + paired
 
 plot(dim_barchart)
 
