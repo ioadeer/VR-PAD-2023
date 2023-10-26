@@ -209,6 +209,7 @@ dim_barchart <- dimensions.volume_aggr %>%
   #scale_fill_grey(start = 0.3) +
   #ylim = c(0, 300) +
   scale_y_continuous(limits = c(0, 300), expand = c(0, 0)) +
+  geom_hline(yintercept=252,linetype="dashed") +
   guides(fill = "none") +
   #theme(legend.position="none") +
   theme_minimal() +
@@ -228,10 +229,10 @@ dim_barchart <- dimensions.volume_aggr %>%
 # paired <- ggpaired(dimensions.volume, x = "condicion" , y = "volume")
 # plot(paired)
 
-stat.test <- stat.test %>% add_xy_position(x = "condicion", fun = "mean", step.increase = 28)
+stat.test <- stat.test %>% add_xy_position(x = "condicion", fun = "mean", step.increase = 10) # step.increase = 28)
 
 dim_barchart <- dim_barchart + 
-  stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01, size = 3)
+  stat_pvalue_manual(stat.test, label = "p", tip.length = 0.05, size = 3, bracket.shorten = 0.1)
   #scale_y_continuous(expand = expansion(mult = c(0.05, 0.1)))
 
 #dim_barchart + paired
@@ -395,6 +396,6 @@ figure <- ggarrange(dim_barchart,
 figure
 
 figures_folder = "./analisis-pad-2-salas-vacias/analisis_volumen_y_visual"
-mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "multiple_final.png", sep = '')
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "multiple_final_2.png", sep = '')
 ggsave(mi_nombre_de_archivo, plot = figure, limitsize=FALSE, dpi=200)
 
