@@ -266,6 +266,13 @@ dimensions.depth <- dimensions.depth %>%
 dimensions.depth <- dimensions.depth %>%
   filter(!Profundidad >= 20)
 
+dimensions.depth_sum <- dimensions.depth %>%
+  group_by(Condición) %>%
+  summarise(
+    mean = mean(Profundidad),
+    sd = sd(Profundidad)
+  )
+
 # Use single color
 violin_depth <- ggplot(dimensions.depth, aes(x=Condición, y=Profundidad,  fill=Condición)) +
   #geom_violin(trim=FALSE, fill='#A4A4A4', color="darkred")+
@@ -309,6 +316,14 @@ dimensions.width <- dimensions.width %>%
 
 dimensions.width <- dimensions.width %>%
   filter(!Ancho >= 10)
+
+dimensions.width_sum <- dimensions.width %>%
+  group_by(Condición) %>%
+  summarise(
+    mean = mean(Ancho),
+    sd = sd(Ancho)
+  )
+
 
 # Use single color
 violin_width <- ggplot(dimensions.width, aes(x=Condición, y=Ancho,  fill=Condición)) +
@@ -354,6 +369,13 @@ dimensions.height <- dimensions.height %>%
 dimensions.height <- dimensions.height %>%
   filter(!Alto >= 6)
 
+dimensions.height_sum <- dimensions.height %>%
+  group_by(Condición) %>%
+  summarise(
+    mean = mean(Alto),
+    sd = sd(Alto)
+  )
+
 # Use single color
 violin_height <- ggplot(dimensions.height, aes(x=Condición, y=Alto,  fill=Condición)) +
   #geom_violin(trim=FALSE, fill='#A4A4A4', color="darkred")+
@@ -398,4 +420,9 @@ figure
 figures_folder = "./analisis-pad-2-salas-vacias/analisis_volumen_y_visual"
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "multiple_final_2.png", sep = '')
 ggsave(mi_nombre_de_archivo, plot = figure, limitsize=FALSE, dpi=200)
+
+
+
+# d w h mean and sd -------------------------------------------------------
+
 
