@@ -1,5 +1,7 @@
 # Analisis de datos del experi 50 sujetos
 # Analisis de volumen de sala percibida
+# Aca estan las figuras que arme para el proceeding del congresio de acustica
+# aada 2023
 
 # Dependencias ------------------------------------------------------------
 
