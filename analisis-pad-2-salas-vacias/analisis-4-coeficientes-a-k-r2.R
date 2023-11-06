@@ -197,16 +197,17 @@ hist_a_sc <- ggplot(data.clean.sala_chica, aes(coef)) +
   geom_histogram(binwidth= 0.1, color="black",fill="white") +
   scale_x_continuous(breaks= seq(0.3,2.1, by=0.5)) +
   scale_y_continuous(breaks= seq(0,5, by = 1))+
-  xlim(0.3,2) +
+  xlim(0.3,2.1) +
   ylim(0,5) +
   geom_vline(xintercept = round(mean(data.clean.sala_chica$coef),2),        # Add line for mean
              linetype="dashed",
              ) +
   annotate("text",                        # Add text for mean
-           x = 1.5,
+           #x = 1.5, # para fig sola
+           x = 1.4, # para fig compuesta
            y = 4.0,
            label = eqn1,
-           size = 2.5,
+           size = 1.5,
            hjust = 0) +
   labs(x="a", y = "Count")+
   theme(
@@ -234,6 +235,12 @@ eqn1 <- sprintf(
   sum(data.clean.sala_grande$coef)
 )
 
+
+# scale_x_continuous(breaks= seq(0.3,2.1, by=0.5)) +
+#   scale_y_continuous(breaks= seq(0,5, by = 1))+
+#   xlim(0.3,2) +
+#   ylim(0,5) +
+
 hist_a_sg <- ggplot(data.clean.sala_grande, aes(coef)) +
   geom_histogram(binwidth= 0.1, color="black",fill="white") +
   geom_vline(xintercept = round(mean(data.clean.sala_grande$coef),2),        # Add line for mean
@@ -244,10 +251,11 @@ hist_a_sg <- ggplot(data.clean.sala_grande, aes(coef)) +
   xlim(0.3,2.1) +
   ylim(0,5) +
   annotate("text",                        # Add text for mean
-           x = 1.5,
+           #x = 1.5, # para fig sola
+           x = 1.3, # para fig compuesta
            y = 4.0,
            label = eqn1,
-           size = 2.5,
+           size = 1.5,
            hjust = 0) +
   labs(x="a", y = "Count")+
   theme(
@@ -286,21 +294,24 @@ data.clean.boxplot_a <- data.clean %>%
 bxp <- ggboxplot(data.clean.boxplot_a, x = "condicion_sala", y = "coef",
                  orientation = "horizontal",
                color = "condicion_sala", palette = "jco",
-               add = "jitter", ylab="coef a (non-linear compression)",
+               add = "jitter", ylab="coef a",
                title="T-test coeficientes a") +
+  theme_minimal() +
   theme(
     legend.position="none",
     #axis.line = element_blank(),
     axis.title.x = element_blank(),
+    #axis.title = element_text(hjust = 0),
     #axis.ticks = element_blank(),
-    axis.title.y = element_blank()) 
+    axis.title.y = element_blank())
+
   
 stat.test <- data.clean.boxplot_a  %>% 
   t_test(coef~condicion_sala) %>%
   add_significance()
 
 
-stat.test <- stat.test %>% add_y_position()
+stat.test <- stat.test %>% add_y_position(fun ="mean", step.increase = 35)
 
 
 bxp <- bxp + stat_pvalue_manual(
@@ -324,5 +335,5 @@ all <- ggarrange(
 plot(all)
 
 figures_folder = "./analisis-pad-2-salas-vacias/imgs_analisis_4_coefs"
-mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "2_histogramas_a.png", sep = '')
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "coef_a.png", sep = '')
 ggsave(mi_nombre_de_archivo, plot = all, limitsize=FALSE, dpi=200)
