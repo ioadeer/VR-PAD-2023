@@ -337,8 +337,6 @@ mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "coef_a.png", s
 ggsave(mi_nombre_de_archivo, plot = all, limitsize=FALSE, dpi=200)
 
 
-
-
 # histogramas de k intercept -------------------------------------------------------------
 
 # IQR(data.clean$intercept)
@@ -430,7 +428,7 @@ hist_a_sg <- ggplot(data.clean.sala_grande, aes(intercept)) +
            label = eqn1,
            size = 1.5,
            hjust = 0) +
-  labs(x="a", y = "Count")+
+  labs(x="k", y = "Count")+
   theme(
     legend.position="none",
     #axis.line = element_blank(),
