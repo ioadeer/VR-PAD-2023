@@ -1,0 +1,72 @@
+---
+title: ""
+authors: 
+format: 
+  revealjs:
+    theme: simple
+    logo: imgs/logos/logo_acaa.png
+editor: visual
+---
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+
+```
+
+## Desarrollo y validación de un entorno visual virtual para experimentos psicofísicos
+
+Joaquín Cerviño, Berenice Piceda, Esteban N. Lombera, Manuel C. Eguía, Ramiro O. Vergara
+
+::: {layout="[[1.5,1.2,1.5],[1]]"}
+![](imgs/logos/lapso_black3.png)
+
+![](imgs/logos/Unqui.png) ![](imgs/logos/logo_acaa.png)
+
+![](imgs/logos/Foncyt.png)
+:::
+
+## Introducción
+
+### Generación de entornos virtuales para la manipulación experimental
+
+Poder hacer uso de las capacidad de inmersividad de Realidad Virtual para poder probar distintos contextos visuales y su efecto en la percepción auditiva de distancia (PAD).
+
+<!-- ![](imgs/setup/setup_final.png){fig-align="center"} -->
+
+::: columns
+::: {.column width="40%"}
+- Entorno visual virtual
+- Estímulos acústicos reales 
+
+:::
+
+::: {.column width="60%"}
+![](imgs/setup/setup_final.png)
+
+:::
+:::
+
+## ¿Cómo es la percepción visual en Realidad Virtual?
+
+- La media de las distancias estimadas en entornos virtuales es de un
+74% de los entornos modelados debido a 
+  - limitaciones de calidad gráfica y campo visual (FOV)
+  - peso de los cascos
+
+En cascos más modernos, se observa una tendencia a que la percepción 
+en entornos virtuales se equipare a la de entornos reales.
+
+##  
+
+### Diseño de entornos virtuales
+
+::: columns
+::: {.column width="40%"}
+
+![ ](imgs/setup/herramientas_vr/2_salas.png)
+
+:::
+
+::: {.column width="60%"}
+![ ](imgs/setup/herramientas_vr/first_workflow.png)
+:::
+:::
