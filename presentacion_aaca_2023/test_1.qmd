@@ -47,10 +47,11 @@ Poder hacer uso de las capacidad de inmersividad de Realidad Virtual para poder 
 
 ## ¿Cómo es la percepción visual en Realidad Virtual?
 
-- La media de las distancias estimadas en entornos virtuales es de un
+La media de las distancias estimadas en entornos virtuales es de un
 74% de los entornos modelados debido a 
-  - limitaciones de calidad gráfica y campo visual (FOV)
-  - peso de los cascos
+
+- limitaciones de calidad gráfica y campo visual (FOV)
+- peso de los cascos
 
 En cascos más modernos, se observa una tendencia a que la percepción 
 en entornos virtuales se equipare a la de entornos reales.

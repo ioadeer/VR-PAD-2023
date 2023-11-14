@@ -41,9 +41,13 @@ library(hrbrthemes)
 library(viridis)
 ```
 
-## Analisis de control
+## Intro
 
 Este es un control sobre si hay ajuste o no entre modalidad oscuras y visual para la pad.
+(escribir mas)
+\pagebreak
+
+## Analisis de datos
 
 ```{r load_data, include=FALSE}
 
@@ -192,4 +196,235 @@ tabla_sesgo %>%
     ) +
     ggtitle("Sesgo Absoluto") +
     xlab("")
+```
+
+\pagebreak
+
+## Estadistica
+
+### Modelo de efectos mixtos y anova.
+
+```{r lmer, echo=FALSE, warning=TRUE}
+
+m.distancia <- lmer(log(respuesta[,"mean"]) ~ condicion_sala * log(distancia) + (1|nsub), 
+                    data = tabla.ind)
+
+summary(m.distancia)
+anova(m.distancia)
+
+```
+
+### Analisis de funcion de potencia
+
+```{r power function sala oscuras, echo=FALSE, message=FALSE, warning=FALSE}
+tabla.oscuras.ind <- tabla.ind %>%
+  filter(condicion_sala =="OSCURAS")
+
+tabla.oscuras.pob <- tabla.pob %>%
+  filter(condicion_sala == "OSCURAS")
+
+tabla.oscuras.pob <- tabla.oscuras.pob %>%
+  mutate(
+    log_respuesta = log(respuestapob[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+tabla.oscuras.ind <- tabla.oscuras.ind %>%
+  mutate(
+    log_respuesta = log(respuesta[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+m.distancia.oscuras <- lm(log_respuesta ~ log_distancia, 
+                    data = tabla.oscuras.pob)
+
+
+tabla.oscuras.pob <- tabla.oscuras.pob %>%
+  mutate(
+    predi = predict(m.distancia.oscuras),
+  )
+
+eqn <- sprintf(
+  "italic(k) == %.3g * ',' ~~ italic(a) == %.3g  * ',' ~~ italic(r)^2 ~ '=' ~ %.2g",
+  coef(m.distancia.oscuras)[1],
+  coef(m.distancia.oscuras)[2],
+  summary(m.distancia.oscuras)$r.squared
+)
+
+g1 <- ggplot() +
+  #geom_line(data= tabla.ind, aes(x = log(distancia), y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
+  geom_line(data= tabla.oscuras.pob, aes(x = log_distancia, y = predi), alpha = 0.9)+
+  geom_point(data = tabla.oscuras.pob, mapping = aes(x=log_distancia, y=log_respuesta))+
+  geom_point(data = tabla.oscuras.ind, mapping = aes(x=log_distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  #geom_point(data = tabla.oscuras.ind, mapping = aes(x=log_distancia, y=log_respuesta), 
+  #           color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  xlab("Distancia real (log)")+
+  ylab("Distancia percibida (log)") +
+  ggtitle("Ajuste con funcion de potencia (log log)") +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  annotate("text",x = 1.1, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+
+g2 <- ggplot() +
+  geom_line(data= tabla.oscuras.pob, aes(x = distancia, y = exp(predi)))+
+  geom_point(data = tabla.oscuras.pob, mapping = aes(x=distancia, y=respuestapob[,"mean"]))+
+  geom_point(data = tabla.oscuras.ind, mapping = aes(x=distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_continuous(name="Distance source (m)", breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  scale_y_continuous(name="Perceived distance (m)",  breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  ggtitle("Sala oscuras ajuste con funcion de potencia") +
+  annotate("text",x = 5, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+grid.arrange(g1, g2, nrow = 1)
+
+```
+
+```{r power function visual, echo=FALSE, message=FALSE, warning=FALSE}
+tabla.visual.ind <- tabla.ind %>%
+  filter(condicion_sala =="VISUAL")
+
+tabla.visual.pob <- tabla.pob %>%
+  filter(condicion_sala == "VISUAL")
+
+tabla.visual.pob <- tabla.visual.pob %>%
+  mutate(
+    log_respuesta = log(respuestapob[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+tabla.visual.ind <- tabla.visual.ind %>%
+  mutate(
+    log_respuesta = log(respuesta[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+m.distancia.sala_visual <- lm(log_respuesta ~ log_distancia, 
+                    data = tabla.visual.pob)
+
+
+tabla.visual.pob <- tabla.visual.pob %>%
+  mutate(
+    predi = predict(m.distancia.sala_visual),
+  )
+
+eqn <- sprintf(
+  "italic(k) == %.3g * ',' ~~ italic(a) == %.3g  * ',' ~~ italic(r)^2 ~ '=' ~ %.2g",
+  coef(m.distancia.sala_visual)[1],
+  coef(m.distancia.sala_visual)[2],
+  summary(m.distancia.sala_visual)$r.squared
+)
+
+g1 <- ggplot() +
+  #geom_line(data= tabla.ind, aes(x = log(distancia), y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
+  geom_line(data= tabla.visual.pob, aes(x = log_distancia, y = predi), alpha = 0.9)+
+  geom_point(data = tabla.visual.pob, mapping = aes(x=log_distancia, y=log_respuesta))+
+  geom_point(data = tabla.visual.ind, mapping = aes(x=log_distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  #geom_point(data = tabla.visual.ind, mapping = aes(x=log_distancia, y=log_respuesta), 
+  #           color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  xlab("Distancia real (log)")+
+  ylab("Distancia percibida (log)") +
+  ggtitle("Visual ajuste con funcion de potencia (log log)") +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  annotate("text",x = 1.1, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+g2 <- ggplot() +
+  geom_line(data= tabla.visual.pob, aes(x = distancia, y = exp(predi)))+
+  geom_point(data = tabla.visual.pob, mapping = aes(x=distancia, y=respuestapob[,"mean"]))+
+  geom_point(data = tabla.visual.ind, mapping = aes(x=distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_continuous(name="Distance source (m)", breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  scale_y_continuous(name="Perceived distance (m)",  breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  ggtitle("Visual ajuste con funcion de potencia") +
+  annotate("text",x = 5, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+grid.arrange(g1, g2, nrow = 1)
+
+```
+
+
+### Obteniendo coeficiente por sujeto
+
+```{r load data many models, echo=FALSE, message=FALSE, warning=FALSE}
+data.clean <-  read.csv('data/coeficientes_por_sujeto.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+# Asi se preparo data
+# modelo_sujeto  <- function(df) {
+#   lmer(log_respuesta ~ log_distancia + (1|nsub) , data = df)
+# }
+# 
+# modelo_sujeto  <- function(df) {
+#   lm(log_respuesta ~ log_distancia, data = df)
+# }
+# 
+# regressions <- tabla.ind %>%
+#   nest(data = -nsub) %>%
+#   mutate(
+#     fit = map(data,modelo_sujeto),
+#     tidied = map(fit, tidy),
+#     glanced = map(fit, glance),
+#     augmented = map(fit, augment)
+#   )
+# 
+# tidied <- regressions %>%
+#   unnest(tidied)
+# 
+# regressions %>%
+#   unnest(glanced)
+# 
+# regressions %>%
+#   unnest(augmented)
+# 
+# #
+# # CORRECCION Guardarse el R^2 tambien
+# 
+# r_sqrd <- regressions %>%
+#   unnest(glanced) %>%
+#   group_by(nsub) %>%
+#   select(nsub, r.squared)
+# 
+# #
+# coefs <- regressions %>%
+#   unnest(tidied) %>%
+#   group_by(nsub) %>%
+#   spread(term,estimate) %>%
+#   select(nsub,"(Intercept)", log_distancia) %>%
+#   rename(intercept = "(Intercept)") %>%
+#   group_by(nsub) %>%
+#   summarise(
+#     intercept = max(intercept, na.rm =T),
+#     coef = max(log_distancia, na.rm =T),
+#   )
+# 
+# cond <- data.frame(tabla.ind$nsub, tabla.ind$condicion_sala)
+# 
+# cond <- cond %>%
+#   rename(nsub = tabla.ind.nsub) %>%
+#   rename(condicion_sala = tabla.ind.condicion_sala)
+# 
+# cond <- cond %>%
+#   group_by(nsub)  %>%
+#   distinct()
+# 
+# coefs <- merge(x=coefs, y=cond, by='nsub')
+# 
+# coefs <- merge(x=coefs, y=r_sqrd, by='nsub')
+# 
+# write.table(coefs, file="analisis-pad-2-salas-vacias/data/coeficientes_por_sujeto.csv", row.names = FALSE)
+
 ```
