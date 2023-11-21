@@ -34,40 +34,50 @@ Poder hacer uso de las capacidad de inmersividad de Realidad Virtual para poder 
 
 ::: columns
 ::: {.column width="40%"}
-- Entorno visual virtual
-- Estímulos acústicos reales 
-
+-   Entorno visual virtual
+-   Estímulos acústicos reales
 :::
 
 ::: {.column width="60%"}
 ![](imgs/setup/setup_final.png)
-
 :::
 :::
 
 ## ¿Cómo es la percepción visual en Realidad Virtual?
 
-La media de las distancias estimadas en entornos virtuales es de un
-74% de los entornos modelados debido a 
+La media de las distancias estimadas en entornos virtuales es de un 74% de los entornos modelados debido a
 
-- limitaciones de calidad gráfica y campo visual (FOV)
-- peso de los cascos
+-   limitaciones de calidad gráfica y campo visual (FOV)
+-   peso de los cascos
 
-En cascos más modernos, se observa una tendencia a que la percepción 
-en entornos virtuales se equipare a la de entornos reales.
+En cascos más modernos, se observa una tendencia a que la percepción en entornos virtuales se equipare a la de entornos reales.
 
-##  
+## 
 
 ### Diseño de entornos virtuales
 
 ::: columns
 ::: {.column width="40%"}
-
-![ ](imgs/setup/herramientas_vr/2_salas.png)
-
+![](imgs/setup/herramientas_vr/2_salas.png)
 :::
 
 ::: {.column width="60%"}
-![ ](imgs/setup/herramientas_vr/first_workflow.png)
+![](imgs/setup/herramientas_vr/first_workflow.png)
+:::
+:::
+
+## 
+
+### Implementación en Realidad virtual
+
+::: columns
+::: {.column width="40%"}
+<br>
+![](imgs/setup/herramientas_vr/unreal_blender2.png)
+:::
+
+::: {.column width="60%"}
+<br>
+{{< video ../videos/vr/vr_clip_1.mp4 >}}
 :::
 :::
