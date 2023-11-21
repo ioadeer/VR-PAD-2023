@@ -330,7 +330,7 @@ dimensions.width_sum <- dimensions.width %>%
 # Use single color
 violin_width <- ggplot(dimensions.width, aes(x=Condición, y=Ancho,  fill=Condición)) +
   #geom_violin(trim=FALSE, fill='#A4A4A4', color="darkred")+
-  geom_violin(trim=FALSE)+
+  geom_violin(trim=TRUE)+
   geom_boxplot(width=0.1) + 
   theme_minimal() +
   guides(fill = "none") +
@@ -400,14 +400,6 @@ plot(violin_height)
 figures_folder = "./analisis-pad-2-salas-vacias/analisis_volumen_y_visual"
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "violin_alto.png", sep = '')
 ggsave(mi_nombre_de_archivo, plot = violin_height, limitsize=FALSE, dpi=200)
-
-# ggarrange(
-#   lp,                # First row with line plot
-#   # Second row with box and dot plots
-#   ggarrange(bxp, dp, ncol = 2, labels = c("B", "C")), 
-#   nrow = 2, 
-#   labels = "A"       # Label of the line plot
-# ) 
 
 figure <- ggarrange(dim_barchart, 
                     ggarrange(violin_depth, violin_width,violin_height,

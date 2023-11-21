@@ -30,7 +30,26 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
-  </style>
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
   <link rel="stylesheet" href="test_1_files/libs/revealjs/dist/theme/quarto.css">
   <link href="test_1_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="test_1_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
@@ -346,7 +365,7 @@
 <section id="introducción" class="slide level2">
 <h2>Introducción</h2>
 <h3 id="generación-de-entornos-virtuales-para-la-manipulación-experimental">Generación de entornos virtuales para la manipulación experimental</h3>
-<p>Poder hacer uso de las capacidad de inmersividad de Realidad Virtual para poder probar distintos contextos visuales y su efecto en la percepción auditiva de distancia (PAD).</p>
+<p>Hacer uso de la capacidad de inmersividad de la Realidad Virtual para probar distintos contextos visuales y su efecto en la percepción auditiva de distancia (PAD). (<span class="citation" data-cites="calcagno_role_2012">Calcagno et al. (<a href="#/section-4" role="doc-biblioref" onclick="">2012</a>)</span>)</p>
 <!-- ![](imgs/setup/setup_final.png){fig-align="center"} -->
 <div class="columns">
 <div class="column" style="width:40%;">
@@ -386,12 +405,51 @@
 <div class="column" style="width:40%;">
 <p><br> <img data-src="imgs/setup/herramientas_vr/unreal_blender2.png"></p>
 </div><div class="column" style="width:60%;">
-<p><br></p>
-<video id="video_shortcode_videojs_video1" class="video-js vjs-default-skin vjs-fluid" controls="" preload="auto" data-setup="{}" title=""><source src="../videos/vr/vr_clip_1.mp4"></video>
+<p><br> <video id="video_shortcode_videojs_video1" class="video-js vjs-default-skin vjs-fluid" controls="" preload="auto" data-setup="{}" title=""><source src="../videos/vr/vr_clip_1.mp4"></video></p>
 </div>
 </div>
-<p><img src="imgs/logos/logo_acaa.png" class="slide-logo"></p>
-<div class="footer footer-default">
+</section>
+<section id="section-2" class="slide level2">
+<h2></h2>
+<h3 id="validación-experimental-visual-de-entorno-virtual">Validación experimental visual de entorno virtual</h3>
+<div class="columns">
+<div class="column" style="width:40%;">
+<h4 id="participantes">Participantes</h4>
+<p>50 sujetos</p>
+<ul>
+<li>22 mujeres</li>
+<li>28 hombres</li>
+</ul>
+<h4 id="materiales-y-métodos">Materiales y métodos</h4>
+<ul>
+<li>Casco HTC Vive Pro</li>
+<li>Placa GeForce RTX3070</li>
+</ul>
+</div><div class="column" style="width:60%;">
+<h4 id="procedimiento">Procedimiento</h4>
+<ol type="1">
+<li>Introducir participantes en sala experimental procurando que en un principio no la vean.</li>
+<li>Colocar casco de RV y pedir reporte verbal del tamaño del sala virtual.</li>
+<li>Remover casco y pedir reporte verbal del tamaño de sala real.</li>
+</ol>
+</div>
+</div>
+</section>
+<section id="section-3" class="slide level2">
+<h2></h2>
+<h3 id="resultados">Resultados</h3>
+
+<img data-src="test_1_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
+<section id="section-4" class="slide level2 smaller scrollable">
+<h2></h2>
+<h3 id="references">References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-calcagno_role_2012" class="csl-entry" role="listitem">
+Calcagno, Esteban R., Ezequiel L. Abregú, Manuel C. Eguía, and Ramiro Vergara. 2012. <span>“The Role of Vision in Auditory Distance Perception.”</span> <em>Perception</em> 41 (2): 175–92.
+</div>
+</div>
+
+<img src="imgs/logos/logo_acaa.png" class="slide-logo r-stretch"><div class="footer footer-default">
 
 </div>
 </section>
