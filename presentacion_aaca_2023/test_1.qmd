@@ -104,8 +104,8 @@ En cascos más modernos, se observa una tendencia a que la percepción en entorn
 #### Procedimiento
 
 1.  Introducir participantes en sala experimental procurando que en un principio no la vean.
-2.  Colocar casco de RV y pedir reporte verbal del tamaño del sala virtual.
-3.  Remover casco y pedir reporte verbal del tamaño de sala real.
+2.  Colocar casco de RV y registrar reporte verbal del tamaño del sala virtual.
+3.  Remover casco y registrar reporte verbal del tamaño de sala real.
 :::
 :::
 
@@ -213,19 +213,20 @@ dim_barchart <- dimensions.volume_aggr %>%
   #ylim = c(0, 300) +
   scale_y_continuous(limits = c(0, 300), expand = c(0, 0)) +
   geom_hline(yintercept=252,linetype="dashed") +
+  annotate("text", x=0.6, y=259, label= expression("252 m"^3*" ")) +
   guides(fill = "none") +
   #theme(legend.position="none") +
   theme_minimal() +
     annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
-           x = 0.50, # para fig compuesta
+           x = 0.70, # para fig compuesta
            y = 290.0,
            label = eqn1,
            size = 3.5,
            hjust = 0) +
     annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
-           x = 1.50, # para fig compuesta
+           x = 1.70, # para fig compuesta
            y = 290.0,
            label = eqn2,
            size = 3.5,
@@ -315,6 +316,7 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condición, y=Profundidad,  fill=
   scale_fill_brewer(palette="YlOrRd")+
   #geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
   geom_hline(yintercept=12,linetype="dashed") +
+  annotate("text", x=0.5, y=10, label= "12 m", size=2.5) +
   theme(
     axis.title.x = element_blank(),
     axis.title.y = element_text(hjust = 0)) 
@@ -388,6 +390,7 @@ violin_width <- ggplot(dimensions.width, aes(x=Condición, y=Ancho,  fill=Condic
   scale_fill_brewer(palette="YlOrRd")+
   #geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
   geom_hline(yintercept=7,linetype="dashed")+
+  annotate("text", x=0.5, y=6, label= "7 m", size=2.5) +
   labs(
     y = "Ancho (m)",
   ) +
@@ -458,6 +461,7 @@ violin_height <- ggplot(dimensions.height, aes(x=Condición, y=Alto,  fill=Condi
   scale_fill_brewer(palette="YlOrRd")+
   #geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
   geom_hline(yintercept=3,linetype="dashed") +
+  annotate("text", x=0.5, y=2.5, label= "3 m", size=2.5) +
   labs(
     y = "Alto (m)",
   ) +
