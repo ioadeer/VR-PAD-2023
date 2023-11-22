@@ -1,0 +1,857 @@
+---
+title: "Analisis-limpio"
+author: "Joaquin Cervino"
+date: "2023-11-22"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r dependencies,  include=FALSE}
+# Dependencias ------------------------------------------------------------
+library(broom)
+library(broom.mixed)
+library(dplyr)
+library(ggbeeswarm)
+library(gmodels)
+library(ggplot2)
+library(ggthemes)
+library(ggpubr)
+library(ggstatsplot)
+library(gridExtra)
+library(htmlwidgets)
+library(quickpsy)
+library(tidyverse)
+library(lme4)
+library(nlme)
+library(lmerTest)
+library(modelr)
+library(scales) 
+library(pracma)
+library(plotly)
+library(Routliers)
+library(processx)
+library(orca)
+library(hrbrthemes)
+library(viridis)
+library(rstatix)
+```
+
+## Intro
+
+Este es un control sobre si hay ajuste o no entre modalidad oscuras y vr para la pad.
+(escribir mas)
+\pagebreak
+
+## Analisis de datos
+
+```{r load_data, include=FALSE}
+
+tabla.raw <- read.csv('./data/oscuras_vr_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+tabla.raw$SesgoAbs <-  abs(tabla.raw$respuesta - tabla.raw$distancia)
+tabla.raw$SesgoRel <- (tabla.raw$respuesta - tabla.raw$distancia) / tabla.raw$distancia
+
+
+f_promedio <- function(x) c(mean = mean(x),
+                            sd   = sd(x),
+                            var  = var(x),
+                            sem  = sd(x)/sqrt(length(x)),
+                            n    = length(x))
+
+tabla.ind <- tibble(aggregate(cbind(respuesta,SesgoRel,SesgoAbs) ~ nsub*condicion_sala*distancia*nbloque,
+                              data = tabla.raw,
+                              FUN  = f_promedio,na.action = NULL))
+
+# - Nivel poblacional
+
+tabla.pob <- tibble(aggregate(cbind(
+                              respuesta[,"mean"],
+                              SesgoRel[,"mean"],
+                              SesgoAbs[,"mean"]
+                              ) ~ condicion_sala*distancia,
+                              data <- tabla.ind,
+                              FUN  <- f_promedio,na.action = NULL))
+
+
+tabla.pob = tabla.pob %>% rename(respuestapob = V1)
+tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
+
+
+```
+
+## Figuras
+
+### Tabla pob
+
+```{r individual con brutos, echo=FALSE, message=FALSE, warning=FALSE}
+g1 <- ggplot() +
+ geom_line(data= tabla.pob, aes(x = distancia, y = respuestapob[,"mean"], group = condicion_sala, col = condicion_sala), alpha = 1)+
+ geom_errorbar(data=tabla.pob, aes(x = distancia, y = respuestapob[,"mean"],
+                                   ymin = respuestapob[,"mean"] - respuestapob[,"sem"],
+                                   ymax = respuestapob[,"mean"] + respuestapob[,"sem"],
+                                   col = condicion_sala),
+               alpha = 0.7, width=0.3, linewidth=0.75,
+               )+
+  scale_x_continuous(name="Distance source (m)")+
+  scale_y_continuous(name="Perceived distance (m)")+
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  theme_linedraw(base_size = 9)
+
+plot(g1)
+
+```
+
+### Sesgo
+
+```{r sesgo1, message=FALSE, warning=FALSE, include=FALSE}
+## Sesgo
+tabla_sesgo <- tabla.ind %>% 
+  group_by(condicion_sala,nsub) %>%
+  summarise(mDist_perc = mean(respuesta[,"mean"]),
+            mSesgoRel  = mean(SesgoRel[,"mean"]),
+            mSesgoAbs = mean(SesgoAbs[,"mean"]))  %>%
+  ungroup()
+
+tabla_sesgo.pob <- tabla_sesgo  %>% 
+  group_by(condicion_sala) %>%
+  summarise(MSesgoRel = mean(mSesgoRel),
+            N = n()) %>%
+  ungroup()
+
+fig.sesgo <- ggplot(tabla_sesgo, aes(x = condicion_sala,
+                                     y = mSesgoRel,
+                                     colour = condicion_sala))+
+geom_point(size = 4,alpha = 1,
+           position = position_jitterdodge(jitter.width = .1,
+                                           jitter.height = 0,
+                                           dodge.width = .1)) +
+  stat_summary(fun.data = "mean_se",
+               geom = "bar",
+               alpha = .4,
+               size = 1,
+               position = position_dodge(width = 1)) +
+  stat_summary(fun.data = "mean_se",
+               geom = "line") +
+  stat_summary(fun.data = "mean_se",
+               geom = "bar",
+               alpha = .4,
+               size=2,
+               position = position_dodge(width = 1)) +
+  labs(x = "Condition de sala",
+       y = "Bias") +
+  theme_pubr(base_size = 9, margin = TRUE)
+# theme(legend.position = "none")
+fig.sesgo
+
+```
+
+```{r sesgo2, echo=FALSE, message=FALSE, warning=FALSE}
+
+# bxp <- tabla_sesgo %>%
+#   ggplot( aes(x=condicion_sala, y=mDist_perc, fill=condicion_sala)) +
+#     geom_boxplot() +
+#     scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+#     geom_jitter(color="black", size=0.4, alpha=0.9) +
+#    # theme_ipsum() +
+#     theme(
+#       legend.position="none",
+#       plot.title = element_text(size=11)
+#     ) +
+#     ggtitle("Media de distancia percibida") +
+#     xlab("")
+bxp <- ggpaired(tabla_sesgo, x="condicion_sala", y="mDist_perc",
+                color="condicion_sala", line.color="grey", line.size=0.4)+
+       ggtitle("Media de distancia percibida") +
+       ylab("Distancia (m)")+
+       stat_compare_means(method= "t.test", paired = TRUE)
+
+plot(bxp)
+```
+
+```{r sesgo3, echo=FALSE, message=FALSE, warning=FALSE}
+
+# tabla_sesgo %>%
+#   ggplot( aes(x=condicion_sala, y=mSesgoRel, fill=condicion_sala)) +
+#     geom_boxplot() +
+#     scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+#     geom_jitter(color="black", size=0.4, alpha=0.9) +
+#     #theme_ipsum() +
+#     theme(
+#       legend.position="none",
+#       plot.title = element_text(size=11)
+#     ) +
+#     ggtitle("Sesgo Rel") +
+#     xlab("")
+
+bxp <- ggpaired(tabla_sesgo, x="condicion_sala", y="mSesgoRel",
+                color="condicion_sala", line.color="grey", line.size=0.4)+
+       ggtitle("Sesgo relativo") +
+       ylab("Distancia (m)")+
+       stat_compare_means(method= "t.test", paired = TRUE)
+
+plot(bxp)
+```
+
+```{r sesgo4, echo=FALSE, message=FALSE, warning=FALSE}
+
+# tabla_sesgo %>%
+#   ggplot( aes(x=condicion_sala, y=mSesgoAbs, fill=condicion_sala)) +
+#     geom_boxplot() +
+#     scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+#     geom_jitter(color="black", size=0.4, alpha=0.9) +
+#  #   theme_ipsum() +
+#     theme(
+#       legend.position="none",
+#       plot.title = element_text(size=11)
+#     ) +
+#     ggtitle("Sesgo Absoluto") +
+#     xlab("")
+
+bxp <- ggpaired(tabla_sesgo, x="condicion_sala", y="mSesgoAbs",
+                color="condicion_sala", line.color="grey", line.size=0.4)+
+       ggtitle("Sesgo absoluto") +
+       ylab("Distancia (m)")+
+       stat_compare_means(method= "t.test", paired = TRUE)
+
+plot(bxp)
+```
+
+\pagebreak
+
+## Estadistica
+
+### Modelo de efectos mixtos y anova.
+
+```{r lmer, echo=FALSE, warning=TRUE}
+
+m.distancia <- lmer(log(respuesta[,"mean"]) ~ condicion_sala * log(distancia) + (1|nsub), 
+                    data = tabla.ind)
+
+summary(m.distancia)
+anova(m.distancia)
+
+```
+
+### Analisis de funcion de potencia
+
+```{r power function sala oscuras, echo=FALSE, message=FALSE, warning=FALSE}
+tabla.oscuras.ind <- tabla.ind %>%
+  filter(condicion_sala =="OSCURAS")
+
+tabla.oscuras.pob <- tabla.pob %>%
+  filter(condicion_sala == "OSCURAS")
+
+tabla.oscuras.pob <- tabla.oscuras.pob %>%
+  mutate(
+    log_respuesta = log(respuestapob[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+tabla.oscuras.ind <- tabla.oscuras.ind %>%
+  mutate(
+    log_respuesta = log(respuesta[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+m.distancia.oscuras <- lm(log_respuesta ~ log_distancia, 
+                    data = tabla.oscuras.pob)
+
+
+tabla.oscuras.pob <- tabla.oscuras.pob %>%
+  mutate(
+    predi = predict(m.distancia.oscuras),
+  )
+
+eqn <- sprintf(
+  "italic(k) == %.3g * ',' ~~ italic(a) == %.3g  * ',' ~~ italic(r)^2 ~ '=' ~ %.2g",
+  coef(m.distancia.oscuras)[1],
+  coef(m.distancia.oscuras)[2],
+  summary(m.distancia.oscuras)$r.squared
+)
+
+g1 <- ggplot() +
+  #geom_line(data= tabla.ind, aes(x = log(distancia), y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
+  geom_line(data= tabla.oscuras.pob, aes(x = log_distancia, y = predi), alpha = 0.9)+
+  geom_point(data = tabla.oscuras.pob, mapping = aes(x=log_distancia, y=log_respuesta))+
+  geom_point(data = tabla.oscuras.ind, mapping = aes(x=log_distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  #geom_point(data = tabla.oscuras.ind, mapping = aes(x=log_distancia, y=log_respuesta), 
+  #           color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  xlab("Distancia real (log)")+
+  ylab("Distancia percibida (log)") +
+  ggtitle("Ajuste con funcion de potencia (log log)") +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  annotate("text",x = 1.1, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+
+g2 <- ggplot() +
+  geom_line(data= tabla.oscuras.pob, aes(x = distancia, y = exp(predi)))+
+  geom_point(data = tabla.oscuras.pob, mapping = aes(x=distancia, y=respuestapob[,"mean"]))+
+  geom_point(data = tabla.oscuras.ind, mapping = aes(x=distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_continuous(name="Distance source (m)", breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  scale_y_continuous(name="Perceived distance (m)",  breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  ggtitle("Sala oscuras ajuste con funcion de potencia") +
+  annotate("text",x = 5, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+grid.arrange(g1, g2, nrow = 1)
+
+```
+
+```{r power function vr, echo=FALSE, message=FALSE, warning=FALSE}
+tabla.visual.ind <- tabla.ind %>%
+  filter(condicion_sala =="VR")
+
+tabla.visual.pob <- tabla.pob %>%
+  filter(condicion_sala == "VR")
+
+tabla.visual.pob <- tabla.visual.pob %>%
+  mutate(
+    log_respuesta = log(respuestapob[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+tabla.visual.ind <- tabla.visual.ind %>%
+  mutate(
+    log_respuesta = log(respuesta[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+m.distancia.sala_visual <- lm(log_respuesta ~ log_distancia, 
+                    data = tabla.visual.pob)
+
+
+tabla.visual.pob <- tabla.visual.pob %>%
+  mutate(
+    predi = predict(m.distancia.sala_visual),
+  )
+
+eqn <- sprintf(
+  "italic(k) == %.3g * ',' ~~ italic(a) == %.3g  * ',' ~~ italic(r)^2 ~ '=' ~ %.2g",
+  coef(m.distancia.sala_visual)[1],
+  coef(m.distancia.sala_visual)[2],
+  summary(m.distancia.sala_visual)$r.squared
+)
+
+g1 <- ggplot() +
+  #geom_line(data= tabla.ind, aes(x = log(distancia), y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
+  geom_line(data= tabla.visual.pob, aes(x = log_distancia, y = predi), alpha = 0.9)+
+  geom_point(data = tabla.visual.pob, mapping = aes(x=log_distancia, y=log_respuesta))+
+  geom_point(data = tabla.visual.ind, mapping = aes(x=log_distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  #geom_point(data = tabla.visual.ind, mapping = aes(x=log_distancia, y=log_respuesta), 
+  #           color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  xlab("Distancia real (log)")+
+  ylab("Distancia percibida (log)") +
+  ggtitle("Visual ajuste con funcion de potencia (log log)") +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  annotate("text",x = 1.1, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+g2 <- ggplot() +
+  geom_line(data= tabla.visual.pob, aes(x = distancia, y = exp(predi)))+
+  geom_point(data = tabla.visual.pob, mapping = aes(x=distancia, y=respuestapob[,"mean"]))+
+  geom_point(data = tabla.visual.ind, mapping = aes(x=distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_continuous(name="Distance source (m)", breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  scale_y_continuous(name="Perceived distance (m)",  breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  ggtitle("Visual ajuste con funcion de potencia") +
+  annotate("text",x = 5, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+grid.arrange(g1, g2, nrow = 1)
+
+```
+
+\pagebreak
+
+### Obteniendo coeficiente por sujeto
+
+```{r load data many models, echo=FALSE, message=FALSE, warning=FALSE}
+data.clean <-  read.csv('data/coeficientes_por_sujeto_oscuras_vr.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+```
+
+
+#### Coefciente a
+
+Este coeficiente representa el exponente del ajuste con funcion de potencias. Explica la parte no lineal de la compresion.
+
+```{r coef a, echo=FALSE, message=FALSE, warning=FALSE}
+
+data.clean.sala_oscuras <- data.clean %>%
+  filter(condicion_sala == "OSCURAS")
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g \nMdn = %.3g (%.2g - %.2g)\nN =  %.2g",
+  mean(data.clean.sala_oscuras$coef),
+  sd(data.clean.sala_oscuras$coef),
+  median(data.clean.sala_oscuras$coef),
+  quantile(data.clean.sala_oscuras$coef)[4],
+  quantile(data.clean.sala_oscuras$coef)[2],
+  sum(data.clean.sala_oscuras$coef)
+)
+
+hist_a_sc <- ggplot(data.clean.sala_oscuras, aes(coef)) +
+  geom_histogram(binwidth= 0.1, color="black",fill="white") +
+  scale_x_continuous(breaks= seq(0.3,2.1, by=0.5)) +
+  scale_y_continuous(breaks= seq(0,5, by = 1))+
+  xlim(0.3,2.1) +
+  ylim(0,5) +
+  geom_vline(xintercept = round(mean(data.clean.sala_oscuras$coef),2),        # Add line for mean
+             linetype="dashed",
+             ) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 1.4, # para fig compuesta
+           y = 4.0,
+           label = eqn1,
+           size = 1.5,
+           hjust = 0) +
+  labs(x="a", y = "Count")+
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank()) +
+  theme_minimal()
+
+#hist_a_sc
+
+# sala grande
+
+data.clean.sala_grande <- data.clean %>%
+  filter(condicion_sala == "VR")
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g \nMdn = %.3g (%.2g - %.2g)\nN =  %.2g",
+  mean(data.clean.sala_grande$coef),
+  sd(data.clean.sala_grande$coef),
+  median(data.clean.sala_grande$coef),
+  quantile(data.clean.sala_grande$coef)[4],
+  quantile(data.clean.sala_grande$coef)[2],
+  sum(data.clean.sala_grande$coef)
+)
+
+
+# scale_x_continuous(breaks= seq(0.3,2.1, by=0.5)) +
+#   scale_y_continuous(breaks= seq(0,5, by = 1))+
+#   xlim(0.3,2) +
+#   ylim(0,5) +
+
+hist_a_sg <- ggplot(data.clean.sala_grande, aes(coef)) +
+  geom_histogram(binwidth= 0.1, color="black",fill="white") +
+  geom_vline(xintercept = round(mean(data.clean.sala_grande$coef),2),        # Add line for mean
+             linetype="dashed",
+  ) +
+  scale_x_continuous(breaks= seq(0.3,2.1, by=0.5)) +
+  scale_y_continuous(breaks= seq(0,5, by = 1))+
+  xlim(0.3,2.1) +
+  ylim(0,5) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 1.4, # para fig compuesta
+           y = 4.0,
+           label = eqn1,
+           size = 1.5,
+           hjust = 0) +
+  labs(x="a", y = "Count")+
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank()) +
+  theme_minimal()
+
+#hist_a_sg
+
+# a_comp <- ggarrange(
+#   hist_a_sc,
+#   hist_a_sg,
+#   nrow = 2
+# )
+
+#plot(a_comp)
+
+# histograma a apaisado
+data.clean.boxplot_a <- data.clean %>%
+  mutate(
+    condicion_sala = case_when(
+      condicion_sala == "VR" ~ "VR",
+      condicion_sala == "OSCURAS" ~ "Oscuras",
+    )
+  )
+
+bxp <- ggboxplot(data.clean.boxplot_a, x = "condicion_sala", y = "coef",
+                 orientation = "horizontal",
+               color = "condicion_sala", palette = "jco",
+               add = "jitter", ylab="coef a",
+               title="T-test coeficientes a") +
+  theme_minimal() +
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.title = element_text(hjust = 0),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank())
+
+  
+stat.test <- data.clean.boxplot_a  %>% 
+  t_test(coef~condicion_sala) %>%
+  add_significance()
+
+stat.test <- stat.test %>% add_y_position(fun ="mean", step.increase = 35)
+
+bxp <- bxp + stat_pvalue_manual(
+  stat.test, label = "p", tip.length = 0.01,
+  coord.flip = TRUE
+) +
+  coord_flip()
+
+#bxp
+
+all <- ggarrange(
+  bxp,
+  ggarrange(
+    hist_a_sc, 
+    hist_a_sg,
+    nrow = 2
+  ),
+  ncol = 2
+)
+
+plot(all)
+```
+
+\pagebreak
+
+#### k intercept
+
+placeholder
+
+```{r k intercept, echo=FALSE, message=FALSE, warning=FALSE}
+
+data.clean.sala_oscuras <- data.clean %>%
+  filter(condicion_sala == "OSCURAS")
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g \nMdn = %.3g (%.2g - %.2g)\nN =  %.2g",
+  mean(data.clean.sala_oscuras$intercept),
+  sd(data.clean.sala_oscuras$intercept),
+  median(data.clean.sala_oscuras$intercept),
+  quantile(data.clean.sala_oscuras$intercept)[4],
+  quantile(data.clean.sala_oscuras$intercept)[2],
+  sum(data.clean.sala_oscuras$intercept)
+)
+
+hist_a_sc <- ggplot(data.clean.sala_oscuras, aes(intercept)) +
+  geom_histogram(binwidth= 0.5, color="black",fill="white") +
+  scale_x_continuous(breaks= seq(-3,1.0, by=1.0)) +
+  scale_y_continuous(breaks= seq(0,6, by = 1))+
+  xlim(-3,1) +
+  ylim(0,6) +
+  geom_vline(xintercept = round(mean(data.clean.sala_oscuras$intercept),2),        # Add line for mean
+             linetype="dashed",
+  ) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.0, # para fig compuesta
+           y = 5,
+           label = eqn1,
+           size = 1.5,
+           hjust = 0) +
+  labs(x="k", y = "Count")+
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank()) +
+  theme_minimal()
+
+#hist_a_sc
+
+# sala grande
+
+data.clean.sala_visual <- data.clean %>%
+  filter(condicion_sala == "VR")
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g \nMdn = %.3g (%.2g - %.2g)\nN =  %.2g",
+  mean(data.clean.sala_visual$intercept),
+  sd(data.clean.sala_visual$intercept),
+  median(data.clean.sala_visual$intercept),
+  quantile(data.clean.sala_visual$intercept)[4],
+  quantile(data.clean.sala_visual$intercept)[2],
+  sum(data.clean.sala_visual$intercept)
+)
+
+# scale_x_continuous(breaks= seq(0.3,2.1, by=0.5)) +
+#   scale_y_continuous(breaks= seq(0,5, by = 1))+
+#   xlim(0.3,2) +
+#   ylim(0,5) +
+
+hist_a_sg <- ggplot(data.clean.sala_visual, aes(intercept)) +
+  geom_histogram(binwidth= 0.5, color="black",fill="white") +
+  geom_vline(xintercept = round(mean(data.clean.sala_visual$intercept),2),        # Add line for mean
+             linetype="dashed",
+  ) +
+  scale_x_continuous(breaks= seq(-3,1.0, by=1.0)) +
+  scale_y_continuous(breaks= seq(0,6, by = 1))+
+  xlim(-3,1) +
+  ylim(0,6) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.0, # para fig compuesta
+           y = 5.0,
+           label = eqn1,
+           size = 1.5,
+           hjust = 0) +
+  labs(x="k", y = "Count")+
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank()) +
+  theme_minimal()
+
+#hist_a_sg
+
+a_comp <- ggarrange(
+  hist_a_sc,
+  hist_a_sg,
+  nrow = 2
+)
+
+#plot(a_comp)
+
+# histograma a apaisado
+data.clean.boxplot_a <- data.clean %>%
+  mutate(
+    condicion_sala = case_when(
+      condicion_sala == "OSCURAS" ~ "Oscuras",
+      condicion_sala == "VR" ~ "VR",
+    )
+  )
+
+bxp <- ggboxplot(data.clean.boxplot_a, x = "condicion_sala", y = "intercept",
+                 orientation = "horizontal",
+                 color = "condicion_sala", palette = "jco",
+                 add = "jitter", ylab="intercept k",
+                 title="T-test de k") +
+  theme_minimal() +
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.title = element_text(hjust = 0),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank())
+
+
+stat.test <- data.clean.boxplot_a  %>% 
+  t_test(intercept~condicion_sala) %>%
+  add_significance()
+
+stat.test <- stat.test %>% add_y_position(fun ="mean", step.increase = 10)
+
+bxp <- bxp + stat_pvalue_manual(
+  stat.test, label = "p", tip.length = 0.01,
+  coord.flip = TRUE
+) +
+  coord_flip()
+
+#bxp
+
+all_k <- ggarrange(
+  bxp,
+  ggarrange(
+    hist_a_sc, 
+    hist_a_sg,
+    nrow = 2
+  ),
+  ncol = 2
+)
+
+plot(all_k)
+
+```
+
+\pagebreak
+
+#### R squared
+
+placeholder
+
+```{r r squared, echo=FALSE, message=FALSE, warning=FALSE}
+
+data.clean <- data.clean  %>%
+  rename(rsqr = r.squared)
+
+data.clean.sala_oscuras <- data.clean %>%
+  filter(condicion_sala == "OSCURAS")
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g \nMdn = %.3g (%.2g - %.2g)\nN =  %.2g",
+  mean(data.clean.sala_oscuras$rsqr),
+  sd(data.clean.sala_oscuras$rsqr),
+  median(data.clean.sala_oscuras$rsqr),
+  quantile(data.clean.sala_oscuras$rsqr)[4],
+  quantile(data.clean.sala_oscuras$rsqr)[2],
+  sum(data.clean.sala_oscuras$rsqr)
+)
+
+hist_a_sc <- ggplot(data.clean.sala_oscuras, aes(rsqr)) +
+  geom_histogram(binwidth= 0.1, color="black",fill="white") +
+  scale_x_continuous(breaks= seq(0.3,1.0, by=0.1)) +
+  scale_y_continuous(breaks= seq(0,12, by = 1))+
+  xlim(0.5,1.1) +
+  ylim(0,13) +
+  geom_vline(xintercept = round(mean(data.clean.sala_oscuras$rsqr),2),        # Add line for mean
+             linetype="dashed", color = 'darkgrey'
+  ) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.50, # para fig compuesta
+           y = 10.0,
+           label = eqn1,
+           size = 1.5,
+           hjust = 0) +
+  labs(x=expression("R"^2*""), y = "Count")+
+  # (m"^3*")
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank()) +
+  theme_minimal()
+
+#hist_a_sc
+
+# sala grande
+
+data.clean.sala_visual <- data.clean %>%
+  filter(condicion_sala == "VR")
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g \nMdn = %.3g (%.2g - %.2g)\nN =  %.2g",
+  mean(data.clean.sala_visual$rsqr),
+  sd(data.clean.sala_visual$rsqr),
+  median(data.clean.sala_visual$rsqr),
+  quantile(data.clean.sala_visual$rsqr)[4],
+  quantile(data.clean.sala_visual$rsqr)[2],
+  sum(data.clean.sala_visual$rsqr)
+)
+
+
+# scale_x_continuous(breaks= seq(0.3,2.1, by=0.5)) +
+#   scale_y_continuous(breaks= seq(0,5, by = 1))+
+
+hist_a_sg <- ggplot(data.clean.sala_visual, aes(rsqr)) +
+  geom_histogram(binwidth= 0.1, color="black",fill="white") +
+  geom_vline(xintercept = round(mean(data.clean.sala_visual$rsqr),2),        # Add line for mean
+             linetype="dashed", col = 'darkgrey',
+  ) +
+  scale_x_continuous(breaks= seq(0.3,1.0, by=0.1)) +
+  scale_y_continuous(breaks= seq(0,12, by = 1))+
+  xlim(0.5,1.1) +
+  ylim(0,13) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.50, # para fig compuesta
+           y = 10.0,
+           label = eqn1,
+           size = 1.5,
+           hjust = 0) +
+  labs(x=expression("R"^2*""), y = "Count")+
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank()) +
+  theme_minimal()
+
+#hist_a_sg
+
+r_comp <- ggarrange(
+  hist_a_sc,
+  hist_a_sg,
+  nrow = 2
+)
+
+#plot(r_comp)
+
+# histograma a apaisado
+data.clean.boxplot_a <- data.clean %>%
+  mutate(
+    condicion_sala = case_when(
+      condicion_sala == "OSCURAS" ~ "Oscuras",
+      condicion_sala == "VR" ~ "VR",
+    )
+  )
+
+bxp <- ggboxplot(data.clean.boxplot_a, x = "condicion_sala", y = "rsqr",
+                 orientation = "horizontal",
+                 color = "condicion_sala", palette = "jco",
+                 add = "jitter", ylab="r.squared a",
+                 title="T test R squared") +
+  theme_minimal() +
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.title = element_text(hjust = 0),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank())
+
+stat.test <- data.clean.boxplot_a  %>% 
+  t_test(rsqr~condicion_sala) %>%
+  add_significance()
+
+stat.test <- stat.test %>% add_y_position(fun ="mean", step.increase = -7)
+
+bxp <- bxp + stat_pvalue_manual(
+  stat.test, label = "p", tip.length = 0.01,
+  coord.flip = TRUE
+) +
+  coord_flip()
+
+#bxp
+
+all_sqr <- ggarrange(
+  bxp,
+  ggarrange(
+    hist_a_sc, 
+    hist_a_sg,
+    nrow = 2
+  ),
+  ncol = 2
+)
+
+plot(all_sqr)
+
+```
