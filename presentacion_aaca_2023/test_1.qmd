@@ -13,7 +13,7 @@ editor: visual
 
 ```
 
-## Desarrollo y validación de un entorno visual virtual para experimentos psicofísicos
+## Desarrollo y validación de un entorno visual virtual para experimentos psicofísicos { transition="none fade-out" transition-speed="fast" }
 
 Joaquín Cerviño, Berenice Piceda, Esteban N. Lombera, Manuel C. Eguía, Ramiro O. Vergara
 
@@ -25,26 +25,42 @@ Joaquín Cerviño, Berenice Piceda, Esteban N. Lombera, Manuel C. Eguía, Ramiro
 ![](imgs/logos/Foncyt.png)
 :::
 
-## Introducción
+## Introducción { transition="fade-in" transition-speed="fast" auto-animate="true" }
 
-### Generación de entornos virtuales para la manipulación experimental
+<br>
+
+### Generación de entornos virtuales para la manipulación experimental 
 
 Hacer uso de la capacidad de inmersividad de la Realidad Virtual para probar distintos contextos visuales y su efecto en la percepción auditiva de distancia (PAD). (@calcagno_role_2012)
 
-<!-- ![](imgs/setup/setup_final.png){fig-align="center"} -->
+## Introducción {auto-animate="true"}
+
+### Generación de entornos virtuales para la manipulación experimental  
+
+Hacer uso de la capacidad de inmersividad de la Realidad Virtual para probar distintos contextos visuales y su efecto en la percepción auditiva de distancia (PAD). (@calcagno_role_2012)
 
 ::: columns
-::: {.column width="40%"}
+::: {.column width="40%" }
 -   Entorno visual virtual
 -   Estímulos acústicos reales
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" }
 ![](imgs/setup/setup_final.png)
 :::
 :::
 
-## ¿Cómo es la percepción visual en Realidad Virtual?
+## ¿Cómo es la percepción visual en Realidad Virtual?  {auto-animate="true"}
+
+<br>
+
+La media de las distancias estimadas en entornos virtuales es de un 74% de los entornos modelados debido a
+
+-   limitaciones de calidad gráfica y campo visual (FOV)
+-   peso de los cascos
+
+
+## ¿Cómo es la percepción visual en Realidad Virtual?  {auto-animate="true"}
 
 La media de las distancias estimadas en entornos virtuales es de un 74% de los entornos modelados debido a
 
@@ -53,9 +69,9 @@ La media de las distancias estimadas en entornos virtuales es de un 74% de los e
 
 En cascos más modernos, se observa una tendencia a que la percepción en entornos virtuales se equipare a la de entornos reales.
 
-## 
+## { transition="fade-in fade-out" transition-speed="fast" }
 
-### Diseño de entornos virtuales
+### Diseño de entornos virtuales 
 
 ::: columns
 ::: {.column width="40%"}
@@ -67,7 +83,7 @@ En cascos más modernos, se observa una tendencia a que la percepción en entorn
 :::
 :::
 
-## 
+## { transition="fade-in" transition-speed="fast" }
 
 ### Implementación en Realidad virtual
 
@@ -104,8 +120,8 @@ En cascos más modernos, se observa una tendencia a que la percepción en entorn
 #### Procedimiento
 
 1.  Introducir participantes en sala experimental procurando que en un principio no la vean.
-2.  Colocar casco de RV y registrar reporte verbal del tamaño del sala virtual.
-3.  Remover casco y registrar reporte verbal del tamaño de sala real.
+2.  Colocar casco de RV y registrar reporte verbal del tamaño de la sala virtual.
+3.  Remover casco y registrar reporte verbal del tamaño de la sala real.
 :::
 :::
 
@@ -485,7 +501,53 @@ figure
 
 ## 
 
+### Discusión
+
+::: columns
+::: {.column width="60%"}
+
+#### Subestimación de entornos
+
+- 54% para el entorno real
+- 56% para el entorno virtual
+
+El resultado de la
+subestimación coincide con lo reportado en (@kelly_perceived_2017),
+donde se realiza un experimento con un casco
+similar (HTC Vive)
+
+:::
+::: {.column width="40%"}
+
+#### Comparación real vs virtual
+
+Similar estimación de tamaño para ambos entornos, deifiere a 
+lo reportado en literatura (@knapp_limited_2004)
+
+:::
+:::
+
+##
+
 ### References
 
 ::: {#refs}
+:::
+
+## 
+
+### ¡Gracias! ¿Preguntas?
+
+### Desarrollo y validación de un entorno visual virtual para experimentos psicofísicos
+
+Joaquín Cerviño, Berenice Piceda, Esteban N. Lombera, Manuel C. Eguía, Ramiro O. Vergara
+<br>
+contacto: jcervino4@uvq.edu.ar
+
+::: {layout="[[1.5,1.2,1.5],[1]]"}
+![](imgs/logos/lapso_black3.png)
+
+![](imgs/logos/Unqui.png) ![](imgs/logos/logo_acaa.png)
+
+![](imgs/logos/Foncyt.png)
 :::
