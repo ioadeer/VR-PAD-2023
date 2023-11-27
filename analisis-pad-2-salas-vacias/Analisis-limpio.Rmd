@@ -79,9 +79,6 @@ f_promedio <- function(x) c(mean = mean(x),
                             sem  = sd(x)/sqrt(length(x)),
                             n    = length(x))
 
-tabla.ind <- tibble(aggregate(cbind(respuesta,SesgoRel) ~ nsub*condicion_sala*distancia*nbloque,
-                              data = tabla.raw,
-                              FUN  = f_promedio,na.action = NULL))
 
 # - Nivel poblacional
 
@@ -895,8 +892,36 @@ plot(correlation_plot)
 
 ```{r sala_3d_make, echo=FALSE, message=FALSE, warning=FALSE}
 
-
 dimensions.raw  <- read.csv('./data/dimensiones_de_sala_visual_1_50_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+dimensions.raw <- dimensions.raw %>%
+  filter(SR_height < 5) %>%
+  filter(SG_RV_height < 5) %>%
+  filter(SR_depth < 25) %>%
+  filter(SG_RV_depth < 25) %>%
+  filter(SR_width < 20) %>%
+  filter(SG_RV_width < 20) 
+
+
+cols = c(
+  "SG_RV_width",
+  "SG_RV_depth",
+  "SG_RV_height",
+  "SR_width",
+  "SR_depth",
+  "SR_height")
+
+dimensions.raw <- select(dimensions.raw, cols)
+
+
+f_promedio <- function(x) c(mean = mean(x),
+                            sd   = sd(x),
+                            var  = var(x),
+                            sem  = sd(x)/sqrt(length(x)),
+                            n    = length(x))
+
+dimensions.ind <- dimensions.raw$SG_RV_volumen %>%
+  mutate()
 
 for (i in 1: 1:nrow(dimensions.raw)) {
   # obj = objs$shapes[[i]];
@@ -1055,6 +1080,6 @@ reticulate::use_miniconda('r-reticulate')
 #saveWidget(fig, "p1.html", selfcontained = F, libdir = "lib")
 #fig
 #file.show("imgs/two_rooms.png")
-save_image(fig, "imgs/two_rooms.png", scale = 1.0, width = 500, height = 800)
-knitr::include_graphics("imgs/two_rooms.png")
+save_image(fig, "imgs/two_rooms2.png", scale = 1.0, width = 500, height = 800)
+knitr::include_graphics("imgs/two_rooms2.png")
 ```
