@@ -1,6 +1,7 @@
 ---
 title: ""
 bibliography: bib/references.bib
+suppress-bibliography: true
 authors: 
 format: 
   revealjs:
@@ -31,13 +32,13 @@ Joaquín Cerviño, Berenice Piceda, Esteban N. Lombera, Manuel C. Eguía, Ramiro
 
 ### Generación de entornos virtuales para la manipulación experimental
 
-Hacer uso de la capacidad de inmersividad de la Realidad Virtual para probar distintos contextos visuales y su efecto en la percepción auditiva de distancia (PAD). (@calcagno_role_2012)
+Hacer uso de la capacidad de inmersividad de la Realidad Virtual para probar distintos contextos visuales y su efecto en la percepción auditiva de distancia (PAD) @calcagno_role_2012.
 
 ## Introducción {auto-animate="true"}
 
 ### Generación de entornos virtuales para la manipulación experimental
 
-Hacer uso de la capacidad de inmersividad de la Realidad Virtual para probar distintos contextos visuales y su efecto en la percepción auditiva de distancia (PAD). (@calcagno_role_2012)
+Hacer uso de la capacidad de inmersividad de la Realidad Virtual para probar distintos contextos visuales y su efecto en la percepción auditiva de distancia (PAD) @calcagno_role_2012.
 
 ::: columns
 ::: {.column width="40%"}
@@ -73,11 +74,12 @@ En cascos más modernos, se observa una tendencia a que la percepción en entorn
 ### Diseño de entornos virtuales
 
 ::: columns
-::: {.column width="40%"}
-![](imgs/setup/herramientas_vr/2_salas.png)
+::: {.column width="55%"}
+![](imgs/setup/herramientas_vr/fig_salas4.png)
 :::
 
-::: {.column width="60%"}
+::: {.column width="45%"}
+<br><br>
 ![](imgs/setup/herramientas_vr/first_workflow.png)
 :::
 :::
@@ -505,27 +507,42 @@ figure
 
 ::: columns
 ::: {.column width="60%"}
-#### Subestimación de entornos
+#### Percepción espacial
 
--   54% para el entorno real
--   56% para el entorno virtual
+El volumen de sala percibido es subestimado en
 
-El resultado de la subestimación coincide con lo reportado en (@kelly_perceived_2017), donde se realiza un experimento con un casco similar (HTC Vive)
+-   un 54% para el entorno real
+-   un 56% para el entorno virtual
+
+El resultado de la subestimación coincide con lo reportado en @kelly_perceived_2017, donde se realiza un experimento con un casco similar (HTC Vive)
 :::
 
 ::: {.column width="40%"}
 #### Comparación real vs virtual
 
-Similar estimación de tamaño para ambos entornos, difiere a lo reportado en literatura (@knapp_limited_2004)
+Similar estimación de tamaño para ambos entornos, difiere a lo reportado en literatura @renner_perception_2013
 :::
 :::
 
-## 
+## Conclusión {auto-animate="true"}
+<br><br><br>
+Pese a que existe una subestimación considerable del entorno, se observa una escasa diferencia entre el tamaño percibido para las modalidades real y virtual.
 
-### Referencias
+## Conclusión {auto-animate="true"}
 
-::: {#refs}
-:::
+<br><br>
+
+Pese a que existe una subestimación considerable del entorno, se observa una escasa diferencia entre el tamaño percibido para las modalidades real y virtual.
+
+Los entornos virtuales son percibidos de forma verosímil.
+
+## Conclusión {auto-animate="true"}
+
+Pese a que existe una subestimación considerable del entorno, se observa una escasa diferencia entre el tamaño percibido para las modalidades real y virtual.
+
+Los entornos virtuales son percibidos de forma verosímil.
+
+La herramienta desarrollada presenta validez ecológica para su uso en la modalidad visual de experimentos de Percepción Auditiva de Distancia.
 
 ## 
 
