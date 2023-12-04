@@ -34,6 +34,22 @@ Joaquín Cerviño, Berenice Piceda, Esteban N. Lombera, Manuel C. Eguía, Ramiro
 
 Hacer uso de la capacidad de inmersividad de la Realidad Virtual para probar distintos contextos visuales y su efecto en la percepción auditiva de distancia (PAD) @calcagno_role_2012.
 
+## Introducción {transition="fade-in" transition-speed="fast" auto-animate="true"}
+
+### Generación de entornos virtuales para la manipulación experimental
+
+Hacer uso de la capacidad de inmersividad de la Realidad Virtual para probar distintos contextos visuales y su efecto en la percepción auditiva de distancia (PAD) @calcagno_role_2012.
+
+::: columns
+::: {.column width="50%"}
+![](imgs/ref_pad/setups.png)
+:::
+
+::: {.column width="50%"}
+![](imgs/ref_pad/with_visual_cues.png)
+:::
+:::
+
 ## Introducción {auto-animate="true"}
 
 ### Generación de entornos virtuales para la manipulación experimental
@@ -50,6 +66,7 @@ Hacer uso de la capacidad de inmersividad de la Realidad Virtual para probar dis
 ![](imgs/setup/setup_final.png)
 :::
 :::
+
 
 ## ¿Cómo es la percepción visual en Realidad Virtual? {auto-animate="true"}
 

@@ -79,8 +79,7 @@ En cascos más modernos, se observa una tendencia a que la percepción en entorn
 :::
 
 ::: {.column width="45%"}
-<br><br>
-![](imgs/setup/herramientas_vr/first_workflow.png)
+<br><br> ![](imgs/setup/herramientas_vr/first_workflow.png)
 :::
 :::
 
@@ -500,7 +499,6 @@ figure <- ggarrange(dim_barchart,
 figure
 ```
 
-
 ## 
 
 ### Discusión
@@ -526,16 +524,13 @@ Similar estimación de tamaño para ambos entornos, difiere a lo reportado en li
 
 ## Conclusión {transition="fade-in" transition-speed="fast" auto-animate="true"}
 
-<br>
-<br>
-<br>
+<br> <br> <br>
 
 Pese a que existe una subestimación considerable del entorno, se observa una escasa diferencia entre el tamaño percibido para las modalidades real y virtual.
 
 ## Conclusión {auto-animate="true"}
 
-<br>
-<br>
+<br> <br>
 
 Pese a que existe una subestimación considerable del entorno, se observa una escasa diferencia entre el tamaño percibido para las modalidades real y virtual.
 
