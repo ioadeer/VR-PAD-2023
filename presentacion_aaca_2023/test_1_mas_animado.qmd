@@ -67,7 +67,6 @@ Hacer uso de la capacidad de inmersividad de la Realidad Virtual para probar dis
 :::
 :::
 
-
 ## ¿Cómo es la percepción visual en Realidad Virtual? {auto-animate="true"}
 
 <br>
@@ -180,35 +179,6 @@ En cascos más modernos, se observa una tendencia a que la percepción en entorn
 #### Procedimiento
 
 1.  Introducir participantes en sala experimental procurando que en un principio no la vean.
-
-:::
-:::
-
-##  {auto-animate="true"}
-
-### Validación experimental visual del entorno virtual
-
-::: columns
-::: {.column width="40%"}
-#### Participantes
-
-50 sujetos
-
--   22 mujeres
--   28 hombres
-
-#### Materiales 
-
--   Casco HTC Vive Pro
--   Placa GeForce RTX3070
-:::
-
-::: {.column width="60%"}
-#### Procedimiento
-
-1.  Introducir participantes en sala experimental procurando que en un principio no la vean.
-2.  Colocar casco de RV y registrar reporte verbal del tamaño de la sala virtual.
-
 :::
 :::
 
@@ -228,7 +198,34 @@ En cascos más modernos, se observa una tendencia a que la percepción en entorn
 #### Materiales
 
 -   Casco HTC Vive Pro
--   Placa GeForce  RTX3070
+-   Placa GeForce RTX3070
+:::
+
+::: {.column width="60%"}
+#### Procedimiento
+
+1.  Introducir participantes en sala experimental procurando que en un principio no la vean.
+2.  Colocar casco de RV y registrar reporte verbal del tamaño de la sala virtual.
+:::
+:::
+
+##  {auto-animate="true"}
+
+### Validación experimental visual del entorno virtual
+
+::: columns
+::: {.column width="40%"}
+#### Participantes
+
+50 sujetos
+
+-   22 mujeres
+-   28 hombres
+
+#### Materiales
+
+-   Casco HTC Vive Pro
+-   Placa GeForce RTX3070
 :::
 
 ::: {.column width="60%"}
@@ -614,7 +611,7 @@ figure <- ggarrange(dim_barchart,
 figure
 ```
 
-## {transition="fade-in" transition-speed="fast" auto-animate="true"}
+##  {transition="fade-in" transition-speed="fast" auto-animate="true"}
 
 <br>
 
@@ -626,22 +623,11 @@ figure
 
 ### Discusión
 
-## {transition="fade-in" transition-speed="fast" auto-animate="true"}
+##  {transition="fade-in" transition-speed="fast" auto-animate="true"}
 
 ### Discusión
 
-## {transition="fade-in" transition-speed="fast" auto-animate="true"}
-
-### Discusión
-
-#### Percepción espacial
-
-El volumen de sala percibido es subestimado en
-
--   un 54% para el entorno real
--   un 56% para el entorno virtual
-
-## {transition="fade-in" transition-speed="fast" auto-animate="true"}
+##  {transition="fade-in" transition-speed="fast" auto-animate="true"}
 
 ### Discusión
 
@@ -652,9 +638,7 @@ El volumen de sala percibido es subestimado en
 -   un 54% para el entorno real
 -   un 56% para el entorno virtual
 
-El resultado de la subestimación del entorno virtual coincide con lo reportado en @kelly_perceived_2017, donde se realiza un experimento con un casco similar (HTC Vive).
-
-## {transition="fade-in" transition-speed="fast" auto-animate="true"}
+##  {transition="fade-in" transition-speed="fast" auto-animate="true"}
 
 ### Discusión
 
@@ -667,10 +651,22 @@ El volumen de sala percibido es subestimado en
 
 El resultado de la subestimación del entorno virtual coincide con lo reportado en @kelly_perceived_2017, donde se realiza un experimento con un casco similar (HTC Vive).
 
-La subestimación del entorno real puede estar vinculada al procedimeinto
-experimental y al método de reporte.
+##  {transition="fade-in" transition-speed="fast" auto-animate="true"}
 
-## {transition="fade-in" transition-speed="fast" auto-animate="true"}
+### Discusión
+
+#### Percepción espacial
+
+El volumen de sala percibido es subestimado en
+
+-   un 54% para el entorno real
+-   un 56% para el entorno virtual
+
+El resultado de la subestimación del entorno virtual coincide con lo reportado en @kelly_perceived_2017, donde se realiza un experimento con un casco similar (HTC Vive).
+
+La subestimación del entorno real puede estar vinculada al procedimeinto experimental y al método de reporte.
+
+##  {transition="fade-in" transition-speed="fast" auto-animate="true"}
 
 ### Discusión
 
@@ -678,17 +674,15 @@ experimental y al método de reporte.
 
 Similar estimación de tamaño para ambos entornos.
 
-## {transition="fade-in" transition-speed="fast" auto-animate="true"}
+##  {transition="fade-in" transition-speed="fast" auto-animate="true"}
 
 ### Discusión
 
 #### Comparación de entorno real vs entorno virtual
 
-Similar estimación de tamaño para ambos entornos. 
+Similar estimación de tamaño para ambos entornos.
 
-Difiere a lo reportado en @renner_perception_2013 donde se asevera que el tamaño
-de los entornos virtuales es subestimado en un 74% con respecto 
-a su contraparte real.
+Difiere a lo reportado en @renner_perception_2013 donde se asevera que el tamaño de los entornos virtuales es subestimado en un 74% con respecto a su contraparte real.
 
 ## Conclusión {transition="fade-in" transition-speed="fast" auto-animate="true"}
 
@@ -698,7 +692,7 @@ Pese a que existe una subestimación considerable del entorno, se observa una es
 
 ## Conclusión {auto-animate="true"}
 
-<br> 
+<br>
 
 Pese a que existe una subestimación considerable del entorno, se observa una escasa diferencia entre el tamaño percibido para las modalidades real y virtual.
 
