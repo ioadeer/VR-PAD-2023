@@ -142,6 +142,10 @@ r_sqrd.oscuras <- regressions.oscuras %>%
   select(nsub, r.squared)
 
 #
+# CORRECCION 2 Guardarse residuos
+# Esta al final
+
+#
 coefs.oscuras <- regressions.oscuras %>%
   unnest(tidied) %>%
   group_by(nsub) %>%
@@ -212,3 +216,26 @@ coefs.visual <- coefs.visual %>%
 coefs.all <- rbind(coefs.oscuras, coefs.visual)
 
 write.table(coefs.all, file="analisis_control/data/coeficientes_por_sujeto_control.csv", row.names = FALSE)
+
+
+#
+# CORRECCION 2 Guardarse residuos
+residuos.oscuras <- regressions.oscuras %>%
+  unnest(augmented) %>%
+  select(-c(fit, tidied, data, glanced))
+
+residuos.oscuras['condicion_sala'] = 'OSCURAS'
+
+residuos.visual <- regressions.visual %>%
+  unnest(augmented) %>%
+  select(-c(fit, tidied, data, glanced))
+
+residuos.visual['condicion_sala'] = 'VISUAL'
+
+residuos.all <- rbind(residuos.oscuras, residuos.visual)
+
+write.table(residuos.all, file="analisis_control/data/fitted_model_residuals.csv", row.names = FALSE)
+
+# unnest(glanced) %>%
+# group_by(nsub) %>%
+# select(nsub, r.squared)

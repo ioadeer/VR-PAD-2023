@@ -859,11 +859,15 @@ plot(all_sqr)
 
 \pagebreak
 
+#### Residuos para entender la variabilidad
+
+\pagebreak
+
 ### Variabilidad
 
-placeholder
+#### Intrasujeto
 
-En esta sección vamos a ver la variabilidad. Por un lado tenemos 
+En esta sección vamos a ver la variabilidad. Por un lado tenemos desviacion estandar intra
 
 ```{r standard deviation intrasubjects, echo=FALSE, message=FALSE, warning=FALSE}
 g1 <- ggplot() +
@@ -875,26 +879,54 @@ g1 <- ggplot() +
                alpha = 0.7, width=0.3, linewidth=0.75,
                )+
    scale_x_continuous(name="Distance source (m)", breaks=c(2,2.7,3.65,4.9,6.65,9), labels=c(2,2.7,3.65,4.9,6.65,9), minor_breaks=NULL, limits = c(1.5,9.5)) +
-  scale_y_continuous(name="Standard deviation (m) +/- SEM")+
+ #scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#              labels = trans_format(math_format(10^.x))) +
+scale_y_log10(breaks=c(0.25,0.35,0.65,0.9, 1.5,2.5)) +
+  #scale_y_continuous(name="Standard deviation (m) +/- SEM")+
   theme_linedraw(base_size = 9)
 
 plot(g1)
 
 ```
 
-SD colapsada porcentual 
+En esta sección vamos a ver la variabilidad. Por un lado tenemos desviacion estandar intra colapsada
+
+```{r collapsed standard deviation intrasubjects, echo=FALSE, message=FALSE, warning=FALSE}
+
+pob.test <- tabla.pob %>%
+  mutate(sd = respuestapob[,"sd"]) %>%
+  select(sd,condicion_sala)
+
+bxp <- ggpaired(pob.test, x="condicion_sala", y="sd",
+                color="condicion_sala", line.color="grey", line.size=0.4)+
+       ggtitle("Sd intra sujeto colapsado") +
+       ylab("Sd (m)")+
+       stat_compare_means(method= "t.test", paired = TRUE)
+
+plot(bxp)
+
+```
+
+
+#### Entre bloques
+
+SD colapsada  
 
 ```{r standard collapsed deviation, echo=FALSE, message=FALSE, warning=FALSE}
-
-tabla.pob_collapsed <- tabla.pob %>%
-  group_by(condicion_sala) %>%
-  summarize(sd_mean_condicion = mean(respuestapob[,"sd"]),
-            sem  = sd(respuestapob[,"sd"])/sqrt(length(respuestapob[,"sd"])))
+# Estoy hay q hacer sd/distancia real para el indice o hacerla porcentual
 
 tabla.collapsed_sd <- tabla.ind %>%
-  group_by(nsub) %>%
-  mutate(
-    collapsed_percentual_sd = mean(respuesta[,"sd"]) * 100 
-  )
+  group_by(nsub, condicion_sala) %>%
+  summarize(mean_sd = mean(respuesta[,"sd"]))
+ 
+bxp <- ggpaired(tabla.collapsed_sd, x="condicion_sala", y="mean_sd",
+                color="condicion_sala", line.color="grey", line.size=0.4)+
+       ggtitle("Comparacion sd entre sujetos") +
+       ylab("SD")+
+       stat_compare_means(method= "t.test", paired = TRUE)
+
+plot(bxp)
 ```
+
+
 
