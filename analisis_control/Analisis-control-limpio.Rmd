@@ -859,7 +859,148 @@ plot(all_sqr)
 
 \pagebreak
 
-#### Residuos para entender la variabilidad
+#### Analisis de residuos
+
+INTRA SUJETO
+
+```{r r residuals analysis, echo=FALSE, message=FALSE, warning=FALSE}
+data.fitted <-  read.csv('data/fitted_model_residuals.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+
+data.fitted <- data.fitted %>%
+  mutate(distancia = exp(log_distancia))
+
+data.fitted <- data.fitted %>%
+  mutate(distancia =format(round(distancia, 2), nsmall = 2))
+
+g1 <- ggplot(data=data.fitted) +
+  #geom_line(data= tabla.ind, aes(x = log(distancia), y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
+  #geom_line(data= tabla.oscuras.pob, aes(x = log_distancia, y = predi), alpha = 0.9)+
+  #geom_point(data = data.fitted, mapping = aes(x=log_distancia, y=.resid))+
+  geom_point(data = data.fitted, mapping = aes(x=log_distancia, y=.resid), 
+             alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  #geom_point(data = tabla.oscuras.ind, mapping = aes(x=log_distancia, y=log_respuesta), 
+  #           color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  # scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+  #               labels = trans_format("log10", math_format(10^.x))) +
+  # scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+  #               labels = trans_format("log10", math_format(10^.x))) +
+  theme_linedraw(base_size = 9)+
+  facet_grid(condicion_sala~.)
+
+plot(g1)
+```
+
+```{r r residuals bonferroni, message=FALSE, warning=FALSE, include=FALSE}
+
+stat.test <- data.fitted %>%
+  group_by(condicion_sala) %>%
+  pairwise_t_test(
+    .resid ~ log_distancia, paired = TRUE, 
+    p.adjust.method = "bonferroni"
+    ) %>%
+  select(-df, -statistic, -p) # Remove details
+stat.test
+
+```
+
+```{r r residuals bonferroni oscuras, echo=FALSE, message=FALSE, warning=FALSE}
+# Create the plot
+bxp <- ggboxplot(
+  filter(data.fitted, condicion_sala == 'OSCURAS'), x = "distancia", y = ".resid",
+  color = ".resid", palette = "jco"
+  ) +
+  ggtitle("Residuos y comparacion de los mismos OSCURAS")
+
+
+# Add statistical test p-values
+stat.test.oscuras <- filter(stat.test, condicion_sala == 'OSCURAS') %>% add_xy_position()
+
+# show all
+# bxp + stat_pvalue_manual(
+#   stat.test, label = "p.adj.signif", 
+#   step.increase = 0.08
+#   )
+
+# hide ns
+bxp + stat_pvalue_manual(
+  stat.test.oscuras, label = "p.adj.signif", 
+  step.increase = 0.08, hide.ns = TRUE, tip.length = 0
+  )
+
+#plot(bxp)
+```
+
+```{r r residuals bonferroni visual, echo=FALSE, message=FALSE, warning=FALSE}
+# Create the plot
+bxp <- ggboxplot(
+  filter(data.fitted, condicion_sala == 'VISUAL'), x = "distancia", y = ".resid",
+  color = ".resid", palette = "jco"
+  ) +
+  ggtitle("Residuos y comparacion de los mismos VISUAL")
+
+
+# Add statistical test p-values
+stat.test.visual <- filter(stat.test, condicion_sala == 'VISUAL') %>% add_xy_position()
+
+# show all
+# bxp + stat_pvalue_manual(
+#   stat.test, label = "p.adj.signif", 
+#   step.increase = 0.08
+#   )
+
+# hide ns
+bxp + stat_pvalue_manual(
+  stat.test.visual, label = "p.adj.signif", 
+  step.increase = 0.08, hide.ns = TRUE, tip.length = 0
+  )
+
+#plot(bxp)
+```
+
+\pagebreak
+
+ENTRE BLOQUES
+
+```{r r residuals bonferroni bloques, message=FALSE, warning=FALSE, include=FALSE}
+
+stat.test <- data.fitted %>%
+  group_by(distancia) %>%
+  pairwise_t_test(
+    .resid ~ condicion_sala, paired = TRUE, 
+    p.adjust.method = "bonferroni"
+    ) %>%
+  select(-df, -statistic, -p) # Remove details
+stat.test
+
+```
+
+```{r r residuals bonferroni bloques graph, echo=FALSE, message=FALSE, warning=FALSE}
+# Create the plot
+bxp <- ggboxplot(
+  data.fitted, x = "distancia", y = ".resid",
+  color = "condicion_sala", palette = "jco"
+  ) +
+  ggtitle("Residuos y comparacion de los mismos")
+
+
+# Add statistical test p-values
+stat.test <- stat.test %>% add_xy_position(x="distancia")
+
+# show all
+bxp + stat_pvalue_manual(
+  stat.test, label = "p.adj.signif",
+  step.increase = 0.08
+  )
+
+# hide ns
+# bxp + stat_pvalue_manual(
+#   stat.test, label = "p.adj.signif", 
+#   step.increase = 0.08, hide.ns = TRUE, tip.length = 0
+#   )
+
+#plot(bxp)
+```
 
 \pagebreak
 
@@ -915,11 +1056,17 @@ SD colapsada
 ```{r standard collapsed deviation, echo=FALSE, message=FALSE, warning=FALSE}
 # Estoy hay q hacer sd/distancia real para el indice o hacerla porcentual
 
-tabla.collapsed_sd <- tabla.ind %>%
-  group_by(nsub, condicion_sala) %>%
-  summarize(mean_sd = mean(respuesta[,"sd"]))
+
+
+tabla.ind.collapsed_sd <- tabla.ind %>%
+  mutate(relative_sd = respuesta[,"sd"]/distancia)
+
+tabla.ind.collapsed_sd <- tabla.ind.collapsed_sd %>%
+  group_by(nsub, condicion_sala)  %>%
+  summarize(mean_sd_percentual = mean(relative_sd)* 100)
+
  
-bxp <- ggpaired(tabla.collapsed_sd, x="condicion_sala", y="mean_sd",
+bxp <- ggpaired(tabla.ind.collapsed_sd, x="condicion_sala", y="mean_sd_percentual",
                 color="condicion_sala", line.color="grey", line.size=0.4)+
        ggtitle("Comparacion sd entre sujetos") +
        ylab("SD")+
