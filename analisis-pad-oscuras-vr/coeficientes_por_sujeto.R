@@ -173,3 +173,21 @@ coefs.visual <- coefs.visual %>%
 coefs.all <- rbind(coefs.oscuras, coefs.visual)
 
 write.table(coefs.all, file="analisis-pad-oscuras-vr/data/coeficientes_por_sujeto_oscuras_vr.csv", row.names = FALSE)
+
+# Residuos
+
+residuos.oscuras <- regressions.oscuras %>%
+  unnest(augmented) %>%
+  select(-c(fit, tidied, data, glanced))
+
+residuos.oscuras['condicion_sala'] = 'OSCURAS'
+
+regressions.visual <- regressions.visual %>%
+  unnest(augmented) %>%
+  select(-c(fit, tidied, data, glanced))
+
+regressions.visual['condicion_sala'] = 'VR'
+
+residuos.all <- rbind(residuos.oscuras, regressions.visual)
+
+write.table(residuos.all, file="analisis-pad-oscuras-vr/data/fitted_model_residuals.csv", row.names = FALSE)
