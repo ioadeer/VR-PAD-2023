@@ -1057,16 +1057,21 @@ SD colapsada
 ```{r standard collapsed deviation tabla.ind, echo=FALSE, message=FALSE, warning=FALSE}
 # Estoy hay q hacer sd/distancia real para el indice o hacerla porcentual
 
-# tabla.ind.collapsed <- tabla.ind %>%
-#   group_by(condicion_sala, distancia) %>%
-#   summarize(mean_sd = sd(respuesta[,"sd"]))
 
- tabla.ind.collapsed_sd <- tabla.ind %>%
-   mutate(relative_sd = mean(respuesta[,"sd"]))
+#  antes
+# tabla.ind.collapsed_sd <- tabla.ind %>%
+#   group_by(nsub, condicion_sala)  %>%
+#   summarize(mean_sd_percentual = mean(respuesta[,"sd"]/distancia)* 100)
 
 tabla.ind.collapsed_sd <- tabla.ind %>%
+  mutate(relative_sd = respuesta[,"sd"]/respuesta[,"mean"]) 
+
+tabla.ind.collapsed_sd <- tabla.ind.collapsed_sd %>%
   group_by(nsub, condicion_sala)  %>%
-  summarize(mean_sd_percentual = mean(respuesta[,"sd"]/distancia)* 100)
+  summarize(mean_relative_sd = mean(relative_sd))
+
+tabla.ind.collapsed_sd <- tabla.ind.collapsed_sd %>%
+  mutate(mean_sd_percentual = mean_sd * 100)
 
 # tabla.ind.collapsed_sd <- tabla.ind.collapsed_sd %>%
 #   group_by(condicion_sala) %>%
@@ -1106,5 +1111,53 @@ bxp <- ggpaired(tabla.ind.collapsed_sd, x="condicion_sala", y="mean_sd_percentua
        stat_compare_means(method= "t.test", paired = TRUE)
 
 plot(bxp)
+```
+\pagebreak
+
+## Analisis de correlacion
+
+
+```{r creando dataframe correlacion, echo=FALSE, message=FALSE, warning=FALSE}
+tabla.dimensions <- read.csv('data/tamanio_de_sala_sin_outliers_oscuras_visual.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+tabla.dist_max <- tabla.raw %>%
+  group_by(nsub, condicion_sala) %>%
+  summarise(distanca_max = max(respuesta))
+
+tabla.depth_oscuras = merge(x =tibble(tabla.dimensions[c('nsub', 'OSCURAS_depth')]), 
+                            y = filter(tabla.dist_max, condicion_sala == 'OSCURAS'), 
+                            by= "nsub")
+
+tabla.depth_oscuras <- tabla.depth_oscuras %>%
+  rename("perc_depth" = "OSCURAS_depth")
+
+tabla.depth_visual = merge(x =tibble(tabla.dimensions[c('nsub', 'VISUAL_depth')]), 
+                            y = filter(tabla.dist_max, condicion_sala == 'VISUAL'), 
+                            by= "nsub")
+
+tabla.depth_visual <- tabla.depth_visual %>%
+  rename("perc_depth" = "VISUAL_depth")
+
+tabla.correlacion <- rbind(tabla.depth_oscuras, tabla.depth_visual)
+
+tabla.correlacion <- tabla.correlacion %>%
+  mutate(log_perc_depth = log(perc_depth),
+         log_distancia_max = log(distanca_max))
+
+```
+
+```{r graficando correlacion, echo=FALSE, message=FALSE, warning=FALSE}
+correlation_plot <- ggplot(tabla.correlacion, 
+                              aes(x =log_perc_depth, y = log_distancia_max,
+                                  colour = condicion_sala)) +
+  geom_point() +
+  geom_smooth(alpha=0.3, method= "lm")+
+  stat_cor(method = "pearson")+
+  ggtitle("Correlacion ambas condiciones (log log)") +
+  xlab("Profundidad") +
+  #theme(legend.title =element_blank(), legend.position = 'none')+
+  ylab("Maxima distancia auditiva")
+
+plot(correlation_plot)
 ```
 
