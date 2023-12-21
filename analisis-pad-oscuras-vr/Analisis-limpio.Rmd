@@ -85,6 +85,45 @@ tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
 
 ```
 
+```{r load_data 2, include=FALSE}
+
+tabla.raw2 <- read.csv('../analisis_control/data/control_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+tabla.raw2$SesgoAbs <-  abs(tabla.raw2$respuesta - tabla.raw2$distancia)
+tabla.raw2$SesgoRel <- (tabla.raw2$respuesta - tabla.raw2$distancia) / tabla.raw2$distancia
+
+
+f_promedio <- function(x) c(mean = mean(x),
+                            sd   = sd(x),
+                            var  = var(x),
+                            sem  = sd(x)/sqrt(length(x)),
+                            n    = length(x))
+
+tabla.ind2 <- tibble(aggregate(cbind(respuesta,SesgoRel,SesgoAbs) ~ nsub*condicion_sala*distancia*nbloque,
+                              data = tabla.raw2,
+                              FUN  = f_promedio,na.action = NULL))
+
+# - Nivel poblacional
+
+tabla.pob2 <- tibble(aggregate(cbind(
+                              respuesta[,"mean"],
+                              SesgoRel[,"mean"],
+                              SesgoAbs[,"mean"]
+                              ) ~ condicion_sala*distancia,
+                              data <- tabla.ind2,
+                              FUN  <- f_promedio,na.action = NULL))
+
+
+tabla.pob2 = tabla.pob2 %>% rename(respuestapob = V1)
+tabla.pob2 = tabla.pob2 %>% rename(sesgorelpob = V2)
+
+tabla.pob2 <- tabla.pob2 %>%
+ mutate(condicion_sala = case_when(condicion_sala == 'VISUAL' ~ "VISUAL",
+                                   condicion_sala == 'OSCURAS'  ~ "ANTIFAZ"))
+
+
+```
+
 ## Figuras
 
 ### Tabla pob
@@ -93,6 +132,13 @@ tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
 g1 <- ggplot() +
  geom_line(data= tabla.pob, aes(x = distancia, y = respuestapob[,"mean"], group = condicion_sala, col = condicion_sala), alpha = 1)+
  geom_errorbar(data=tabla.pob, aes(x = distancia, y = respuestapob[,"mean"],
+                                   ymin = respuestapob[,"mean"] - respuestapob[,"sem"],
+                                   ymax = respuestapob[,"mean"] + respuestapob[,"sem"],
+                                   col = condicion_sala),
+               alpha = 0.7, width=0.3, linewidth=0.75,
+               )+
+  geom_line(data= tabla.pob2, aes(x = distancia, y = respuestapob[,"mean"], group = condicion_sala, col = condicion_sala), alpha = 1)+
+ geom_errorbar(data=tabla.pob2, aes(x = distancia, y = respuestapob[,"mean"],
                                    ymin = respuestapob[,"mean"] - respuestapob[,"sem"],
                                    ymax = respuestapob[,"mean"] + respuestapob[,"sem"],
                                    col = condicion_sala),

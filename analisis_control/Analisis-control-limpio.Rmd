@@ -278,11 +278,11 @@ eqn <- sprintf(
 g1 <- ggplot() +
   #geom_line(data= tabla.ind, aes(x = log(distancia), y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
   geom_line(data= tabla.oscuras.pob, aes(x = log_distancia, y = predi), alpha = 0.9)+
-  geom_point(data = tabla.oscuras.pob, mapping = aes(x=log_distancia, y=log_respuesta))+
-  geom_point(data = tabla.oscuras.ind, mapping = aes(x=log_distancia, y=respuesta[,"mean"]), 
-             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
-  #geom_point(data = tabla.oscuras.ind, mapping = aes(x=log_distancia, y=log_respuesta), 
-  #           color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  # geom_point(data = tabla.oscuras.pob, mapping = aes(x=log_distancia, y=log_respuesta))+
+  # geom_point(data = tabla.oscuras.ind, mapping = aes(x=log_distancia, y=respuesta[,"mean"]), 
+  #            color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  geom_point(data = tabla.oscuras.ind, mapping = aes(x=log_distancia, y=log_respuesta),
+            color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) +
   scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x))) +
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
@@ -873,22 +873,7 @@ data.fitted <- data.fitted %>%
 data.fitted <- data.fitted %>%
   mutate(distancia =format(round(distancia, 2), nsmall = 2))
 
-g1 <- ggplot(data=data.fitted) +
-  #geom_line(data= tabla.ind, aes(x = log(distancia), y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
-  #geom_line(data= tabla.oscuras.pob, aes(x = log_distancia, y = predi), alpha = 0.9)+
-  #geom_point(data = data.fitted, mapping = aes(x=log_distancia, y=.resid))+
-  geom_point(data = data.fitted, mapping = aes(x=log_distancia, y=.resid), 
-             alpha=.8, shape=1, size=2.2, stroke=.2) + 
-  #geom_point(data = tabla.oscuras.ind, mapping = aes(x=log_distancia, y=log_respuesta), 
-  #           color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
-  # scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-  #               labels = trans_format("log10", math_format(10^.x))) +
-  # scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-  #               labels = trans_format("log10", math_format(10^.x))) +
-  theme_linedraw(base_size = 9)+
-  facet_grid(condicion_sala~.)
 
-plot(g1)
 ```
 
 ```{r r residuals bonferroni, message=FALSE, warning=FALSE, include=FALSE}
@@ -1022,7 +1007,7 @@ g1 <- ggplot() +
    scale_x_continuous(name="Distance source (m)", breaks=c(2,2.7,3.65,4.9,6.65,9), labels=c(2,2.7,3.65,4.9,6.65,9), minor_breaks=NULL, limits = c(1.5,9.5)) +
  #scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
 #              labels = trans_format(math_format(10^.x))) +
-scale_y_log10(name="Standard deviation (m) +/- SEM",breaks=c(0.25,0.35,0.65,0.9, 1.5,2.5)) +
+#scale_y_log10(name="Standard deviation (m) +/- SEM",breaks=c(0.25,0.35,0.65,0.9, 1.5,2.5)) +
   #scale_y_continuous(name="Standard deviation (m) +/- SEM")+
   theme_linedraw(base_size = 9)
 
@@ -1030,24 +1015,30 @@ plot(g1)
 
 ```
 
+```{r}
+  #aov(respuestapob[,"sd"]~condicion_sala, data=tabla.pob)
+
+summary(aov(respuestapob[,"sd"]~condicion_sala, data=tabla.pob)
+)
+```
+
+
+```{r}
+
+tabla.pob.colapsada <- tabla.pob %>%
+  mutate(sd_dividio_distancia = respuestapob[,"sd"]/distancia)
+
+tabla.pob.colapsada <- tabla.pob.colapsada %>%
+  group_by(condicion_sala) %>%
+  summarize(mean_sd_colapsada = mean(sd_dividio_distancia))
+
+```
+
+
 En esta sección vamos a ver la variabilidad. Por un lado tenemos desviacion estandar intra colapsada
 El de arriba 
 
-```{r collapsed standard deviation intrasubjects, echo=FALSE, message=FALSE, warning=FALSE}
 
-pob.test <- tabla.pob %>%
-  mutate(sd = (respuestapob[,"sd"]/distancia)* 100) %>%
-  select(sd,condicion_sala)
-
-bxp <- ggpaired(pob.test, x="condicion_sala", y="sd",
-                color="condicion_sala", line.color="grey", line.size=0.4)+
-       ggtitle("Sd intra sujeto colapsado") +
-       ylab("Sd (m)")+
-       stat_compare_means(method= "t.test", paired = TRUE)
-
-plot(bxp)
-
-```
 
 
 #### Entre bloques
@@ -1063,15 +1054,18 @@ SD colapsada
 #   group_by(nsub, condicion_sala)  %>%
 #   summarize(mean_sd_percentual = mean(respuesta[,"sd"]/distancia)* 100)
 
+# tabla.ind.collapsed_sd <- tabla.ind %>%
+#   mutate(relative_sd = respuesta[,"sd"]/respuesta[,"mean"]) 
+
 tabla.ind.collapsed_sd <- tabla.ind %>%
-  mutate(relative_sd = respuesta[,"sd"]/respuesta[,"mean"]) 
+  mutate(relative_sd = respuesta[,"sd"]/distancia)
 
 tabla.ind.collapsed_sd <- tabla.ind.collapsed_sd %>%
   group_by(nsub, condicion_sala)  %>%
   summarize(mean_relative_sd = mean(relative_sd))
 
 tabla.ind.collapsed_sd <- tabla.ind.collapsed_sd %>%
-  mutate(mean_sd_percentual = mean_sd * 100)
+  mutate(mean_sd_percentual = mean_relative_sd * 100)
 
 # tabla.ind.collapsed_sd <- tabla.ind.collapsed_sd %>%
 #   group_by(condicion_sala) %>%
@@ -1093,7 +1087,7 @@ plot(bxp)
 # Estoy hay q hacer sd/distancia real para el indice o hacerla porcentual
 
 tabla.pob.collapsed_sd <- tabla.pob %>%
-  mutate(relative_sd = respuestapob[,"sd"]/distancia) %>%
+  mutate(relative_sd = respuestapob[,"sd"]/respuestapob[,"mean"]) %>%
   group_by(condicion_sala)  %>%
   summarize(mean_sd_percentual = mean(relative_sd)* 100)
 
