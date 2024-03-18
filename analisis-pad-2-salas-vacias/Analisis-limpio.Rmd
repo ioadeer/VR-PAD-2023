@@ -79,6 +79,9 @@ f_promedio <- function(x) c(mean = mean(x),
                             sem  = sd(x)/sqrt(length(x)),
                             n    = length(x))
 
+tabla.ind <- tibble(aggregate(cbind(respuesta,SesgoRel,SesgoAbs) ~ nsub*condicion_sala*distancia*nbloque,
+                              data = tabla.raw,
+                              FUN  = f_promedio,na.action = NULL))
 
 # - Nivel poblacional
 
