@@ -92,25 +92,25 @@ tabla.all <- do.call("rbind", list(tabla.primer_exp, tabla.segundo_exp, tabla.te
 
 ## Poblacional de todos los experimentos.
 
-Participaron un total de `r count(tabla.all)` participantes de los tres experimentos.
+Participaron un total de `r count(tabla.all)` participantes de los tres experimentos. Hubo un total de `r count(filter(tabla.all, sex == 'F'))` mujeres y `r count(filter(tabla.all, sex == 'M'))` hombres.
 La edad promedio de todos los experimentos es `r format(mean(tabla.all$age), digits =4)` cubriendo un rango desde `r min(tabla.all$age)` hasta `r max(tabla.all$age)`. Del total de participantes,
 `r count(filter(tabla.all, problemas_vision == 'No'))` no usaban anteojos, mientras que `r count(filter(tabla.all, problemas_vision == 'Si'))` usaban.
 
 
 ## Poblacional del experimento 1
 
-Participaron un total de `r count(tabla.primer_exp)` participantes del primer experimento.
+Participaron un total de `r count(tabla.primer_exp)` participantes del primer experimento. Hubo un total de `r count(filter(tabla.primer_exp, sex == 'F'))` mujeres y `r count(filter(tabla.primer_exp, sex == 'M'))` hombres. 
 La edad promedio es `r format(mean(tabla.primer_exp$age), digits =4)` cubriendo un rango desde `r min(tabla.primer_exp$age)` hasta `r max(tabla.primer_exp$age)`. Del total de participantes,
 `r count(filter(tabla.primer_exp, problemas_vision == 'No'))` no usaban anteojos, mientras que `r count(filter(tabla.primer_exp, problemas_vision == 'Si'))` usaban.
 
 ## Poblacional del experimento 2
 
-Participaron un total de `r count(tabla.segundo_exp)` participantes de segundo experimento.
+Participaron un total de `r count(tabla.segundo_exp)` participantes de segundo experimento. Hubo un total de `r count(filter(tabla.segundo_exp, sex == 'F'))` mujeres y `r count(filter(tabla.segundo_exp, sex == 'M'))` hombres. 
 La edad promedio es `r format(mean(tabla.segundo_exp$age), digits =4)` cubriendo un rango desde `r min(tabla.segundo_exp$age)` hasta `r max(tabla.segundo_exp$age)`. Del total de participantes,
 `r count(filter(tabla.segundo_exp, problemas_vision == 'No'))` no usaban anteojos, mientras que `r count(filter(tabla.segundo_exp, problemas_vision == 'Si'))` usaban.
 
 ## Poblacional del experimento 3
 
-Participaron un total de `r count(tabla.tercer_exp)` participantes del tercer experimento.
+Participaron un total de `r count(tabla.tercer_exp)` participantes del tercer experimento. Hubo un total de `r count(filter(tabla.tercer_exp, sex == 'F'))` mujeres y `r count(filter(tabla.tercer_exp, sex == 'M'))` hombres. 
 La edad promedio del tercer experimento es `r format(mean(tabla.tercer_exp$age), digits =4)` cubriendo un rango desde `r min(tabla.tercer_exp$age)` hasta `r max(tabla.tercer_exp$age)`. Del total de participantes,
 `r count(filter(tabla.tercer_exp, problemas_vision == 'No'))` no usaban anteojos, mientras que `r count(filter(tabla.tercer_exp, problemas_vision == 'Si'))` usaban.
