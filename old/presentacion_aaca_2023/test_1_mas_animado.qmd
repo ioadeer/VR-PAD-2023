@@ -273,7 +273,7 @@ library(ggpubr)
 
 ```{r figures}
 
-dimensions.raw  <- read.csv('../analisis-pad-2-salas-vacias/data/volumen_sin_outliers_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+dimensions.raw  <- read.csv('../Exp_1_VDP/data/volumen_sin_outliers_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 #colnames(dimensions.raw)
 
