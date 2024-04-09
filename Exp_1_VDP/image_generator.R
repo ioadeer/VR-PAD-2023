@@ -1,19 +1,7 @@
----
-title: "VDP-analysis"
-author: "Joaquin Cervino"
-date: "2024-04-09"
-output: html_document
----
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+# dependencies ------------------------------------------------------------
 
-## VDP experiment analyis
 
-This document features the analysys conducted por VDP experiment.
-
-```{r dependencies,  include=FALSE}
 library(broom)
 library(broom.mixed)
 library(dplyr)
@@ -40,13 +28,9 @@ library(rstatix)
 library(orca)
 library(reshape2)
 library(ggpubr)
-```
+# figura ------------------------------------------------------------------
 
-```{r figures, echo=FALSE}
-
-# Figura 1 ------------------------
-
-dimensions.raw  <- read.csv('../Exp_1_VDP/data/volumen_sin_outliers_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+dimensions.raw  <- read.csv('./Exp_1_VDP/data/volumen_sin_outliers_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 #colnames(dimensions.raw)
 
@@ -118,14 +102,14 @@ dim_barchart <- dimensions.volume_aggr %>%
   guides(fill = "none") +
   #theme(legend.position="none") +
   theme_minimal() +
-    annotate("text",                        # Add text for mean
+  annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.50, # para fig compuesta
            y = 290.0,
            label = eqn1,
            size = 3.25,
            hjust = 0) +
-    annotate("text",                        # Add text for mean
+  annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 1.50, # para fig compuesta
            y = 290.0,
@@ -140,7 +124,7 @@ dim_barchart <- dimensions.volume_aggr %>%
   )+
   scale_fill_brewer(palette="YlOrRd")+
   theme(#axis.line = element_blank(),
-      axis.title.x = element_blank())
+    axis.title.x = element_blank())
 
 # paired <- ggpaired(dimensions.volume, x = "condicion" , y = "volume")
 # plot(paired)
@@ -194,19 +178,19 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condición, y=Profundidad,  fill=
   geom_violin(trim=FALSE) +
   geom_boxplot(width=0.1) +
   geom_jitter(alpha = 0.1) +
-   annotate("text",                        # Add text for mean
+  annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
-           x = 0.50, # para fig compuesta
+           x = 0.450, # para fig compuesta
            y = 18.0,
            label = eqn1,
-           size = 3.0,
+           size = 2.35,
            hjust = 0) +
-    annotate("text",                        # Add text for mean
+  annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
-           x = 1.5, # para fig compuesta
+           x = 1.4, # para fig compuesta
            y = 18.0,
            label = eqn2,
-           size = 3.0,
+           size = 2.35,
            hjust = 0) +
   labs(
     y = "Depth (m)",
@@ -224,7 +208,7 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condición, y=Profundidad,  fill=
 # ANCHO 
 
 dimensions.width <- melt(dimensions.raw, id.vars='nsub',
-                          measure.vars=c("SG_RV_width", "SR_width"))
+                         measure.vars=c("SG_RV_width", "SR_width"))
 
 dimensions.width <- dimensions.width %>%
   mutate(
@@ -271,19 +255,19 @@ violin_width <- ggplot(dimensions.width, aes(x=Condición, y=Ancho,  fill=Condic
   #   label = paste("Mean: ", round(mean, 1), "\nMedian: ", median, "\nSD: ", round(sd, 1)),
   #   hjust=0, position = ,
   # ))+
-    annotate("text",                        # Add text for mean
+  annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.50, # para fig compuesta
            y = 10.0,
            label = eqn1,
-           size = 3.0,
+           size = 2.35,
            hjust = 0) +
-    annotate("text",                        # Add text for mean
+  annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
-           x = 1.50, # para fig compuesta
+           x = 1.40, # para fig compuesta
            y = 10.0,
            label = eqn2,
-           size = 3.0,
+           size = 2.35,
            hjust = 0) +
   theme_minimal() +
   guides(fill = "none") +
@@ -300,7 +284,7 @@ violin_width <- ggplot(dimensions.width, aes(x=Condición, y=Ancho,  fill=Condic
 # ALTO
 
 dimensions.height <- melt(dimensions.raw, id.vars='nsub',
-                         measure.vars=c("SG_RV_height", "SR_height"))
+                          measure.vars=c("SG_RV_height", "SR_height"))
 
 dimensions.height <- dimensions.height %>%
   mutate(
@@ -345,16 +329,16 @@ violin_height <- ggplot(dimensions.height, aes(x=Condición, y=Alto,  fill=Condi
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.50, # para fig compuesta
-           y = 5.5,
+           y = 5.75,
            label = eqn1,
-           size = 3.0,
+           size = 2.35,
            hjust = 0) +
-    annotate("text",                        # Add text for mean
+  annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
-           x = 1.50, # para fig compuesta
-           y = 5.5,
+           x = 1.40, # para fig compuesta
+           y = 5.75,
            label = eqn2,
-           size = 3.0,
+           size = 2.35,
            hjust = 0) +
   theme_minimal() +
   guides(fill = "none") +
@@ -375,14 +359,13 @@ violin_height <- ggplot(dimensions.height, aes(x=Condición, y=Alto,  fill=Condi
 #                     ncol = 3, labels = c("B", "C", "D"))
 
 figure <- ggarrange(dim_barchart, 
-                    ggarrange(violin_depth, violin_width,violin_height,
-                    nrow = 3, labels = c("B", "C", "D")),
+                    ggarrange(violin_depth, violin_width,violin_height, widths = c(1.5,2),
+                              nrow = 3, labels = c("B", "C", "D")),
                     ncol = 2, 
                     labels ="A",
                     heights = c(1, 0.75))
 figure
 
-figures_folder = "./figuras"
+figures_folder = "./Exp_1_VDP/figuras"
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "Perceived_room_size.png", sep = '')
-ggsave(mi_nombre_de_archivo, plot =figure, dpi=200)
-```
+ggsave(mi_nombre_de_archivo, plot =figure, width = 1400, height=1000, dpi=200, units = "px")
