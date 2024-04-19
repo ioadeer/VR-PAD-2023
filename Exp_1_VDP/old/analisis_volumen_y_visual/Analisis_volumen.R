@@ -35,9 +35,9 @@ t_test
 
 # Load and join data new  -----------------------------------------------------
 
-tabla_volumen_1_11 <- read.csv("./tamanio-visual-de-sala/data/data_1_11_s.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
-tabla_volumen_12_32 <- read.csv("./tamanio-visual-de-sala/data/data_12_32_s.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
-tabla_volumen_33_50 <- read.csv("./tamanio-visual-de-sala/data/data_33_50_s.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla_volumen_1_11 <- read.csv("./Exp_1_VDP/data/tamanio_visual_sala/data_1_11_s.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla_volumen_12_32 <- read.csv("./Exp_1_VDP/data/tamanio_visual_sala/data_12_32_s.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla_volumen_33_50 <- read.csv("./Exp_1_VDP/data/tamanio_visual_sala/data_33_50_s.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 tabla.volumen <- do.call("rbind", list(tabla_volumen_1_11, tabla_volumen_12_32, tabla_volumen_33_50))
 
 tabla.raw = read.csv("analisis-pad-2-salas-vacias/data/data-1-50-bloque-1-sin-outliers.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
@@ -67,7 +67,7 @@ tabla.volumen <- tabla.volumen %>%
 
 write.table(tabla.volumen, file="analisis-pad-2-salas-vacias/data/volumen_sin_outliers_1_50.csv", row.names = FALSE)
 
-write.table(tabla.volumen, file="analisis-pad-2-salas-vacias/data/volumen_1_50.csv", row.names = FALSE)
+write.table(tabla.volumen, file="Exp_1_VDP/data/volumen_1_50.csv", row.names = FALSE)
 
 
 

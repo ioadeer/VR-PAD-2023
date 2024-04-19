@@ -29,8 +29,10 @@ library(orca)
 library(reshape2)
 library(ggpubr)
 # figura ------------------------------------------------------------------
+#Con remocion de outliers con criterio de pad
+#dimensions.raw  <- read.csv('./Exp_1_VDP/data/volumen_sin_outliers_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
-dimensions.raw  <- read.csv('./Exp_1_VDP/data/volumen_sin_outliers_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+dimensions.raw  <- read.csv('./Exp_1_VDP/data/volumen_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 #colnames(dimensions.raw)
 
@@ -96,7 +98,7 @@ dim_barchart <- dimensions.volume_aggr %>%
                 width = .1) +
   #scale_fill_grey(start = 0.3) +
   #ylim = c(0, 300) +
-  scale_y_continuous(limits = c(0, 300), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(0, 310), expand = c(0, 0)) +
   geom_hline(yintercept=252,linetype="dashed") +
   annotate("text", x=0.75, y=259, label= expression("252 m"^3*" ")) +
   guides(fill = "none") +

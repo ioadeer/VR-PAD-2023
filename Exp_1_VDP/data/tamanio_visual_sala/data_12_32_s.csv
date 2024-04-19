@@ -1,0 +1,22 @@
+"nsub" "block_1" "block_2" "SG_RV_volumen" "SG_RV_width" "SG_RV_depth" "SG_RV_height" "SC_RV_volumen" "SC_RV_width" "SC_RV_depth" "SC_RV_height" "SR_volumen" "SR_width" "SR_depth" "SR_height"
+12 "Sala Grande" "Sala Chica" 250 10 10 2.5 480 15 4 8 72 3 8 3
+13 "Sala Chica" "Sala Grande" 140 5 7 4 120 5 6 4 140 5 7 4
+14 "Sala Grande" "Sala Chica" 60 4 6 2.5 54 4 4.5 3 52.5 3.5 5 3
+15 "Sala Chica" "Sala Grande" 225 5 9 5 60 5 3 4 337.5 5 15 4.5
+16 "Sala Grande" "Sala Chica" 78.75 4.5 7 2.5 56.25 4.5 5 2.5 95.625 4.5 8.5 2.5
+17 "Sala Chica" "Sala Grande" 25.2 3 4 2.1 12.6 3 2 2.1 45 3 6 2.5
+18 "Sala Grande" "Sala Chica" 1500 20 15 5 450 10 10 4.5 150 5 10 3
+19 "Sala Chica" "Sala Grande" 125 5 10 2.5 87.5 5 7 2.5 180 5 12 3
+20 "Sala Grande" "Sala Chica" 2000 25 8 10 480 15 4 8 1200 20 15 4
+21 "Sala Chica" "Sala Grande" 62.16 3.7 5.6 3 20.7 3 3 2.3 45 3 5 3
+22 "Sala Grande" "Sala Chica" 4500 15 30 10 1200 10 15 8 4500 15 30 10
+23 "Sala Chica" "Sala Grande" 420 10 12 3.5 255 8.5 10 3 390 10 13 3
+24 "Sala Grande" "Sala Chica" 30 3 4 2.5 35 4 3.5 2.5 45 3 6 2.5
+25 "Sala Chica" "Sala Grande" 160 4 10 4 96 4 6 4 360 6 15 4
+26 "Sala Grande" "Sala Chica" 33.75 3 4.5 2.5 26.25 3 3.5 2.5 55 4 5 2.75
+27 "Sala Chica" "Sala Grande" 140 5 10 2.8 98 5 7 2.8 98 5 7 2.8
+28 "Sala Grande" "Sala Chica" 6000 20 20 15 1000 10 10 10 3000 15 20 10
+29 "Sala Chica" "Sala Grande" 72 4 6 3 96 4 8 3 120 4 10 3
+30 "Sala Grande" "Sala Chica" 49 3.5 4 3.5 26.25 3.5 2.5 3 48 4 4 3
+31 "Sala Chica" "Sala Grande" 54 6 3 3 192 6 8 4 120 5 6 4
+32 "Sala Grande" "Sala Chica" 180 6 10 3 75 5 6 2.5 144 6 8 3
