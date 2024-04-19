@@ -45,8 +45,10 @@ library(ggpubr)
 ```{r figures, echo=FALSE}
 
 # Figura 1 ------------------------
-
+# este tiene remocion de outliers a traves de PAD
 dimensions.raw  <- read.csv('../Exp_1_VDP/data/volumen_sin_outliers_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+# Tengo q traerme la tabla de los 50
 
 #colnames(dimensions.raw)
 
@@ -93,7 +95,7 @@ dimensions.volume <- dimensions.volume %>%
          "condicion" = "variable")
 
 stat.test <- dimensions.volume  %>% 
-  t_test(volume~condicion) %>%
+  t_test(volume~condicion, paired = TRUE) %>%
   add_significance()
 
 #stat.test
@@ -382,7 +384,7 @@ figure <- ggarrange(dim_barchart,
                     heights = c(1, 0.75))
 figure
 
-figures_folder = "./figuras"
-mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "Perceived_room_size.png", sep = '')
-ggsave(mi_nombre_de_archivo, plot =figure, dpi=200)
+#figures_folder = "./figuras"
+#mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "Perceived_room_size.png", sep = '')
+#ggsave(mi_nombre_de_archivo, plot =figure, dpi=200)
 ```

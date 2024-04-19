@@ -77,7 +77,7 @@ dimensions.volume <- dimensions.volume %>%
          "condicion" = "variable")
 
 stat.test <- dimensions.volume  %>% 
-  t_test(volume~condicion) %>%
+  t_test(volume~condicion, paired=TRUE) %>%
   add_significance()
 
 #stat.test

@@ -30,7 +30,8 @@ library(extrafont)
 font_import(pattern = 'times')
 #loadfonts(device = "win")
 
-
+t.test
+t_test
 
 # Load and join data new  -----------------------------------------------------
 
@@ -65,6 +66,8 @@ tabla.volumen <- tabla.volumen %>%
   filter(nsub %in% unique(tabla.raw$nsub))
 
 write.table(tabla.volumen, file="analisis-pad-2-salas-vacias/data/volumen_sin_outliers_1_50.csv", row.names = FALSE)
+
+write.table(tabla.volumen, file="analisis-pad-2-salas-vacias/data/volumen_1_50.csv", row.names = FALSE)
 
 
 
