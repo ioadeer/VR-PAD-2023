@@ -859,6 +859,136 @@ plot(all_sqr)
 
 \pagebreak
 
+#### Analisis de residuos
+
+INTRA SUJETO
+
+```{r r residuals analysis, echo=FALSE, message=FALSE, warning=FALSE}
+data.fitted <-  read.csv('data/fitted_model_residuals.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+
+data.fitted <- data.fitted %>%
+  mutate(distancia = exp(log_distancia))
+
+data.fitted <- data.fitted %>%
+  mutate(distancia =format(round(distancia, 2), nsmall = 2))
+
+
+```
+
+```{r r residuals bonferroni, message=FALSE, warning=FALSE, include=FALSE}
+
+stat.test <- data.fitted %>%
+  group_by(condicion_sala) %>%
+  pairwise_t_test(
+    .resid ~ log_distancia, paired = TRUE, 
+    p.adjust.method = "bonferroni"
+    ) %>%
+  select(-df, -statistic, -p) # Remove details
+stat.test
+
+```
+
+```{r r residuals bonferroni oscuras, echo=FALSE, message=FALSE, warning=FALSE}
+# Create the plot
+bxp <- ggboxplot(
+  filter(data.fitted, condicion_sala == 'OSCURAS'), x = "distancia", y = ".resid",
+  color = ".resid", palette = "jco"
+  ) +
+  ggtitle("Residuos y comparacion de los mismos OSCURAS")
+
+
+# Add statistical test p-values
+stat.test.oscuras <- filter(stat.test, condicion_sala == 'OSCURAS') %>% add_xy_position()
+
+# show all
+# bxp + stat_pvalue_manual(
+#   stat.test, label = "p.adj.signif", 
+#   step.increase = 0.08
+#   )
+
+# hide ns
+bxp + stat_pvalue_manual(
+  stat.test.oscuras, label = "p.adj.signif", 
+  step.increase = 0.08, hide.ns = TRUE, tip.length = 0
+  )
+
+#plot(bxp)
+```
+
+```{r r residuals bonferroni visual, echo=FALSE, message=FALSE, warning=FALSE}
+# Create the plot
+bxp <- ggboxplot(
+  filter(data.fitted, condicion_sala == 'VISUAL'), x = "distancia", y = ".resid",
+  color = ".resid", palette = "jco"
+  ) +
+  ggtitle("Residuos y comparacion de los mismos VISUAL")
+
+
+# Add statistical test p-values
+stat.test.visual <- filter(stat.test, condicion_sala == 'VISUAL') %>% add_xy_position()
+
+# show all
+# bxp + stat_pvalue_manual(
+#   stat.test, label = "p.adj.signif", 
+#   step.increase = 0.08
+#   )
+
+# hide ns
+bxp + stat_pvalue_manual(
+  stat.test.visual, label = "p.adj.signif", 
+  step.increase = 0.08, hide.ns = TRUE, tip.length = 0
+  )
+
+#plot(bxp)
+```
+
+\pagebreak
+
+ENTRE BLOQUES
+
+```{r r residuals bonferroni bloques, message=FALSE, warning=FALSE, include=FALSE}
+
+stat.test <- data.fitted %>%
+  group_by(distancia) %>%
+  pairwise_t_test(
+    .resid ~ condicion_sala, paired = TRUE, 
+    p.adjust.method = "bonferroni"
+    ) %>%
+  select(-df, -statistic, -p) # Remove details
+stat.test
+
+```
+
+```{r r residuals bonferroni bloques graph, echo=FALSE, message=FALSE, warning=FALSE}
+# Create the plot
+bxp <- ggboxplot(
+  data.fitted, x = "distancia", y = ".resid",
+  color = "condicion_sala", palette = "jco"
+  ) +
+  ggtitle("Residuos y comparacion de los mismos")
+
+
+# Add statistical test p-values
+stat.test <- stat.test %>% add_xy_position(x="distancia")
+
+# show all
+bxp + stat_pvalue_manual(
+  stat.test, label = "p.adj.signif",
+  step.increase = 0.08
+  )
+
+# hide ns
+# bxp + stat_pvalue_manual(
+#   stat.test, label = "p.adj.signif", 
+#   step.increase = 0.08, hide.ns = TRUE, tip.length = 0
+#   )
+
+#plot(bxp)
+```
+
+\pagebreak
+
 ### Variabilidad
 
 #### Intrasujeto
@@ -885,7 +1015,7 @@ plot(g1)
 
 ```
 
-```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r}
   #aov(respuestapob[,"sd"]~condicion_sala, data=tabla.pob)
 
 summary(aov(respuestapob[,"sd"]~condicion_sala, data=tabla.pob)
@@ -893,7 +1023,7 @@ summary(aov(respuestapob[,"sd"]~condicion_sala, data=tabla.pob)
 ```
 
 
-```{r echo=FALSE,message=TRUE, warning=TRUE}
+```{r}
 
 tabla.pob.colapsada <- tabla.pob %>%
   mutate(sd_dividio_distancia = respuestapob[,"sd"]/distancia)
@@ -907,6 +1037,7 @@ tabla.pob.colapsada <- tabla.pob.colapsada %>%
 
 En esta sección vamos a ver la variabilidad. Por un lado tenemos desviacion estandar intra colapsada
 El de arriba 
+
 
 
 
@@ -978,6 +1109,7 @@ plot(bxp)
 \pagebreak
 
 ## Analisis de correlacion
+
 
 ```{r creando dataframe correlacion, echo=FALSE, message=FALSE, warning=FALSE}
 tabla.dimensions <- read.csv('data/tamanio_de_sala_sin_outliers_oscuras_visual.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
