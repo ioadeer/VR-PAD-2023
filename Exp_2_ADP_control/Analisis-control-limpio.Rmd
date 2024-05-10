@@ -60,7 +60,7 @@ tabla.raw$SesgoAbs <-  abs(tabla.raw$respuesta - tabla.raw$distancia)
 # signed bias
 tabla.raw$SesgoRel <- (tabla.raw$respuesta - tabla.raw$distancia) / tabla.raw$distancia
 # unsigen bias
-tabla.raw$UnsignedBias <- abs(tabla.raw$SesgoRel)
+tabla.raw$UnsignedSesgoRel <- abs(tabla.raw$SesgoRel)
 
 f_promedio <- function(x) c(mean = mean(x),
                             sd   = sd(x),
@@ -68,7 +68,7 @@ f_promedio <- function(x) c(mean = mean(x),
                             sem  = sd(x)/sqrt(length(x)),
                             n    = length(x))
 
-tabla.ind <- tibble(aggregate(cbind(respuesta,SesgoRel,SesgoAbs) ~ nsub*condicion_sala*distancia*nbloque,
+tabla.ind <- tibble(aggregate(cbind(respuesta,SesgoRel,SesgoAbs, UnsignedSesgoRel) ~ nsub*condicion_sala*distancia*nbloque,
                               data = tabla.raw,
                               FUN  = f_promedio,na.action = NULL))
 
@@ -77,7 +77,8 @@ tabla.ind <- tibble(aggregate(cbind(respuesta,SesgoRel,SesgoAbs) ~ nsub*condicio
 tabla.pob <- tibble(aggregate(cbind(
                               respuesta[,"mean"],
                               SesgoRel[,"mean"],
-                              SesgoAbs[,"mean"]
+                              SesgoAbs[,"mean"],
+                              UnsignedSesgoRel[,"mean"]
                               ) ~ condicion_sala*distancia,
                               data <- tabla.ind,
                               FUN  <- f_promedio,na.action = NULL))
@@ -119,6 +120,7 @@ tabla_sesgo <- tabla.ind %>%
   group_by(condicion_sala,nsub) %>%
   summarise(mDist_perc = mean(respuesta[,"mean"]),
             mSesgoRel  = mean(SesgoRel[,"mean"]),
+            mUnsignedSesgoRel = mean(UnsignedSesgoRel[,"mean"]),
             mSesgoAbs = mean(SesgoAbs[,"mean"]))  %>%
   ungroup()
 
@@ -155,7 +157,7 @@ fig.sesgo
 
 ```
 
-```{r sesgo2, echo=FALSE, message=FALSE, warning=FALSE}
+```{r media_distancia_percibida, message=FALSE, warning=FALSE, include=FALSE}
 
 # bxp <- tabla_sesgo %>%
 #   ggplot( aes(x=condicion_sala, y=mDist_perc, fill=condicion_sala)) +
@@ -178,7 +180,7 @@ bxp <- ggpaired(tabla_sesgo, x="condicion_sala", y="mDist_perc",
 plot(bxp)
 ```
 
-```{r sesgo3, echo=FALSE, message=FALSE, warning=FALSE}
+```{r sesgo_relativo_con_signo, echo=FALSE, message=FALSE, warning=FALSE}
 
 # tabla_sesgo %>%
 #   ggplot( aes(x=condicion_sala, y=mSesgoRel, fill=condicion_sala)) +
@@ -202,7 +204,31 @@ bxp <- ggpaired(tabla_sesgo, x="condicion_sala", y="mSesgoRel",
 plot(bxp)
 ```
 
-```{r sesgo4, echo=FALSE, message=FALSE, warning=FALSE}
+```{r sesgo_relativo_sin_signo, echo=FALSE, message=FALSE, warning=FALSE}
+
+# tabla_sesgo %>%
+#   ggplot( aes(x=condicion_sala, y=mSesgoRel, fill=condicion_sala)) +
+#     geom_boxplot() +
+#     scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+#     geom_jitter(color="black", size=0.4, alpha=0.9) +
+#     #theme_ipsum() +
+#     theme(
+#       legend.position="none",
+#       plot.title = element_text(size=11)
+#     ) +
+#     ggtitle("Sesgo Rel") +
+#     xlab("")
+
+bxp <- ggpaired(tabla_sesgo, x="condicion_sala", y="mUnsignedSesgoRel",
+                color="condicion_sala", line.color="grey", line.size=0.4)+
+       ggtitle("Sesgo relativo absoluto") +
+       ylab("Distancia (m)")+
+       stat_compare_means(method= "t.test", paired = TRUE)
+
+plot(bxp)
+```
+
+```{r sesgo_aboluto, echo=FALSE, message=FALSE, warning=FALSE}
 
 # tabla_sesgo %>%
 #   ggplot( aes(x=condicion_sala, y=mSesgoAbs, fill=condicion_sala)) +
