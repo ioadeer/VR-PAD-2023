@@ -315,10 +315,11 @@ Final.Fixed<-effect(c("condicion_sala*distancia"), m.distancia)
 # You have to convert the output to a dataframe
 Final.Fixed<-as.data.frame(Final.Fixed)
 
-Final.Fixed.Plot <-ggplot(data = Final.Fixed, aes(x = distancia, y =fit, group=condicion_sala))+
+Final.Fixed.Plot <-ggplot(data = Final.Fixed, aes(x = distancia, y =10^fit, group=condicion_sala))+
   #coord_cartesian(xlim=c(0,4),ylim = c(0,.7))+ 
   geom_line(aes(color=condicion_sala), size=2)+
-  geom_ribbon(aes(ymin=fit-se, ymax=fit+se,fill=condicion_sala),alpha=.2)+
+  #geom_ribbon(aes(ymin=fit-se, ymax=fit+se,fill=condicion_sala),alpha=.2)+
+  geom_ribbon(aes(ymin=10^fit-10^se, ymax=10^fit+10^se,fill=condicion_sala),alpha=.2)+
   xlab("Distancia")+
   ylab("Distancia percibida")+
   scale_color_manual(values=c("blue", "red"))+
