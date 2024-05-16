@@ -1,0 +1,96 @@
+---
+title: "Analisis Experimento 3 VR Oscuras"
+author: "Joaquin Cervino"
+date: "2024-05-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Experimento 3
+
+
+```{r dependencies, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(Routliers)
+library(lme4)
+library(nlme)
+library(sjPlot)
+library(MuMIn)
+library(lmerTest)
+library(jtools)
+library(gdtools)
+library(broom)
+library(ggstatsplot)
+library(modelsummary)
+library(ggpubr)
+library(flextable)
+library(webshot)
+library(officer)
+library(effects)
+
+```
+
+```{r load data, echo=FALSE}
+rm(list=ls())
+figures_folder = "Figuras"
+results_tbl <- read.csv("./ResultsData/DresultsExp3.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
+
+cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
+
+```
+
+```{r formula_anova}
+m.Dist3 <-  lmer(log10(perc_dist)~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
+                 data = results_tbl) 
+extract_stats(ggcoefstats(m.Dist3))
+r.squaredGLMM(m.Dist3)
+
+anova(m.Dist3)
+anov1 = anova(m.Dist3)
+```
+
+```{r grafico_individual}
+
+results_tbl$Modelfitted3<-predict(m.Dist3)
+
+# Todos los sujetos
+FittedlmPlot1 <-ggplot()+
+  facet_grid(subject ~ room_condition, labeller=label_both)+
+  geom_line(data = results_tbl, aes(x = target_distance, y = 10^Modelfitted3))+
+  geom_point(data = results_tbl, aes(x = target_distance, y =perc_dist, group=subject,colour = subject), size=3)+
+  #  coord_cartesian(ylim = c(.03,.074))+ 
+  xlab("Targent_distance")+ylab("Perceived_distance")
+FittedlmPlot1
+
+```
+
+```{r grafico_pob}
+Final.Fixed<-effect(c("log10(target_distance)*room_condition"), m.Dist3)
+
+# Grafico poblacional
+Final.Fixed<-as.data.frame(Final.Fixed)
+
+Final.Fixed.Plot <-ggplot(data = Final.Fixed, aes(x = target_distance, y =10^fit, group=room_condition))+
+  # coord_cartesian(xlim=c(0,4),ylim = c(0,.7))+ 
+  geom_line(aes(color=room_condition), size=2)+
+  geom_ribbon(aes(ymin=10^fit-10^se, ymax=10^fit+10^se,fill=room_condition),alpha=.2)+
+  xlab("Target_distance")+
+  ylab("Perceived_distance")+
+  # scale_color_manual(values=c("blue", "red"))+
+  # scale_fill_manual(values=c("blue", "red"))+
+  theme_bw()+
+  theme(text=element_text(face="bold", size=12),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        panel.border = element_rect(fill = NA, colour = "NA"),
+        axis.line = element_line(size = 1, colour = "grey80"),
+        legend.title=element_blank(),
+        legend.position = c(.2, .92))
+Final.Fixed.Plot
+```
+
+
+# Falta BIAS

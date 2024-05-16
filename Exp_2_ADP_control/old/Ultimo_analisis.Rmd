@@ -268,12 +268,24 @@ plot(bxp)
 #m.distancia <- lmer(log(respuesta[,"mean"]) ~ condicion_sala * log(distancia) + (1|nsub)+ (0+condicion_sala|nsub), 
 #                    data = tabla.ind)
 
-m.distancia <- lmer(log10(respuesta[,"mean"]) ~ condicion_sala * log10(distancia) + (1|nsub)+ (0+condicion_sala | nsub), 
+# aca armamos el modelos y en el intercepto
+
+m.distancia1 <- lmer(log10(respuesta[,"mean"]) ~ condicion_sala * log10(distancia) + (1+log10(distancia)|nsub), #,  (0+condicion_sala | nsub), 
                   data = tabla.ind)
 
+# comparar log -> y lin
 
-summary(m.distancia)
-anova(m.distancia)
+summary(m.distancia1)
+anova(m.distancia1)
+```
+
+```{r}
+# modelo 3, modelo 4 de demos (independencia)
+m.distancia2 <- lmer(log10(respuesta[,"mean"]) ~ condicion_sala * log10(distancia) + (1+log10(distancia)|nsub)+ (0+ condicion_sala | nsub), data = tabla.ind)
+
+
+summary(m.distancia2)
+anova(m.distancia2)
 
 ```
 
