@@ -91,6 +91,109 @@ Final.Fixed.Plot <-ggplot(data = Final.Fixed, aes(x = target_distance, y =10^fit
         legend.position = c(.2, .92))
 Final.Fixed.Plot
 ```
+``` {r}
 
+
+```
 
 # Falta BIAS
+
+```{r signed bias}
+
+#Bias
+
+cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
+
+results_tbls <- results_tbl %>% 
+  group_by(room_condition,subject) %>%
+  summarise(mBiasSigned  = mean(rel_bias_signed,na.rm=TRUE),
+            SdBiasSigned  = sd(rel_bias_signed,na.rm=TRUE)/sqrt(length(rel_bias_signed)),
+            mBiasUnSigned  = mean(rel_bias_unsigned,na.rm=TRUE),
+            SdBiasUnSigned  = sd(rel_bias_unsigned,na.rm=TRUE)/sqrt(length(rel_bias_unsigned)))  %>%
+  ungroup()
+
+results_tblp <- results_tbls %>% 
+  group_by(room_condition) %>%
+  summarise(MBiasSigned  = mean(mBiasSigned,na.rm=TRUE),
+            SDBiasSigned  = sd(mBiasSigned,na.rm=TRUE)/sqrt(length(mBiasSigned)),
+            MBiasUnSigned  = mean(mBiasUnSigned,na.rm=TRUE),
+            SDBiasUnSigned  = sd(mBiasUnSigned,na.rm=TRUE)/sqrt(length(mBiasUnSigned)))  %>%
+  ungroup()
+# geom_flat_violin(aes(fill = Condicion),position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA)+
+#   geom_point(aes(x = as.numeric(Tiempo)-.15, y = LeqAS, colour = Condicion),position = position_jitter(width = .05, height = 0), size = 1, shape = 20)+
+
+f6 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasSigned, colour = room_condition, fill = room_condition)) +
+  geom_pointrange(aes(x=room_condition, y=MBiasSigned, ymin=MBiasSigned-SDBiasSigned, ymax=MBiasSigned+SDBiasSigned), size = 1.2)+
+  geom_line(aes(group = room_condition),size = 1.2, alpha=.5)+
+  geom_point(data = results_tbls, mapping = aes(x = room_condition,y = mBiasSigned, colour = room_condition, fill = room_condition), alpha = .8)+
+  geom_line(data = results_tbls, mapping = aes(x = room_condition,y = mBiasSigned, group = subject, colour = room_condition, fill = room_condition),alpha = 0.3)+
+  scale_colour_manual(values = cbPalette) + 
+  scale_fill_manual(values = cbPalette) + 
+  geom_abline(slope = 0,
+              intercept = 0,
+              alpha = 0.5,
+              linetype = "dashed") +
+  labs(x = "Condition", 
+       y = "Relative signed \nbias [%]") +
+  # facet_grid(. ~ type) +
+  # annotate("text", x = 1.5, y = 2,  label = "***", size = 4) +
+  # annotate("segment", x = 1, xend = 2, y = 1.9, yend = 1.9, colour = "black", size=.5, alpha=1,)+
+  theme_pubr(base_size = 12, margin = TRUE)+
+  theme(legend.position = "none")
+
+m.RelativBias <- lm(mBiasSigned ~ room_condition, 
+                    data = results_tbls)
+extract_stats(ggcoefstats(m.RelativBias))
+anov = anova(m.RelativBias)
+anov
+f6
+#mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
+#ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
+
+t.test(filter(results_tbls, 
+              room_condition=="OSCURAS" )$mBiasSigned,
+       filter(results_tbls, 
+              room_condition=="VR")$mBiasSigned, 
+       paired = TRUE)
+
+```
+
+```{r unsignedbias}
+
+#Bias
+
+f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = room_condition, fill = room_condition)) +
+  geom_pointrange(aes(x=room_condition, y=MBiasUnSigned, ymin=MBiasUnSigned-SDBiasUnSigned, ymax=MBiasUnSigned+SDBiasUnSigned), size = 1.2)+
+  geom_line(aes(group = room_condition),size = 1.2, alpha=.5)+
+  geom_point(data = results_tbls, mapping = aes(x = room_condition,y = mBiasUnSigned, colour = room_condition, fill = room_condition), alpha = .8)+
+  geom_line(data = results_tbls, mapping = aes(x = room_condition,y = mBiasUnSigned, group = subject, colour = room_condition, fill = room_condition),alpha = 0.3)+
+  scale_colour_manual(values = cbPalette) + 
+  scale_fill_manual(values = cbPalette) + 
+  geom_abline(slope = 0,
+              intercept = 0,
+              alpha = 0.5,
+              linetype = "dashed") +
+  labs(x = "Condition", 
+       y = "Relative unsigned \nbias [%]") +
+  # facet_grid(. ~ type) +
+  # annotate("text", x = 1.5, y = 2,  label = "***", size = 4) +
+  # annotate("segment", x = 1, xend = 2, y = 1.9, yend = 1.9, colour = "black", size=.5, alpha=1,)+
+  theme_pubr(base_size = 12, margin = TRUE)+
+  theme(legend.position = "none")
+
+m.RelativUnsignedBias <- lm(mBiasUnSigned ~ room_condition, 
+                    data = results_tbls)
+extract_stats(ggcoefstats(m.RelativUnsignedBias))
+anov = anova(m.RelativUnsignedBias)
+anov
+f7
+#mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
+#ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
+
+t.test(filter(results_tbls, 
+              room_condition=="OSCURAS" )$mBiasUnSigned,
+       filter(results_tbls, 
+              room_condition=="VR")$mBiasUnSigned, 
+       paired = TRUE)
+
+```
