@@ -46,7 +46,7 @@ cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "
 
 ```{r formula_anova}
 # Ajustamos 5 modelos y confirmamos que el modelo 3 es el mas acertado. Sobre todo porq: La pendiente de la distancia varia en funcion del sujo,
-#pero trata la variacion entre room_condition y la distancia como INDEPENDIENTES. Tambien hicimos un ANOVA entre los modelos y el 3 es el que mejor
+#pero trata la variacion entre room_condition y la distancia como INDEPENDIENTES. Tambien hicimos un ANOVA entre los modelos y el 3 es el que mejor. es el 4 de 
 # Ajusta segun AIC. Dejo todo en el dbug
 
 # EXPERIMENTO 2 -----
