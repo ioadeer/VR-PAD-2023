@@ -1,6 +1,6 @@
-# En este script vamos a formatear y ver los datos visuales del experi 2
+# En este script vamos a formatear y ver los datos visuales del experi 3
 # Estos datos son del reporte verbal que dieron para tamaño de sala
-# Antes y despues de realizar tareas de PAD a oscuras y viendo
+# Antes y despues de realizar tareas de PAD a oscuras y virtual
 
 # dependencies ------------------------------------------------------------
 
@@ -17,10 +17,11 @@ tabla.pob_y_visual <- tabla.pob_y_visual %>%
   rename(
     No_Visual = Sin.Ver.w.d.h.,
     Visual = Viendo.Real,
+    Subject =  Número.de.Sujeto
   )
 
 tabla.visual <- tabla.pob_y_visual %>% 
-  select(c("No_Visual", "Visual"))
+  select(c("No_Visual", "Visual", "Subject"))
 
 tabla.visual <- tabla.visual %>%
   separate(No_Visual, into = c("value1", "value2", "value3"), sep = "x") %>%
@@ -38,4 +39,16 @@ tabla.visual <- tabla.visual %>%
     Visual_height = as.numeric(value3)
   ) %>% 
   select(-c("value1", "value2", "value3"))
+
+# Estos son los outliers que sacaba de acuerdo al sesgo
+# Estan calculados aca:
+# './Exp_2_ADP_control/old/remocion_outliers.R'
+
+tabla.visual <- tabla.visual %>%
+  filter(Subject != 1) %>%
+  filter(Subject != 2) %>%
+  filter(Subject != 10) %>%
+  filter(Subject != 16) 
+
+write.table(tabla.visual, file="./Visual-de-experimento-2-3/data/visual_exp_2_sin_outliers.csv", row.names = FALSE)
 
