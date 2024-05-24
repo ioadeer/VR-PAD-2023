@@ -17,6 +17,11 @@ library(Routliers)
 library(processx)
 library(effects)
 
+
+
+
+# Format data -------------------------------------------------------------
+
 rm(list=ls())
 tabla.raw <- read.csv('./Exp_2_ADP_control/data/control_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
@@ -43,6 +48,13 @@ results_tbl <- tibble(aggregate(cbind(percived_distance,signed_bias,unsigned_bia
                                 data = tabla.raw,
                                 FUN  = f_promedio,na.action = NULL))
 
+results_tbl <- results_tbl %>%
+  mutate(
+    room_condition = case_when(
+      room_condition == "OSCURAS" ~ "No visual information",
+      room_condition == "VISUAL" ~ "Visual information"
+    )
+  )
 
 results_tbl %>%
   # clean_names() %>%
