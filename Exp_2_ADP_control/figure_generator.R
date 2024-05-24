@@ -24,6 +24,7 @@ library(officer)
 library(effects)
 
 
+
 # load data and generate image  ---------------------------------------------------------------
 
 rm(list=ls())
@@ -47,7 +48,18 @@ Final.Fixed<-as.data.frame(Final.Fixed)
 mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
 mDist1stats$tidy_data$estimate[[1]]
 
-r.squaredGLMM(m.Dist3)
+r.squaredGLMM(m.Dist1)
+
+
+eq1 <- substitute("No visual:" ~~~italic(y) == k %.% italic(X)^italic(a),
+                  list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
+                       a = round(mDist1stats$tidy_data$estimate[[2]], digits = 2)))
+eq2 <- substitute("Visual:"~~~italic(y) == k %.% italic(X)^italic(a),
+                  list(k = round(10^(mDist1stats$tidy_data$estimate[[1]]+mDist1stats$tidy_data$estimate[[3]]), digits = 2),
+                       a = round(mDist1stats$tidy_data$estimate[[2]]+mDist1stats$tidy_data$estimate[[4]], digits = 2)))
+eq3 <- substitute("r.squared:"~~~italic(R)^italic(2) == italic(b),
+                  list(b = round(r.squaredGLMM(m.Dist1)[2], digits = 2)))
+
 
 
 tabla.pob = results_tbl %>% group_by(target_distance,room_condition) %>%
@@ -72,9 +84,9 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =Mperc_dist, group = room_condi
   #            intercept =m.Dist1$coefficients$fixed[[1]]+m.Dist1$coefficients$fixed[[3]],
   #            alpha = 0.5,
   #            color = "#E69F00") +
-  #geom_text(x = 0.2, y = 7.1, label = as.character(as.expression(eq1)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#000000")+
-  #geom_text(x = 0.2, y = 6.7, label = as.character(as.expression(eq2)), hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = "#E69F00")+
-  #geom_text(x = 0.2, y = 6.3, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
+  geom_text(x = 0.2, y = 7.0, label = as.character(as.expression(eq1)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#000000")+
+  geom_text(x = 0.2, y = 6.5, label = as.character(as.expression(eq2)), hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = "#E69F00")+
+  geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
   scale_y_continuous(name="Perceived distance (m)",   limits = c(0,10)) +
   theme_pubr(base_size = 12, margin = TRUE)+
@@ -83,7 +95,8 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =Mperc_dist, group = room_condi
 
 
 f1
-mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "5. Lme Lineal-Normal", ".png", sep = '')
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "5. Lme Lineal-Normal", ".jpg", sep = '')
 ggsave(mi_nombre_de_archivo, plot=f1, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
+
 
 
