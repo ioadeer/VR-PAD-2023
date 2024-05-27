@@ -154,6 +154,8 @@ testSigendBias <- t.test(filter(results_tbls,
               room_condition=="Visual information")$mBiasSigned, 
        paired = TRUE)
 
+testSigendBias
+
 # unsigned bias -----------------------------------------------------------
 
 f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = room_condition, fill = room_condition)) +

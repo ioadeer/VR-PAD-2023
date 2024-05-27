@@ -163,6 +163,7 @@ results_tbls <- results_tbl %>%
 results_tblp <- results_tbls %>% 
   group_by(room_condition) %>%
   summarise(MBiasSigned  = mean(mBiasSigned,na.rm=TRUE),
+            # esto es SE sd/sqrt(N)
             SDBiasSigned  = sd(mBiasSigned,na.rm=TRUE)/sqrt(length(mBiasSigned)),
             MBiasUnSigned  = mean(mBiasUnSigned,na.rm=TRUE),
             SDBiasUnSigned  = sd(mBiasUnSigned,na.rm=TRUE)/sqrt(length(mBiasUnSigned)))  %>%
