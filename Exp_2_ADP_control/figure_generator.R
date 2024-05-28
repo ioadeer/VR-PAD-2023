@@ -24,7 +24,7 @@ library(effects)
 
 
 
-# load data and generate image  ---------------------------------------------------------------
+# load data  ---------------------------------------------------------------
 
 
 #theme_set(theme_gray(base_family = "DejaVuSerif"))
@@ -34,6 +34,11 @@ results_tbl <- read.csv("Exp_2_ADP_control/ResultsData/Dresults.csv", header = T
 
 cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
 
+
+
+# make model figure -------------------------------------------------------
+
+
 results_tbl <- results_tbl %>%
   mutate(
     perc_dist_log_10 = log10(perc_dist)
@@ -42,16 +47,16 @@ results_tbl <- results_tbl %>%
 m.Dist1 <-  lmer(log10(perc_dist) ~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
                  data = results_tbl)
 
-#Final.Fixed<-effect(c("log10(target_distance)*room_condition"), m.Dist1)
+Final.Fixed<-effect(c("log10(target_distance)*room_condition"), m.Dist1)
 
-Final.Fixed<-effect(c("log10(target_distance)*room_condition"), m.Dist1, xlevels=list(target_distance=seq(2,9,1)))
+#Final.Fixed<-effect(c("log10(target_distance)*room_condition"), m.Dist1, xlevels=list(target_distance=seq(2,9,1)))
 #2,2.7,3.65,4.9,6.65,9
 # xlevels=list(TimeStep=seq(0,4,1))
 # Grafico poblacional
 Final.Fixed<-as.data.frame(Final.Fixed)
 
 mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
-mDist1stats$tidy_data$estimate[[1]]
+#mDist1stats$tidy_data$estimate[[1]]
 
 r.squaredGLMM(m.Dist1)
 
@@ -67,7 +72,7 @@ eq3 <- substitute("r.squared:"~~~italic(R)^italic(2) == italic(b),
 
 
 
-tabla.pob = results_tbl %>% group_by(target_distance,room_condition) %>%
+tabla.pob <- results_tbl %>% group_by(target_distance,room_condition) %>%
   summarise(Mperc_dist  = mean(perc_dist_log_10),
             SDperc_dist = sd(perc_dist_log_10)/sqrt(n()))  %>%
   ungroup()
@@ -94,6 +99,7 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
 f1
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "5. Lme Lineal-Normal", ".jpg", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f1, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
+
 
 
 # signed bias -------------------------------------------------------------
@@ -156,6 +162,7 @@ testSigendBias <- t.test(filter(results_tbls,
 
 testSigendBias
 
+
 # unsigned bias -----------------------------------------------------------
 
 f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = room_condition, fill = room_condition)) +
@@ -195,6 +202,7 @@ t.test(filter(results_tbls,
        filter(results_tbls, 
               room_condition=="Visual information")$mBiasUnSigned, 
        paired = TRUE)
+
 
 
 
