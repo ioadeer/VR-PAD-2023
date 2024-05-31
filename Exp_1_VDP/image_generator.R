@@ -58,7 +58,7 @@ dimensions.volume_aggr <- dimensions.volume %>%
   group_by(variable) %>%
   summarize(
     mean_volume = mean(value),
-    sd_volume = sd(value)
+    se = sd(value)/sqrt(n())
   )
 
 eqn1 <- sprintf(
@@ -88,12 +88,12 @@ stat.test <- dimensions.volume  %>%
 # .y.    group1    group2          n1    n2 statistic    df     p p.signif
 # <chr>  <chr>     <chr>        <int> <int>     <dbl> <dbl> <dbl> <chr>   
 # volume Sala Real Sala Virtual    40    40    -0.203  76.7  0.84 ns   
-
+# aca el errorbar lo voy a cambiar por se
 dim_barchart <- dimensions.volume_aggr %>%
   ggplot(aes(variable, mean_volume)) +
   geom_col(aes(fill = variable), color ="black", width =0.85) +
-  geom_errorbar(aes(ymin=mean_volume - sd_volume,
-                    ymax=mean_volume + sd_volume),
+  geom_errorbar(aes(ymin=mean_volume - se,
+                    ymax=mean_volume + se),
                 color = "#22292F",
                 width = .1) +
   #scale_fill_grey(start = 0.3) +
