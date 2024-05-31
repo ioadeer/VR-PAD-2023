@@ -73,7 +73,6 @@ eq2 <- substitute("Visual:"~~~italic(y) == k %.% italic(X)^italic(a),
 #                  list(b = round(r.squaredGLMM(m.Dist1)[2], digits = 2)))
 
 
-par(family ="Ubuntu Mono")
 tabla.pob <- results_tbl %>% group_by(target_distance,room_condition) %>%
   summarise(Mperc_dist  = mean(perc_dist_log_10),
             SDperc_dist = sd(perc_dist_log_10)/sqrt(n()))  %>%
@@ -88,34 +87,19 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
   scale_colour_manual(values = cbPalette) +
   scale_fill_manual(values = cbPalette) +
   geom_line(data = Final.Fixed, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
-  #geom_text(x = 0.2, y = 8.0, label = as.character(as.expression(eq1)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#000000")+
-  #geom_text(x = 0.2, y = 7.0, label = as.character(as.expression(eq2)), hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = "#E69F00")+
+  geom_text(x = 0.2, y = 8.0, label = as.character(as.expression(eq1)), 
+            hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#000000",
+            family="Times New Roman")+
+  geom_text(x = 0.2, y = 7.0, label = as.character(as.expression(eq2)), 
+            hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = "#E69F00",
+            family="Times New Roman")+
   #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
-  annotate("text",
-           family= "Times New Roman", 
-           #size= theme_get()$text[["size"]]/2.5, 
-           fontface="bold",
-           x = 0.2, # para fig compuesta
-           y = 8.0,
-           label = eq1,
-           size = 5,
-           hjust = 0,
-           color = "#000000") +
-  annotate("text",                        # Add text for mean
-           family= "Times New Roman", 
-           #size= theme_get()$text[["size"]]/2.5, 
-           fontface="bold",
-           x = 0.2, # para fig compuesta
-           y = 7,
-           label = eq2,
-           size = 5,
-           hjust = 0,
-           color="#E69F00") +
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
   scale_y_continuous(name="Perceived distance (m)",   limits = c(0,10)) +
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
-        legend.title = element_blank())
+        legend.title = element_blank(),
+        text=element_text(family="Times New Roman", size=10)) 
 
 
 f1
