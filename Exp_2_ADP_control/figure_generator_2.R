@@ -63,7 +63,7 @@ mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
 r.squaredGLMM(m.Dist1)
 
 
-eq1 <- substitute("No visual:"~~~ italic(y) == k %.% italic(X)^italic(a),
+eq1 <- substitute("No visual:" ~~~ italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]], digits = 2)))
 eq2 <- substitute("Visual:"~~~italic(y) == k %.% italic(X)^italic(a),
@@ -71,7 +71,7 @@ eq2 <- substitute("Visual:"~~~italic(y) == k %.% italic(X)^italic(a),
                        a = round(mDist1stats$tidy_data$estimate[[2]]+mDist1stats$tidy_data$estimate[[4]], digits = 2)))
 #eq3 <- substitute("r.squared:"~~~italic(R)^italic(2) == italic(b),
 #                  list(b = round(r.squaredGLMM(m.Dist1)[2], digits = 2)))
-
+eq1
 
 tabla.pob <- results_tbl %>% group_by(target_distance,room_condition) %>%
   summarise(Mperc_dist  = mean(perc_dist_log_10),
@@ -142,10 +142,10 @@ f6 <-  ggplot(results_tblp, aes(x = room_condition,y = MBiasSigned, colour = roo
               alpha = 0.5,
               linetype = "dashed") +
   labs(x = "Condition", 
-       y = "Relative signed \nbias [%]") +
+       y = "Relative signed \nbias") +
   # facet_grid(. ~ type) +
-  annotate("text", x = 1.5, y = 0.3,  label = "*", size = 4) +
-  annotate("segment", x = 1, xend = 2, y = 0.2, yend = 0.2, colour = "black", size=.5, alpha=1,)+
+  #annotate("text", x = 1.5, y = 0.3,  label = "*", size = 4) +
+  #annotate("segment", x = 1, xend = 2, y = 0.2, yend = 0.2, colour = "black", size=.5, alpha=1,)+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "none",
         axis.title.x = element_blank(),
@@ -153,24 +153,35 @@ f6 <-  ggplot(results_tblp, aes(x = room_condition,y = MBiasSigned, colour = roo
 
 f6
 
+
 m.RelativBias <- lm(mBiasSigned ~ room_condition, 
                     data = results_tbls)
 extract_stats(ggcoefstats(m.RelativBias))
+#1 (Intercept)                        -0.509
+# room_conditionVisual information    0.151 
+
 anov = anova(m.RelativBias)
 anov
 f6
+
+# no es signficitavo #1 0.18301 0.183011  3.5967 0.06756 .
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
 
+# NO ES PAREADO
 testSigendBias <- t.test(filter(results_tbls, 
               room_condition=="No visual information" )$mBiasSigned,
        filter(results_tbls, 
               room_condition=="Visual information")$mBiasSigned, 
-       paired = TRUE)
+       paired = FALSE)
 
 testSigendBias
 
-
+#95 percent confidence interval:
+#  -0.31498920  0.01249011
+#sample estimates:
+#  mean of x  mean of y 
+#-0.5090052 -0.3577557 
 # unsigned bias -----------------------------------------------------------
 
 f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = room_condition, fill = room_condition)) +
@@ -186,7 +197,7 @@ f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = ro
               alpha = 0.5,
               linetype = "dashed") +
   labs(x = "Condition", 
-       y = "Relative unsigned \nbias [%]") +
+       y = "Relative unsigned \nbias") +
   # facet_grid(. ~ type) +
   annotate("text", x = 1.5, y = 1.1,  label = "***", size = 4) +
   annotate("segment", x = 1, xend = 2, y = 1.0, yend = 1.0, colour = "black", size=.5, alpha=1,)+
@@ -234,8 +245,11 @@ main_figure
 
 figures_folder = "./Exp_2_ADP_control/Figura_final_2/"
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "exp", ".png", sep = '')
-ggsave(mi_nombre_de_archivo, plot=main_figure, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
+ggsave(device = "png", mi_nombre_de_archivo, plot=main_figure, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
 
-main_figure
+## asi me lo guarda bien
+png(mi_nombre_de_archivo, res=600, units="cm", width=15, height=15)
+plot(main_figure)
+dev.off()
 #View(systemfonts::system_fonts())
 #device = ragg::agg_png, # this is the relevant part
