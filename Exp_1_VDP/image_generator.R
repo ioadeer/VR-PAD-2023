@@ -64,12 +64,12 @@ dimensions.volume_aggr <- dimensions.volume %>%
 eqn1 <- sprintf(
   "M = %.3g ± %.4g",
   dimensions.volume_aggr$mean_volume[1],
-  dimensions.volume_aggr$sd_volume[1])
+  dimensions.volume_aggr$se[1])
 
 eqn2 <- sprintf(
   "M = %.3g ± %.4g",
   dimensions.volume_aggr$mean_volume[2],
-  dimensions.volume_aggr$sd_volume[2])
+  dimensions.volume_aggr$se[2])
 
 dimensions.volume <- dimensions.volume %>%
   ungroup()
@@ -136,6 +136,7 @@ stat.test <- stat.test %>% add_xy_position(x = "condicion", fun = "mean", step.i
 dim_barchart <- dim_barchart + 
   stat_pvalue_manual(stat.test, label = "p", tip.length = 0.05, size = 3, bracket.shorten = 0.1)
 
+dim_barchart
 # d,w, h comparasion ------------------------------------------------------
 #DEPTH
 dimensions.depth <- melt(dimensions.raw, id.vars='nsub',
@@ -160,25 +161,27 @@ dimensions.depth_sum <- dimensions.depth %>%
   summarise(
     mean = mean(Profundidad),
     median = median(Profundidad),
-    sd = sd(Profundidad)
+    sd = sd(Profundidad),
+    se = sd(Profundidad)/sqrt(n())
   )
 
 eqn1 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g ± %.2g",
   dimensions.depth_sum$mean[1],
-  dimensions.depth_sum$sd[1],
-  dimensions.depth_sum$median[1])
+  dimensions.depth_sum$se[1])
 
 eqn2 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g ± %.2g",
   dimensions.depth_sum$mean[2],
-  dimensions.depth_sum$sd[2],
-  dimensions.depth_sum$median[2])
+  dimensions.depth_sum$se[2])
 
 # Use single color
 violin_depth <- ggplot(dimensions.depth, aes(x=Condición, y=Profundidad,  fill=Condición)) +
   geom_violin(trim=FALSE) +
-  geom_boxplot(width=0.1) +
+  geom_errorbar(data=dimensions.depth_sum, mapping = aes(x = Condición, y = mean, ymin=mean - se,
+                    ymax=mean + se),
+                color = "#22292F",
+                width = .1) +
   geom_jitter(alpha = 0.1) +
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
@@ -207,6 +210,7 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condición, y=Profundidad,  fill=
     axis.title.x = element_blank(),
     axis.title.y = element_text(hjust = 0)) 
 
+violin_depth
 # ANCHO 
 
 dimensions.width <- melt(dimensions.raw, id.vars='nsub',
@@ -232,26 +236,29 @@ dimensions.width_sum <- dimensions.width %>%
   summarise(
     mean = mean(Ancho),
     median = median(Ancho),
-    sd = sd(Ancho)
+    sd = sd(Ancho),
+    se = sd(Ancho)/sqrt(n())
   )
 
 eqn1 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g ± %.2g",
   dimensions.width_sum$mean[1],
-  dimensions.width_sum$sd[1],
-  dimensions.width_sum$median[1])
+  dimensions.width_sum$se[1])
 
 eqn2 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g ± %.2g",
   dimensions.width_sum$mean[2],
-  dimensions.width_sum$sd[2],
-  dimensions.width_sum$median[2])
+  dimensions.width_sum$sd[2])
 
 # Use single color
 violin_width <- ggplot(dimensions.width, aes(x=Condición, y=Ancho,  fill=Condición)) +
   #geom_violin(trim=FALSE, fill='#A4A4A4', color="darkred")+
   geom_violin(trim=FALSE)+
-  geom_boxplot(width=0.1) + 
+  geom_errorbar(data=dimensions.width_sum, 
+                mapping = aes(x = Condición, y = mean, ymin=mean - se,
+                              ymax=mean + se),
+                color = "#22292F",
+                width = .1) +
   geom_jitter(alpha = 0.1) +
   # geom_text(data = dimensions.width_sum, aes(x = Condición, y = mean, 
   #   label = paste("Mean: ", round(mean, 1), "\nMedian: ", median, "\nSD: ", round(sd, 1)),
@@ -308,25 +315,28 @@ dimensions.height_sum <- dimensions.height %>%
   summarise(
     mean = mean(Alto),
     median = median(Alto),
-    sd = sd(Alto)
+    sd = sd(Alto),
+    se = sd(Alto)/sqrt(n())
   )
 
 eqn1 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g ± %.2g",
   dimensions.height_sum$mean[1],
-  dimensions.height_sum$sd[1],
-  dimensions.height_sum$median[1])
+  dimensions.height_sum$se[1])
 
 eqn2 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g ± %.2g",
   dimensions.height_sum$mean[2],
-  dimensions.height_sum$sd[2],
-  dimensions.height_sum$median[2])
+  dimensions.height_sum$se[2])
 
 # Use single color
 violin_height <- ggplot(dimensions.height, aes(x=Condición, y=Alto,  fill=Condición)) +
   geom_violin(trim=FALSE)+
-  geom_boxplot(width=0.1) + 
+  geom_errorbar(data=dimensions.height_sum, 
+                mapping = aes(x = Condición, y = mean, ymin=mean - se,
+                              ymax=mean + se),
+                color = "#22292F",
+                width = .1) +
   geom_jitter(alpha = 0.1) +
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
@@ -367,6 +377,11 @@ figure <- ggarrange(dim_barchart,
                     labels ="A",
                     heights = c(1, 0.75))
 figure
+
+
+
+# save image --------------------------------------------------------------
+
 
 figures_folder = "./Exp_1_VDP/figuras"
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "Perceived_room_size.png", sep = '')

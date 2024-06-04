@@ -228,12 +228,6 @@ t.test(filter(results_tbls,
               room_condition=="Virtual environment")$mBiasUnSigned, 
        paired = FALSE)
 
-
-
-
-
-
-
 # main plot ---------------------------------------------------------------
 
 #f1 f6 y f7
