@@ -200,10 +200,10 @@ f6
 #ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
 
 t.test(filter(results_tbls, 
-              room_condition=="OSCURAS" )$mBiasSigned,
+              room_condition=="No visual information" )$mBiasSigned,
        filter(results_tbls, 
-              room_condition=="VISUAL")$mBiasSigned, 
-       paired = TRUE)
+              room_condition=="Visual information")$mBiasSigned, 
+       paired = FALSE)
 
 ```
 
@@ -240,9 +240,9 @@ f7
 #ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
 
 t.test(filter(results_tbls, 
-              room_condition=="OSCURAS" )$mBiasUnSigned,
+              room_condition=="No visual information" )$mBiasUnSigned,
        filter(results_tbls, 
-              room_condition=="VISUAL")$mBiasUnSigned, 
-       paired = TRUE)
+              room_condition=="Visual information")$mBiasUnSigned, 
+       paired = FALSE)
 
 ```

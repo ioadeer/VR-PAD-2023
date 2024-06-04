@@ -109,6 +109,7 @@ f1
 
 
 
+
 # signed bias -------------------------------------------------------------
 
 results_tbls <- results_tbl %>% 
@@ -182,6 +183,7 @@ testSigendBias
 #sample estimates:
 #  mean of x  mean of y 
 #-0.5090052 -0.3577557 
+
 # unsigned bias -----------------------------------------------------------
 
 f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = room_condition, fill = room_condition)) +
@@ -199,7 +201,7 @@ f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = ro
   labs(x = "Condition", 
        y = "Relative unsigned \nbias") +
   # facet_grid(. ~ type) +
-  annotate("text", x = 1.5, y = 1.1,  label = "***", size = 4) +
+  annotate("text", x = 1.5, y = 1.1,  label = "**", size = 4) +
   annotate("segment", x = 1, xend = 2, y = 1.0, yend = 1.0, colour = "black", size=.5, alpha=1,)+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "none",
@@ -221,7 +223,8 @@ t.test(filter(results_tbls,
               room_condition=="No visual information" )$mBiasUnSigned,
        filter(results_tbls, 
               room_condition=="Visual information")$mBiasUnSigned, 
-       paired = TRUE)
+       paired = FALSE)
+
 
 
 
