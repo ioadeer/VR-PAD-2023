@@ -1,4 +1,4 @@
-#  Oscuras vs real
+#  Oscuras vs VR
 #  En este script voy a armar la figura
 #  La idea es tener por una lado
 #  Un grafico con el modelo, y las medidas promedio de PAD
@@ -23,18 +23,17 @@ library(webshot)
 library(officer)
 library(effects)
 
-
-
-
 # load data  ---------------------------------------------------------------
 
 
 #theme_set(theme_gray(base_family = "DejaVuSerif"))
 rm(list=ls())
-figures_folder = "Exp_2_ADP_control/Figura_final"
-results_tbl <- read.csv("Exp_2_ADP_control/ResultsData/Dresults.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
+figures_folder = "Exp_3_ADP_vr/Figura_final"
+results_tbl <- read.csv("Exp_3_ADP_vr/ResultsData/DresultsExp3.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
 
 cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
+
+
 
 
 
@@ -64,10 +63,10 @@ mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
 r.squaredGLMM(m.Dist1)
 
 
-eq1 <- substitute("No visual:" ~~~ italic(y) == k %.% italic(X)^italic(a),
+eq1 <- substitute("No visual information:" ~~~ italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]], digits = 2)))
-eq2 <- substitute("Visual:"~~~italic(y) == k %.% italic(X)^italic(a),
+eq2 <- substitute("Virtual environment:"~~~italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^(mDist1stats$tidy_data$estimate[[1]]+mDist1stats$tidy_data$estimate[[3]]), digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]]+mDist1stats$tidy_data$estimate[[4]], digits = 2)))
 #eq3 <- substitute("r.squared:"~~~italic(R)^italic(2) == italic(b),
@@ -106,6 +105,7 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
 f1
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "5. Lme Lineal-Normal", ".jpg", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f1, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
+
 
 
 
@@ -174,7 +174,7 @@ f6
 testSigendBias <- t.test(filter(results_tbls, 
               room_condition=="No visual information" )$mBiasSigned,
        filter(results_tbls, 
-              room_condition=="Visual information")$mBiasSigned, 
+              room_condition=="Virtual environment")$mBiasSigned, 
        paired = FALSE)
 
 testSigendBias
@@ -184,6 +184,7 @@ testSigendBias
 #sample estimates:
 #  mean of x  mean of y 
 #-0.5090052 -0.3577557 
+
 
 
 # unsigned bias -----------------------------------------------------------
@@ -203,8 +204,8 @@ f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = ro
   labs(x = "Condition", 
        y = "Relative unsigned \nbias") +
   # facet_grid(. ~ type) +
-  annotate("text", x = 1.5, y = 1.1,  label = "**", size = 4) +
-  annotate("segment", x = 1, xend = 2, y = 1.0, yend = 1.0, colour = "black", size=.5, alpha=1,)+
+ # annotate("text", x = 1.5, y = 1.1,  label = "**", size = 4) +
+#  annotate("segment", x = 1, xend = 2, y = 1.0, yend = 1.0, colour = "black", size=.5, alpha=1,)+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "none",
         axis.title.x = element_blank(),
@@ -224,8 +225,9 @@ f7
 t.test(filter(results_tbls, 
               room_condition=="No visual information" )$mBiasUnSigned,
        filter(results_tbls, 
-              room_condition=="Visual information")$mBiasUnSigned, 
+              room_condition=="Virtual environment")$mBiasUnSigned, 
        paired = FALSE)
+
 
 
 
@@ -248,9 +250,10 @@ main_figure
 
 
 
+
 # save plot ---------------------------------------------------------------
 
-figures_folder = "./Exp_2_ADP_control/Figura_final_2/"
+figures_folder = "./Exp_3_ADP_vr/Figura_final/"
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "exp", ".png", sep = '')
 ggsave(device = "png", mi_nombre_de_archivo, plot=main_figure, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
 
