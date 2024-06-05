@@ -59,8 +59,8 @@ Final.Fixed<-effect(c("log10(target_distance)*room_condition"), m.Dist1)
 Final.Fixed<-as.data.frame(Final.Fixed)
 
 mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
-#mDist1stats$tidy_data$estimate[[1]]
-
+mDist1stats$tidy_data
+anova(m.Dist1)
 r.squaredGLMM(m.Dist1)
 
 
@@ -106,6 +106,8 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
 f1
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "5. Lme Lineal-Normal", ".jpg", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f1, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
+anov = anova(m.Dist1)
+anov
 
 
 

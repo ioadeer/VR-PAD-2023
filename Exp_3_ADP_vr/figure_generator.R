@@ -40,7 +40,6 @@ cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "
 
 # make model figure -------------------------------------------------------
 
-
 results_tbl <- results_tbl %>%
   mutate(
     perc_dist_log_10 = log10(perc_dist)
@@ -58,8 +57,8 @@ Final.Fixed<-effect(c("log10(target_distance)*room_condition"), m.Dist1)
 Final.Fixed<-as.data.frame(Final.Fixed)
 
 mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
-#mDist1stats$tidy_data$estimate[[1]]
-
+mDist1stats$tidy_data
+anova(m.Dist1)
 r.squaredGLMM(m.Dist1)
 
 
