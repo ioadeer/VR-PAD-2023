@@ -158,14 +158,18 @@ f6
 m.RelativBias <- lm(mBiasSigned ~ room_condition, 
                     data = results_tbls)
 extract_stats(ggcoefstats(m.RelativBias))
-#1 (Intercept)                        -0.509
-# room_conditionVisual information    0.151 
+# De aca saco los datos de relative bias signed
+#1 (Intercept)                        -0.581       0.95   -0.676   -0.487
+# room_conditionVirtual environment  -0.0205       0.95   -0.154    0.113 (esto sumado a lo de arriba)
 
 anov = anova(m.RelativBias)
 anov
+#               Df Sum Sq  Mean Sq F value Pr(>F)
+#room_condition  1 0.0038 0.003798  0.0978 0.7564
+# Residuals      34 1.3210 0.038853 
 f6
 
-# no es signficitavo #1 0.18301 0.183011  3.5967 0.06756 .
+# no es signficitavo
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
 
@@ -177,12 +181,13 @@ testSigendBias <- t.test(filter(results_tbls,
        paired = FALSE)
 
 testSigendBias
-
+#t = 0.31268, df = 33.571, p-value = 0.7565
+#alternative hypothesis: true difference in means is not equal to 0
 #95 percent confidence interval:
-#  -0.31498920  0.01249011
+#  -0.1130450  0.1541329
 #sample estimates:
 #  mean of x  mean of y 
-#-0.5090052 -0.3577557 
+#-0.5812711 -0.6018150 
 
 
 
@@ -214,10 +219,19 @@ f7
 
 m.RelativUnsignedBias <- lm(mBiasUnSigned ~ room_condition, 
                             data = results_tbls)
+
 extract_stats(ggcoefstats(m.RelativUnsignedBias))
+
+# (Intercept)                         0.593   0.95    0.506   0.680 
+# room_conditionVirtual environment   0.0153  0.95   -0.108   0.139
+
 anov = anova(m.RelativUnsignedBias)
 anov
+#               Df Sum Sq  Mean Sq F value Pr(>F)
+#room_condition  1 0.0021 0.002096  0.0632  0.803
+#Residuals      34 1.1273 0.033157   
 f7
+
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
 
@@ -226,6 +240,7 @@ t.test(filter(results_tbls,
        filter(results_tbls, 
               room_condition=="Virtual environment")$mBiasUnSigned, 
        paired = FALSE)
+#t = -0.25141, df = 33.724, p-value = 0.803
 
 # main plot ---------------------------------------------------------------
 
