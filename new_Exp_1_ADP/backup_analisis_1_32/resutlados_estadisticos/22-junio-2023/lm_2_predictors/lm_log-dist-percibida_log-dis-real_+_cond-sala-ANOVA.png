@@ -1,0 +1,9 @@
+Analysis of Variance Table
+
+Response: log_respuesta
+               Df  Sum Sq Mean Sq  F value    Pr(>F)    
+log_distancia   1 3.03301 3.03301 112.3880 2.196e-06 ***
+condicion_sala  1 0.00045 0.00045   0.0167    0.8999    
+Residuals       9 0.24288 0.02699                       
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1

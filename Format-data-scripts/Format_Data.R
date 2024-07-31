@@ -55,9 +55,6 @@ all_data <- all_data %>%
 
 write.table(all_data, file="./data-piloto/data.csv", row.names = FALSE)
 
-
-
-
 # -s11-a-32-empty-room ----------------------------------------------------
 
 data_list <- list()
@@ -110,7 +107,7 @@ library("dplyr")
 all_data <- all_data %>%
   mutate(nsub = nsub + 11)
 
-write.table(all_data, file="./analisis-pad-main/data/12_22_s/raw/data-s12-32-2-blocks", row.names = FALSE)
+write.table(all_data, file="./analisis-pad-main/data/12_22_s/raw/data-s12-32-2-blocks.csv", row.names = FALSE)
 
 all_data.first_block <- all_data %>%
   filter(nbloque == 1)

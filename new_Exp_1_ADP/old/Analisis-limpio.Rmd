@@ -1,0 +1,1088 @@
+---
+title: "Experimento tamaño de sala virtual (N=50)"
+author: "Joaquin Cervino"
+date: "2023-08-10"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r dependencies,  include=FALSE}
+# Dependencias ------------------------------------------------------------
+library(broom)
+library(broom.mixed)
+library(dplyr)
+library(ggbeeswarm)
+library(gmodels)
+library(ggplot2)
+library(ggthemes)
+library(ggpubr)
+library(ggstatsplot)
+library(gridExtra)
+library(htmlwidgets)
+library(quickpsy)
+library(tidyverse)
+library(lme4)
+library(nlme)
+library(lmerTest)
+library(modelr)
+library(scales) 
+library(pracma)
+library(plotly)
+library(Routliers)
+library(processx)
+library(rstatix)
+library(orca)
+```
+
+# Introducción
+
+La motivación de este experimento consiste en probar lo aseverado en Calcagno et al. que sugiere que la modalidad visual tiene una influencia en la percepeción auditiva de distancia.
+
+H1: El tamaño de sala afecta la percepción auditiva de distancia.
+
+H2: El tamaño máximo de sala percibido visualmente se correlaciona positivamente con la mayor distancia reportada para la percepción auditiva de distancia.
+
+# Materiales y métodos
+
+Para probar estas hipótesis se realizó un setup experimental mixto. En este coexisten entornos virtuales visuales (mediante un casco de realidad virtual) y fuentes reales ubicadas en el mismo entorno acústico (sala del Lapso).
+
+El uso del casco de realidad virtual consiste de una aplicación en UE 5.0 que permite situar al sujeto en entornos virtuales para realizar una manipulación experimental en la modalidad visual. Esta manipulación consiste de dos condiciones. Por un lado, una sala virtual equivalente en tamaño y aspecto a la sala real en la cual el participante realiza la tarea. Por otro lado, una sala que es la mitad en tamaño de profundidad, esto es, la pared situada en frente del participante.
+
+En lo que respecta a la parte auditiva, se utilizó una configuración de parlantes clásicas para relevar curvas de distancia. Esta configuración consiste en situar parlantes a distintas distancias en el plano frontal del sujeto a lo largo del eje anetoro posterior. Las distancias utilizadas fueron: 2 m, 2.7 m, 3.65 m, 4.9 m, 6.65 m y 9 m. De los parlantes se emite un estimulo sonoro, un burst de ruido blanco de duración de 500 ms. El estímulo se emite con intensidad equivalente desde los distintos parlantes para inducir el cue o pista mas significativo del la percepción auditiva de distancia que es la variación de la intensidad del estímulo en función de la distancia.
+
+Para realizar el experimento, los participantes fueron divididos en dos grupos. A cada grupo se lo exponía a un entorno virtual diferente. Un grupo veía en primer instancia en el entorno virtual una sala congruente con la sala real en la que se encontraba. El otro grupo, era expuesto a una sala de mitad del tamaño en profundidad. Los participantes fueron introducidos en la sala experimental con los ojos vendados para que no conocieran el entorno real de forma visual. Una vez dentro de la sala experimental, se sentaban en una silla y se les colocaba el casco de realidad virtual procurando que no vieran la sala real. Con el casco ya colocado se les mostraba una sala virtual congruente o no congruente, dependiendo del grupo al que pertenecieran. Luego de exponer a los participantes al entorno virtual durante unos instantes, se apagaba el estímulo visual y debían dar un reporte verbal a ciegas de la distancia a la cual percibiían estímulos sonoros. En un segundo bloque, se les mostraba la sala que no habían visto previamente, y luego realizaban la misma tarea de reporte verbal de localización de estiímulos sonoros.
+
+Este diseño fue motivado para poder observar la existencia de un efecto tanto entre sujetos como intra sujetos.
+
+# Participantes
+
+Del experimento participaron 50 sujetos. *SACAR DATOS POBLACIONALES*
+
+# Análisis de datos
+
+```{r load_data, include=FALSE}
+
+tabla.raw <- read.csv('./data/data-1-50-bloque-1-sin-outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+tabla.raw$SesgoAbs <-  tabla.raw$respuesta - tabla.raw$distancia
+tabla.raw$SesgoRel <- (tabla.raw$respuesta - tabla.raw$distancia) / tabla.raw$distancia
+
+
+f_promedio <- function(x) c(mean = mean(x),
+                            sd   = sd(x),
+                            var  = var(x),
+                            sem  = sd(x)/sqrt(length(x)),
+                            n    = length(x))
+
+tabla.ind <- tibble(aggregate(cbind(respuesta,SesgoRel,SesgoAbs) ~ nsub*condicion_sala*distancia*nbloque,
+                              data = tabla.raw,
+                              FUN  = f_promedio,na.action = NULL))
+
+# - Nivel poblacional
+
+tabla.pob <- tibble(aggregate(cbind(respuesta[,"mean"],SesgoRel[,"mean"]) ~ condicion_sala*distancia,
+                              data <- tabla.ind,
+                              FUN  <- f_promedio,na.action = NULL))
+
+
+tabla.pob = tabla.pob %>% rename(respuestapob = V1)
+tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
+
+
+```
+
+## Figuras
+
+### Individual con brutos
+
+```{r individual con brutos, echo=FALSE, message=FALSE, warning=FALSE}
+g1 <- ggplot() +
+  geom_line(data= tabla.ind, aes(x = distancia, y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
+  geom_line(data= tabla.pob, aes(x = distancia, y = respuestapob[,"mean"], group = condicion_sala, col = condicion_sala), alpha = 1)+
+  geom_errorbar(data=tabla.pob, aes(x = distancia, y = respuestapob[,"mean"], 
+                                    ymin = respuestapob[,"mean"] - respuestapob[,"sem"], 
+                                    ymax = respuestapob[,"mean"] + respuestapob[,"sem"],
+                                    col = condicion_sala),
+                alpha = 0.7, width=0.3, linewidth=0.75,
+                )+
+  scale_x_continuous(name="Distance source (m)")+
+  scale_y_continuous(name="Perceived distance (m)")+
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+ 
+  theme_linedraw(base_size = 9)
+
+plot(g1)
+
+```
+
+### Sesgo
+
+```{r sesgo, echo=FALSE, message=FALSE, warning=FALSE}
+## Sesgo
+tabla_sesgo <- tabla.ind %>% 
+  group_by(condicion_sala,nsub) %>%
+  summarise(mDist_perc = mean(respuesta[,"mean"]),
+            mSesgoRel  = mean(SesgoRel[,"mean"]))  %>%
+  ungroup()
+
+tabla_sesgo.pob <- tabla_sesgo  %>% 
+  group_by(condicion_sala) %>%
+  summarise(MSesgoRel = mean(mSesgoRel),
+            N = n()) %>%
+  ungroup()
+
+fig.sesgo <- ggplot(tabla_sesgo, aes(x = condicion_sala,
+                                     y = mSesgoRel,
+                                     colour = condicion_sala))+
+geom_point(size = 4,alpha = 1,
+           position = position_jitterdodge(jitter.width = .1,
+                                           jitter.height = 0,
+                                           dodge.width = .1)) +
+  # stat_summary(fun.data = "mean_se",
+  #              geom = "bar",
+  #              alpha = .4,
+  #              size = 1,
+  #              position = position_dodge(width = 1)) +
+  stat_summary(fun.data = "mean_se",
+               geom = "line") +
+  stat_summary(fun.data = "mean_se",
+               geom = "bar",
+               alpha = .4,
+               size=2,
+               position = position_dodge(width = 1)) +
+  labs(x = "Condition de sala",
+       y = "Bias") +
+  theme_pubr(base_size = 9, margin = TRUE)
+# theme(legend.position = "none")
+fig.sesgo
+
+```
+
+## Estadistica
+
+### Modelo de efectos mixtos y anova.
+
+```{r lmer, echo=FALSE, warning=TRUE}
+
+m.distancia <- lmer(log(respuesta[,"mean"]) ~ condicion_sala * log(distancia) + (1|nsub), 
+                    data = tabla.ind)
+
+summary(m.distancia)
+anova(m.distancia)
+
+```
+
+### Analisis de funcion de potencia
+
+```{r power function sala chica, echo=FALSE, message=FALSE, warning=FALSE}
+tabla.chica.ind <- tabla.ind %>%
+  filter(condicion_sala =="SALA_CHICA")
+
+tabla.chica.pob <- tabla.pob %>%
+  filter(condicion_sala == "SALA_CHICA")
+
+tabla.chica.pob <- tabla.chica.pob %>%
+  mutate(
+    log_respuesta = log(respuestapob[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+tabla.chica.ind <- tabla.chica.ind %>%
+  mutate(
+    log_respuesta = log(respuesta[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+m.distancia.sala_chica <- lm(log_respuesta ~ log_distancia, 
+                    data = tabla.chica.pob)
+
+
+tabla.chica.pob <- tabla.chica.pob %>%
+  mutate(
+    predi = predict(m.distancia.sala_chica),
+  )
+
+eqn <- sprintf(
+  "italic(k) == %.3g * ',' ~~ italic(a) == %.3g  * ',' ~~ italic(r)^2 ~ '=' ~ %.2g",
+  coef(m.distancia.sala_chica)[1],
+  coef(m.distancia.sala_chica)[2],
+  summary(m.distancia.sala_chica)$r.squared
+)
+
+g1 <- ggplot() +
+  #geom_line(data= tabla.ind, aes(x = log(distancia), y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
+  geom_line(data= tabla.chica.pob, aes(x = log_distancia, y = predi), alpha = 0.9)+
+  geom_point(data = tabla.chica.pob, mapping = aes(x=log_distancia, y=log_respuesta))+
+  geom_point(data = tabla.chica.ind, mapping = aes(x=log_distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  #geom_point(data = tabla.chica.ind, mapping = aes(x=log_distancia, y=log_respuesta), 
+  #           color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  xlab("Distancia real (log)")+
+  ylab("Distancia percibida (log)") +
+  ggtitle("Ajuste con funcion de potencia (log log)") +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  annotate("text",x = 1.1, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+
+g2 <- ggplot() +
+  geom_line(data= tabla.chica.pob, aes(x = distancia, y = exp(predi)))+
+  geom_point(data = tabla.chica.pob, mapping = aes(x=distancia, y=respuestapob[,"mean"]))+
+  geom_point(data = tabla.chica.ind, mapping = aes(x=distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_continuous(name="Distance source (m)", breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  scale_y_continuous(name="Perceived distance (m)",  breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  ggtitle("Sala chica ajuste con funcion de potencia") +
+  annotate("text",x = 5, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+grid.arrange(g1, g2, nrow = 1)
+
+```
+
+```{r power function sala grande, echo=FALSE, message=FALSE, warning=FALSE}
+tabla.grande.ind <- tabla.ind %>%
+  filter(condicion_sala =="SALA_GRANDE")
+
+tabla.grande.pob <- tabla.pob %>%
+  filter(condicion_sala == "SALA_GRANDE")
+
+tabla.grande.pob <- tabla.grande.pob %>%
+  mutate(
+    log_respuesta = log(respuestapob[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+tabla.grande.ind <- tabla.grande.ind %>%
+  mutate(
+    log_respuesta = log(respuesta[,"mean"]),
+    log_distancia = log(distancia)
+  )
+
+m.distancia.sala_grande <- lm(log_respuesta ~ log_distancia, 
+                    data = tabla.grande.pob)
+
+
+tabla.grande.pob <- tabla.grande.pob %>%
+  mutate(
+    predi = predict(m.distancia.sala_grande),
+  )
+
+eqn <- sprintf(
+  "italic(k) == %.3g * ',' ~~ italic(a) == %.3g  * ',' ~~ italic(r)^2 ~ '=' ~ %.2g",
+  coef(m.distancia.sala_grande)[1],
+  coef(m.distancia.sala_grande)[2],
+  summary(m.distancia.sala_grande)$r.squared
+)
+
+g1 <- ggplot() +
+  #geom_line(data= tabla.ind, aes(x = log(distancia), y = respuesta[,"mean"], group = nsub, col=condicion_sala), alpha = 0.2)+
+  geom_line(data= tabla.grande.pob, aes(x = log_distancia, y = predi), alpha = 0.9)+
+  geom_point(data = tabla.grande.pob, mapping = aes(x=log_distancia, y=log_respuesta))+
+  geom_point(data = tabla.grande.ind, mapping = aes(x=log_distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  #geom_point(data = tabla.grande.ind, mapping = aes(x=log_distancia, y=log_respuesta), 
+  #           color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  xlab("Distancia real (log)")+
+  ylab("Distancia percibida (log)") +
+  ggtitle("Sala grande ajuste con funcion de potencia (log log)") +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  annotate("text",x = 1.1, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+g2 <- ggplot() +
+  geom_line(data= tabla.grande.pob, aes(x = distancia, y = exp(predi)))+
+  geom_point(data = tabla.grande.pob, mapping = aes(x=distancia, y=respuestapob[,"mean"]))+
+  geom_point(data = tabla.grande.ind, mapping = aes(x=distancia, y=respuesta[,"mean"]), 
+             color='blue', alpha=.8, shape=1, size=2.2, stroke=.2) + 
+  scale_x_continuous(name="Distance source (m)", breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  scale_y_continuous(name="Perceived distance (m)",  breaks=c(0,2,2.7,3.65,4.9,6.65,9.0), labels=c(0,2,2.7,3.65,4.9,6.65,9.0), minor_breaks=NULL) +
+  geom_abline(intercept = 0, slope = 1, linetype="dashed") +
+  ggtitle("Sala grande ajuste con funcion de potencia") +
+  annotate("text",x = 5, y = 10, label= eqn, parse = TRUE) +
+  theme_linedraw(base_size = 9)
+
+grid.arrange(g1, g2, nrow = 1)
+
+```
+
+### Obteniendo coeficiente por sujeto
+
+```{r load data many models, echo=FALSE, message=FALSE, warning=FALSE}
+data.clean <-  read.csv('data/coeficientes_por_sujeto.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+# Asi se preparo data
+# modelo_sujeto  <- function(df) {
+#   lmer(log_respuesta ~ log_distancia + (1|nsub) , data = df)
+# }
+# 
+# modelo_sujeto  <- function(df) {
+#   lm(log_respuesta ~ log_distancia, data = df)
+# }
+# 
+# regressions <- tabla.ind %>%
+#   nest(data = -nsub) %>%
+#   mutate(
+#     fit = map(data,modelo_sujeto),
+#     tidied = map(fit, tidy),
+#     glanced = map(fit, glance),
+#     augmented = map(fit, augment)
+#   )
+# 
+# tidied <- regressions %>%
+#   unnest(tidied)
+# 
+# regressions %>%
+#   unnest(glanced)
+# 
+# regressions %>%
+#   unnest(augmented)
+# 
+# #
+# # CORRECCION Guardarse el R^2 tambien
+# 
+# r_sqrd <- regressions %>%
+#   unnest(glanced) %>%
+#   group_by(nsub) %>%
+#   select(nsub, r.squared)
+# 
+# #
+# coefs <- regressions %>%
+#   unnest(tidied) %>%
+#   group_by(nsub) %>%
+#   spread(term,estimate) %>%
+#   select(nsub,"(Intercept)", log_distancia) %>%
+#   rename(intercept = "(Intercept)") %>%
+#   group_by(nsub) %>%
+#   summarise(
+#     intercept = max(intercept, na.rm =T),
+#     coef = max(log_distancia, na.rm =T),
+#   )
+# 
+# cond <- data.frame(tabla.ind$nsub, tabla.ind$condicion_sala)
+# 
+# cond <- cond %>%
+#   rename(nsub = tabla.ind.nsub) %>%
+#   rename(condicion_sala = tabla.ind.condicion_sala)
+# 
+# cond <- cond %>%
+#   group_by(nsub)  %>%
+#   distinct()
+# 
+# coefs <- merge(x=coefs, y=cond, by='nsub')
+# 
+# coefs <- merge(x=coefs, y=r_sqrd, by='nsub')
+# 
+# write.table(coefs, file="analisis-pad-2-salas-vacias/data/coeficientes_por_sujeto.csv", row.names = FALSE)
+
+```
+
+#### Coefciente a
+
+Este coeficiente representa el exponente del ajuste con funcion de potencias. Explica la parte no lineal de la compresion.
+
+```{r coef a, echo=FALSE, message=FALSE, warning=FALSE}
+
+data.clean.sala_chica <- data.clean %>%
+  filter(condicion_sala == "SALA_CHICA")
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g \nMdn = %.3g (%.2g - %.2g)\nN =  %.2g",
+  mean(data.clean.sala_chica$coef),
+  sd(data.clean.sala_chica$coef),
+  median(data.clean.sala_chica$coef),
+  quantile(data.clean.sala_chica$coef)[4],
+  quantile(data.clean.sala_chica$coef)[2],
+  sum(data.clean.sala_chica$coef)
+)
+
+hist_a_sc <- ggplot(data.clean.sala_chica, aes(coef)) +
+  geom_histogram(binwidth= 0.1, color="black",fill="white") +
+  scale_x_continuous(breaks= seq(0.3,2.1, by=0.5)) +
+  scale_y_continuous(breaks= seq(0,5, by = 1))+
+  xlim(0.3,2.1) +
+  ylim(0,5) +
+  geom_vline(xintercept = round(mean(data.clean.sala_chica$coef),2),        # Add line for mean
+             linetype="dashed",
+             ) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 1.4, # para fig compuesta
+           y = 4.0,
+           label = eqn1,
+           size = 1.5,
+           hjust = 0) +
+  labs(x="a", y = "Count")+
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank()) +
+  theme_minimal()
+
+#hist_a_sc
+
+# sala grande
+
+data.clean.sala_grande <- data.clean %>%
+  filter(condicion_sala == "SALA_GRANDE")
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g \nMdn = %.3g (%.2g - %.2g)\nN =  %.2g",
+  mean(data.clean.sala_grande$coef),
+  sd(data.clean.sala_grande$coef),
+  median(data.clean.sala_grande$coef),
+  quantile(data.clean.sala_grande$coef)[4],
+  quantile(data.clean.sala_grande$coef)[2],
+  sum(data.clean.sala_grande$coef)
+)
+
+
+# scale_x_continuous(breaks= seq(0.3,2.1, by=0.5)) +
+#   scale_y_continuous(breaks= seq(0,5, by = 1))+
+#   xlim(0.3,2) +
+#   ylim(0,5) +
+
+hist_a_sg <- ggplot(data.clean.sala_grande, aes(coef)) +
+  geom_histogram(binwidth= 0.1, color="black",fill="white") +
+  geom_vline(xintercept = round(mean(data.clean.sala_grande$coef),2),        # Add line for mean
+             linetype="dashed",
+  ) +
+  scale_x_continuous(breaks= seq(0.3,2.1, by=0.5)) +
+  scale_y_continuous(breaks= seq(0,5, by = 1))+
+  xlim(0.3,2.1) +
+  ylim(0,5) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 1.4, # para fig compuesta
+           y = 4.0,
+           label = eqn1,
+           size = 1.5,
+           hjust = 0) +
+  labs(x="a", y = "Count")+
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank()) +
+  theme_minimal()
+
+#hist_a_sg
+
+# a_comp <- ggarrange(
+#   hist_a_sc,
+#   hist_a_sg,
+#   nrow = 2
+# )
+
+#plot(a_comp)
+
+# histograma a apaisado
+data.clean.boxplot_a <- data.clean %>%
+  mutate(
+    condicion_sala = case_when(
+      condicion_sala == "SALA_GRANDE" ~ "Grande",
+      condicion_sala == "SALA_CHICA" ~ "Chica",
+    )
+  )
+
+bxp <- ggboxplot(data.clean.boxplot_a, x = "condicion_sala", y = "coef",
+                 orientation = "horizontal",
+               color = "condicion_sala", palette = "jco",
+               add = "jitter", ylab="coef a",
+               title="T-test coeficientes a") +
+  theme_minimal() +
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.title = element_text(hjust = 0),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank())
+
+  
+stat.test <- data.clean.boxplot_a  %>% 
+  t_test(coef~condicion_sala) %>%
+  add_significance()
+
+stat.test <- stat.test %>% add_y_position(fun ="mean", step.increase = 35)
+
+bxp <- bxp + stat_pvalue_manual(
+  stat.test, label = "p", tip.length = 0.01,
+  coord.flip = TRUE
+) +
+  coord_flip()
+
+#bxp
+
+all <- ggarrange(
+  bxp,
+  ggarrange(
+    hist_a_sc, 
+    hist_a_sg,
+    nrow = 2
+  ),
+  ncol = 2
+)
+
+plot(all)
+```
+
+\pagebreak
+
+#### k intercept
+
+placeholder
+
+```{r k intercept, echo=FALSE, message=FALSE, warning=FALSE}
+
+data.clean.sala_chica <- data.clean %>%
+  filter(condicion_sala == "SALA_CHICA")
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g \nMdn = %.3g (%.2g - %.2g)\nN =  %.2g",
+  mean(data.clean.sala_chica$intercept),
+  sd(data.clean.sala_chica$intercept),
+  median(data.clean.sala_chica$intercept),
+  quantile(data.clean.sala_chica$intercept)[4],
+  quantile(data.clean.sala_chica$intercept)[2],
+  sum(data.clean.sala_chica$intercept)
+)
+
+hist_a_sc <- ggplot(data.clean.sala_chica, aes(intercept)) +
+  geom_histogram(binwidth= 0.5, color="black",fill="white") +
+  scale_x_continuous(breaks= seq(-3,1.0, by=1.0)) +
+  scale_y_continuous(breaks= seq(0,6, by = 1))+
+  xlim(-3,1) +
+  ylim(0,6) +
+  geom_vline(xintercept = round(mean(data.clean.sala_chica$intercept),2),        # Add line for mean
+             linetype="dashed",
+  ) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.0, # para fig compuesta
+           y = 5,
+           label = eqn1,
+           size = 1.5,
+           hjust = 0) +
+  labs(x="k", y = "Count")+
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank()) +
+  theme_minimal()
+
+#hist_a_sc
+
+# sala grande
+
+data.clean.sala_grande <- data.clean %>%
+  filter(condicion_sala == "SALA_GRANDE")
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g \nMdn = %.3g (%.2g - %.2g)\nN =  %.2g",
+  mean(data.clean.sala_grande$intercept),
+  sd(data.clean.sala_grande$intercept),
+  median(data.clean.sala_grande$intercept),
+  quantile(data.clean.sala_grande$intercept)[4],
+  quantile(data.clean.sala_grande$intercept)[2],
+  sum(data.clean.sala_grande$intercept)
+)
+
+# scale_x_continuous(breaks= seq(0.3,2.1, by=0.5)) +
+#   scale_y_continuous(breaks= seq(0,5, by = 1))+
+#   xlim(0.3,2) +
+#   ylim(0,5) +
+
+hist_a_sg <- ggplot(data.clean.sala_grande, aes(intercept)) +
+  geom_histogram(binwidth= 0.5, color="black",fill="white") +
+  geom_vline(xintercept = round(mean(data.clean.sala_grande$intercept),2),        # Add line for mean
+             linetype="dashed",
+  ) +
+  scale_x_continuous(breaks= seq(-3,1.0, by=1.0)) +
+  scale_y_continuous(breaks= seq(0,6, by = 1))+
+  xlim(-3,1) +
+  ylim(0,6) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.0, # para fig compuesta
+           y = 5.0,
+           label = eqn1,
+           size = 1.5,
+           hjust = 0) +
+  labs(x="k", y = "Count")+
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank()) +
+  theme_minimal()
+
+#hist_a_sg
+
+a_comp <- ggarrange(
+  hist_a_sc,
+  hist_a_sg,
+  nrow = 2
+)
+
+#plot(a_comp)
+
+# histograma a apaisado
+data.clean.boxplot_a <- data.clean %>%
+  mutate(
+    condicion_sala = case_when(
+      condicion_sala == "SALA_GRANDE" ~ "Grande",
+      condicion_sala == "SALA_CHICA" ~ "Chica",
+    )
+  )
+
+bxp <- ggboxplot(data.clean.boxplot_a, x = "condicion_sala", y = "intercept",
+                 orientation = "horizontal",
+                 color = "condicion_sala", palette = "jco",
+                 add = "jitter", ylab="intercept k",
+                 title="T-test de k") +
+  theme_minimal() +
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.title = element_text(hjust = 0),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank())
+
+
+stat.test <- data.clean.boxplot_a  %>% 
+  t_test(intercept~condicion_sala) %>%
+  add_significance()
+
+stat.test <- stat.test %>% add_y_position(fun ="mean", step.increase = 10)
+
+bxp <- bxp + stat_pvalue_manual(
+  stat.test, label = "p", tip.length = 0.01,
+  coord.flip = TRUE
+) +
+  coord_flip()
+
+#bxp
+
+all_k <- ggarrange(
+  bxp,
+  ggarrange(
+    hist_a_sc, 
+    hist_a_sg,
+    nrow = 2
+  ),
+  ncol = 2
+)
+
+plot(all_k)
+
+```
+
+\pagebreak
+
+#### R squared
+
+placeholder
+
+```{r r squared, echo=FALSE, message=FALSE, warning=FALSE}
+
+data.clean <- data.clean  %>%
+  rename(rsqr = r.squared)
+
+data.clean.sala_chica <- data.clean %>%
+  filter(condicion_sala == "SALA_CHICA")
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g \nMdn = %.3g (%.2g - %.2g)\nN =  %.2g",
+  mean(data.clean.sala_chica$rsqr),
+  sd(data.clean.sala_chica$rsqr),
+  median(data.clean.sala_chica$rsqr),
+  quantile(data.clean.sala_chica$rsqr)[4],
+  quantile(data.clean.sala_chica$rsqr)[2],
+  sum(data.clean.sala_chica$rsqr)
+)
+
+hist_a_sc <- ggplot(data.clean.sala_chica, aes(rsqr)) +
+  geom_histogram(binwidth= 0.1, color="black",fill="white") +
+  scale_x_continuous(breaks= seq(0.3,1.0, by=0.1)) +
+  scale_y_continuous(breaks= seq(0,12, by = 1))+
+  xlim(0.5,1.1) +
+  ylim(0,13) +
+  geom_vline(xintercept = round(mean(data.clean.sala_chica$rsqr),2),        # Add line for mean
+             linetype="dashed", color = 'darkgrey'
+  ) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.50, # para fig compuesta
+           y = 10.0,
+           label = eqn1,
+           size = 1.5,
+           hjust = 0) +
+  labs(x=expression("R"^2*""), y = "Count")+
+  # (m"^3*")
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank()) +
+  theme_minimal()
+
+#hist_a_sc
+
+# sala grande
+
+data.clean.sala_grande <- data.clean %>%
+  filter(condicion_sala == "SALA_GRANDE")
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g \nMdn = %.3g (%.2g - %.2g)\nN =  %.2g",
+  mean(data.clean.sala_grande$rsqr),
+  sd(data.clean.sala_grande$rsqr),
+  median(data.clean.sala_grande$rsqr),
+  quantile(data.clean.sala_grande$rsqr)[4],
+  quantile(data.clean.sala_grande$rsqr)[2],
+  sum(data.clean.sala_grande$rsqr)
+)
+
+
+# scale_x_continuous(breaks= seq(0.3,2.1, by=0.5)) +
+#   scale_y_continuous(breaks= seq(0,5, by = 1))+
+
+hist_a_sg <- ggplot(data.clean.sala_grande, aes(rsqr)) +
+  geom_histogram(binwidth= 0.1, color="black",fill="white") +
+  geom_vline(xintercept = round(mean(data.clean.sala_grande$rsqr),2),        # Add line for mean
+             linetype="dashed", col = 'darkgrey',
+  ) +
+  scale_x_continuous(breaks= seq(0.3,1.0, by=0.1)) +
+  scale_y_continuous(breaks= seq(0,12, by = 1))+
+  xlim(0.5,1.1) +
+  ylim(0,13) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.50, # para fig compuesta
+           y = 10.0,
+           label = eqn1,
+           size = 1.5,
+           hjust = 0) +
+  labs(x=expression("R"^2*""), y = "Count")+
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank()) +
+  theme_minimal()
+
+#hist_a_sg
+
+r_comp <- ggarrange(
+  hist_a_sc,
+  hist_a_sg,
+  nrow = 2
+)
+
+#plot(r_comp)
+
+# histograma a apaisado
+data.clean.boxplot_a <- data.clean %>%
+  mutate(
+    condicion_sala = case_when(
+      condicion_sala == "SALA_GRANDE" ~ "Grande",
+      condicion_sala == "SALA_CHICA" ~ "Chica",
+    )
+  )
+
+bxp <- ggboxplot(data.clean.boxplot_a, x = "condicion_sala", y = "rsqr",
+                 orientation = "horizontal",
+                 color = "condicion_sala", palette = "jco",
+                 add = "jitter", ylab="r.squared a",
+                 title="T test R squared") +
+  theme_minimal() +
+  theme(
+    legend.position="none",
+    #axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    #axis.title = element_text(hjust = 0),
+    #axis.ticks = element_blank(),
+    axis.title.y = element_blank())
+
+stat.test <- data.clean.boxplot_a  %>% 
+  t_test(rsqr~condicion_sala) %>%
+  add_significance()
+
+stat.test <- stat.test %>% add_y_position(fun ="mean", step.increase = -7)
+
+bxp <- bxp + stat_pvalue_manual(
+  stat.test, label = "p", tip.length = 0.01,
+  coord.flip = TRUE
+) +
+  coord_flip()
+
+#bxp
+
+all_sqr <- ggarrange(
+  bxp,
+  ggarrange(
+    hist_a_sc, 
+    hist_a_sg,
+    nrow = 2
+  ),
+  ncol = 2
+)
+
+plot(all_sqr)
+
+```
+
+### Análisis de correlación
+
+```{r correlación, echo=FALSE, message=FALSE, warning=FALSE}
+
+tabla.analisis_cor <- read.csv("./data/analisis_correlacion_1_50.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.analisis_cor <- select(tabla.analisis_cor, c(nsub, 
+                                               block_1, 
+                                               SV_depth,
+                                               distanca_max
+                                              ))
+# LOG LOG
+
+tabla.analisis_cor <- tabla.analisis_cor %>%
+  mutate(
+    log_distancia_max = log(distanca_max),
+    log_SV_depth = log(SV_depth)
+  )
+
+correlation_plot <- ggplot(tabla.analisis_cor, 
+                              aes(x =log_SV_depth, y = log_distancia_max,
+                                  colour = block_1)) +
+  geom_point() +
+  geom_smooth(alpha=0.3, method= "lm")+
+  stat_cor(method = "pearson")+
+  ggtitle("Correlacion ambas salas (log log)") +
+  xlab("Profundidad de sala visual") +
+  #theme(legend.title =element_blank(), legend.position = 'none')+
+  ylab("Maxima distancia auditiva")
+
+plot(correlation_plot)
+```
+
+## Sala percibida
+
+```{r}
+```
+
+```{r sala_3d_make, echo=FALSE, message=FALSE, warning=FALSE}
+
+dimensions.raw  <- read.csv('./data/dimensiones_de_sala_visual_1_50_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+dimensions.raw <- dimensions.raw %>%
+  filter(SR_height < 5) %>%
+  filter(SG_RV_height < 5) %>%
+  filter(SR_depth < 25) %>%
+  filter(SG_RV_depth < 25) %>%
+  filter(SR_width < 20) %>%
+  filter(SG_RV_width < 20) 
+
+
+cols = c(
+  "SG_RV_width",
+  "SG_RV_depth",
+  "SG_RV_height",
+  "SR_width",
+  "SR_depth",
+  "SR_height")
+
+dimensions.raw <- select(dimensions.raw, cols)
+
+
+f_promedio <- function(x) c(mean = mean(x),
+                            sd   = sd(x),
+                            var  = var(x),
+                            sem  = sd(x)/sqrt(length(x)),
+                            n    = length(x))
+
+dimensions.ind <- dimensions.raw$SG_RV_volumen %>%
+  mutate()
+
+for (i in 1: 1:nrow(dimensions.raw)) {
+  # obj = objs$shapes[[i]];
+  # Sala real
+  
+  width = dimensions.raw$SR_width[i]
+  depth = dimensions.raw$SR_depth[i]
+  height = dimensions.raw$SR_height[i]
+  
+  if (i==1) {
+    a = plot_ly(type = "mesh3d",
+                scene = 'scene1',
+                x = c(0, 0, depth, depth, 0, 0, depth, depth),
+                y = c(0, width, width, 0, 0, width, width, 0),
+                z = c(0, 0, 0, 0, height, height, height, height),
+                i = c(7, 0, 0, 0, 4, 4, 6, 6, 4, 0, 3, 2),
+                j = c(3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3),
+                k = c(0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6),
+                opacity = 0.1,
+                color = I("red"),
+                intensity = 10,
+                showlegend= FALSE,
+                showscale = FALSE
+    )
+  } 
+  else {
+    a = add_mesh(p = a,
+                 scene = 'scene1',
+                 x = c(0, 0, depth, depth, 0, 0, depth, depth),
+                 y = c(0, width, width, 0, 0, width, width, 0),
+                 z = c(0, 0, 0, 0, height, height, height, height),
+                 i = c(7, 0, 0, 0, 4, 4, 6, 6, 4, 0, 3, 2),
+                 j = c(3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3),
+                 k = c(0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6),
+                 opacity = 0.1,
+                 color = I("red"),
+                 intensity = 10,
+                 showlegend= FALSE,
+                 showscale = FALSE
+    )
+  }
+  #a$scene = 'scene1'
+  fig1 <- a %>% 
+    hide_colorbar()
+  
+  # Sala grande realidad virtual
+  width = dimensions.raw$SG_RV_width[i]
+  depth = dimensions.raw$SG_RV_depth[i]
+  height = dimensions.raw$SG_RV_height[i]
+  
+  if (i==1) {
+   b = plot_ly(type = "mesh3d",
+                scene = 'scene2',
+                x = c(0, 0, depth, depth, 0, 0, depth, depth),
+                y = c(0, width, width, 0, 0, width, width, 0),
+                z = c(0, 0, 0, 0, height, height, height, height),
+                i = c(7, 0, 0, 0, 4, 4, 6, 6, 4, 0, 3, 2),
+                j = c(3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3),
+                k = c(0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6),
+                opacity = 0.1,
+                color = I("blue"),
+                intensity = 10,
+                showlegend= FALSE,
+                showscale = FALSE
+    )
+   
+  } 
+  else {
+    b = add_mesh(p = b,
+                 scene = 'scene2',
+                 x = c(0, 0, depth, depth, 0, 0, depth, depth),
+                 y = c(0, width, width, 0, 0, width, width, 0),
+                 z = c(0, 0, 0, 0, height, height, height, height),
+                 i = c(7, 0, 0, 0, 4, 4, 6, 6, 4, 0, 3, 2),
+                 j = c(3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3),
+                 k = c(0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6),
+                 opacity = 0.1,
+                 color = I("blue"),
+                 intensity = 10,
+                 showlegend= FALSE,
+                 showscale = FALSE
+    )
+  }
+  #b$scene = 'scene2'
+  fig2 <- b %>% 
+    hide_colorbar()
+}
+
+# https://plotly.com/r/reference/layout/
+# https://plotly.com/r/reference/layout/scene/
+# https://stackoverflow.com/questions/74206526/adding-a-scene-information-after-a-plot-ly-object-has-been-created
+axx <- list(
+  gridcolor='rgb(255, 255, 255)',
+  zerolinecolor='rgb(255, 255, 255)',
+  showbackground=TRUE,
+  backgroundcolor='rgb(230, 230,230)'
+)
+
+fig1$x$layout$scene = 'scene1'
+
+fig2$x$layout$scene = 'scene2'
+
+fig <- subplot(fig1, fig2) %>% 
+  layout(title = "3D Subplots", 
+         # estos se tienen q llama scene y scene2 etc.
+         scene = list(domain = list(x = c(0,1),y = c(0,0.5)),
+                      xaxis = axx, yaxis = axx, zaxis = axx,
+                      showscale = TRUE,
+                      aspectmode = 'cube'),
+         scene2 = list(domain = list(x = c(0,1),y = c(0.5,1)),
+                       xaxis = axx, yaxis = axx, zaxis = axx,
+                       showscale = FALSE,
+                       aspectmode = 'cube')
+         )
+
+# fig
+# fig$x$layout$showlegend = FALSE
+#fig$x$layout$scene2
+annotations = list( 
+  list( 
+    x = 0.25,  
+    y = 0,  
+    text = "Sala Real",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.25,  
+    y = 0.5,  
+    text = "Sala virtual",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ))
+
+fig <- fig %>%layout(annotations = annotations) 
+
+fig <- plotly_build(fig)
+#fig
+#orca(fig, "test.svg", args=c('--disable-gpu'))
+
+# En este miniconda se instalo plotly y kaleido
+reticulate::use_miniconda('r-reticulate')
+#save_image(fig, "imgs/two_rooms.png", scale = 0.9, width = 500, height = 500,)
+
+```
+
+```{r sala_3d_render, echo=FALSE, message=FALSE, warning=FALSE}
+
+#setwd("path/to/your/folder/with/these/bars")
+#saveWidget(fig, "p1.html", selfcontained = F, libdir = "lib")
+#fig
+#file.show("imgs/two_rooms.png")
+save_image(fig, "imgs/two_rooms2.png", scale = 1.0, width = 500, height = 800)
+knitr::include_graphics("imgs/two_rooms2.png")
+```

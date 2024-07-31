@@ -1,0 +1,388 @@
+
+# dependencies ------------------------------------------------------------
+
+
+library(broom)
+library(broom.mixed)
+library(dplyr)
+library(ggbeeswarm)
+library(gmodels)
+library(ggplot2)
+library(ggthemes)
+library(ggpubr)
+library(ggstatsplot)
+library(gridExtra)
+library(htmlwidgets)
+library(quickpsy)
+library(tidyverse)
+library(lme4)
+library(nlme)
+library(lmerTest)
+library(modelr)
+library(scales) 
+library(pracma)
+library(plotly)
+library(Routliers)
+library(processx)
+library(rstatix)
+library(orca)
+library(reshape2)
+library(ggpubr)
+# figura ------------------------------------------------------------------
+#Con remocion de outliers con criterio de pad
+#dimensions.raw  <- read.csv('./Exp_1_VDP/data/volumen_sin_outliers_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+dimensions.raw  <- read.csv('./Exp_1_VDP/data/volumen_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+
+#colnames(dimensions.raw)
+
+dimensions.volume <- melt(dimensions.raw, id.vars='nsub',
+                          measure.vars=c("SG_RV_volumen", "SR_volumen"))
+
+dimensions.volume <- dimensions.volume %>%
+  mutate(
+    variable = case_when(
+      variable == "SG_RV_volumen" ~ "Virtual Room",
+      variable == "SR_volumen" ~ "Real Room",
+    )
+  )
+
+# Voy a remover outliers, valores superior 1000 m3
+dimensions.volume <- dimensions.volume %>%
+  filter(!value >= 1000)
+
+dimensions.volume <- dimensions.volume %>%
+  filter(!nsub == 18)
+
+dimensions.volume_aggr <- dimensions.volume %>%
+  group_by(variable) %>%
+  summarize(
+    mean_volume = mean(value),
+    se = sd(value)/sqrt(n())
+  )
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.4g",
+  dimensions.volume_aggr$mean_volume[1],
+  dimensions.volume_aggr$se[1])
+
+eqn2 <- sprintf(
+  "M = %.3g ± %.4g",
+  dimensions.volume_aggr$mean_volume[2],
+  dimensions.volume_aggr$se[2])
+
+dimensions.volume <- dimensions.volume %>%
+  ungroup()
+
+dimensions.volume <- dimensions.volume %>%
+  rename("volume" = "value",
+         "condicion" = "variable")
+
+stat.test <- dimensions.volume  %>% 
+  t_test(volume~condicion, paired=TRUE) %>%
+  add_significance()
+
+#stat.test
+
+# # A tibble: 1 × 9
+# .y.    group1    group2          n1    n2 statistic    df     p p.signif
+# <chr>  <chr>     <chr>        <int> <int>     <dbl> <dbl> <dbl> <chr>   
+# volume Sala Real Sala Virtual    40    40    -0.203  76.7  0.84 ns   
+# aca el errorbar lo voy a cambiar por se
+dim_barchart <- dimensions.volume_aggr %>%
+  ggplot(aes(variable, mean_volume)) +
+  geom_col(aes(fill = variable), color ="black", width =0.85) +
+  geom_errorbar(aes(ymin=mean_volume - se,
+                    ymax=mean_volume + se),
+                color = "#22292F",
+                width = .1) +
+  #scale_fill_grey(start = 0.3) +
+  #ylim = c(0, 300) +
+  scale_y_continuous(limits = c(0, 310), expand = c(0, 0)) +
+  geom_hline(yintercept=252,linetype="dashed") +
+  annotate("text", x=0.75, y=259, label= expression("252 m"^3*" ")) +
+  guides(fill = "none") +
+  #theme(legend.position="none") +
+  theme_minimal() +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.50, # para fig compuesta
+           y = 290.0,
+           label = eqn1,
+           size = 3.25,
+           hjust = 0) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 1.50, # para fig compuesta
+           y = 290.0,
+           label = eqn2,
+           size = 3.25,
+           hjust = 0) +
+  labs(
+    #x = "Condición",
+    y = expression("Perceived volume (m"^3*")"),
+    #title = "Volumen de sala real vs virtual",
+    #caption = "Barra de errores indica desviación estándar"
+  )+
+  scale_fill_brewer(palette="YlOrRd")+
+  theme(#axis.line = element_blank(),
+    axis.title.x = element_blank())
+
+# paired <- ggpaired(dimensions.volume, x = "condicion" , y = "volume")
+# plot(paired)
+
+stat.test <- stat.test %>% add_xy_position(x = "condicion", fun = "mean", step.increase = 10) # step.increase = 28)
+
+dim_barchart <- dim_barchart + 
+  stat_pvalue_manual(stat.test, label = "p", tip.length = 0.05, size = 3, bracket.shorten = 0.1)
+
+dim_barchart
+# d,w, h comparasion ------------------------------------------------------
+#DEPTH
+dimensions.depth <- melt(dimensions.raw, id.vars='nsub',
+                         measure.vars=c("SG_RV_depth", "SR_depth"))
+
+dimensions.depth <- dimensions.depth %>%
+  mutate(
+    variable = case_when(
+      variable == "SG_RV_depth" ~ "Virtual",
+      variable == "SR_depth" ~ "Real",
+    )
+  )
+dimensions.depth <- dimensions.depth %>%
+  rename("Profundidad" = "value",
+         "Condición" = "variable")
+
+dimensions.depth <- dimensions.depth %>%
+  filter(!Profundidad >= 20)
+
+dimensions.depth_sum <- dimensions.depth %>%
+  group_by(Condición) %>%
+  summarise(
+    mean = mean(Profundidad),
+    median = median(Profundidad),
+    sd = sd(Profundidad),
+    se = sd(Profundidad)/sqrt(n())
+  )
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g",
+  dimensions.depth_sum$mean[1],
+  dimensions.depth_sum$se[1])
+
+eqn2 <- sprintf(
+  "M = %.3g ± %.2g",
+  dimensions.depth_sum$mean[2],
+  dimensions.depth_sum$se[2])
+
+# Use single color
+violin_depth <- ggplot(dimensions.depth, aes(x=Condición, y=Profundidad,  fill=Condición)) +
+  geom_violin(trim=FALSE) +
+  geom_errorbar(data=dimensions.depth_sum, mapping = aes(x = Condición, y = mean, ymin=mean - se,
+                    ymax=mean + se),
+                color = "#22292F",
+                width = .1) +
+  geom_jitter(alpha = 0.1) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.450, # para fig compuesta
+           y = 18.0,
+           label = eqn1,
+           size = 2.35,
+           hjust = 0) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 1.4, # para fig compuesta
+           y = 18.0,
+           label = eqn2,
+           size = 2.35,
+           hjust = 0) +
+  labs(
+    y = "Depth (m)",
+  )+
+  theme_minimal() +
+  guides(fill = "none") +
+  scale_fill_brewer(palette="YlOrRd")+
+  #geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
+  geom_hline(yintercept=12,linetype="dashed") +
+  annotate("text", x=0.5, y=10, label= "12 m", size=2.5) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(hjust = 0)) 
+
+violin_depth
+# ANCHO 
+
+dimensions.width <- melt(dimensions.raw, id.vars='nsub',
+                         measure.vars=c("SG_RV_width", "SR_width"))
+
+dimensions.width <- dimensions.width %>%
+  mutate(
+    variable = case_when(
+      variable == "SG_RV_width" ~ "Virtual",
+      variable == "SR_width" ~ "Real",
+    )
+  )
+
+dimensions.width <- dimensions.width %>%
+  rename("Ancho" = "value",
+         "Condición" = "variable")
+
+dimensions.width <- dimensions.width %>%
+  filter(!Ancho >= 10)
+
+dimensions.width_sum <- dimensions.width %>%
+  group_by(Condición) %>%
+  summarise(
+    mean = mean(Ancho),
+    median = median(Ancho),
+    sd = sd(Ancho),
+    se = sd(Ancho)/sqrt(n())
+  )
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g",
+  dimensions.width_sum$mean[1],
+  dimensions.width_sum$se[1])
+
+eqn2 <- sprintf(
+  "M = %.3g ± %.2g",
+  dimensions.width_sum$mean[2],
+  dimensions.width_sum$sd[2])
+
+# Use single color
+violin_width <- ggplot(dimensions.width, aes(x=Condición, y=Ancho,  fill=Condición)) +
+  #geom_violin(trim=FALSE, fill='#A4A4A4', color="darkred")+
+  geom_violin(trim=FALSE)+
+  geom_errorbar(data=dimensions.width_sum, 
+                mapping = aes(x = Condición, y = mean, ymin=mean - se,
+                              ymax=mean + se),
+                color = "#22292F",
+                width = .1) +
+  geom_jitter(alpha = 0.1) +
+  # geom_text(data = dimensions.width_sum, aes(x = Condición, y = mean, 
+  #   label = paste("Mean: ", round(mean, 1), "\nMedian: ", median, "\nSD: ", round(sd, 1)),
+  #   hjust=0, position = ,
+  # ))+
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.50, # para fig compuesta
+           y = 10.0,
+           label = eqn1,
+           size = 2.35,
+           hjust = 0) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 1.40, # para fig compuesta
+           y = 10.0,
+           label = eqn2,
+           size = 2.35,
+           hjust = 0) +
+  theme_minimal() +
+  guides(fill = "none") +
+  scale_fill_brewer(palette="YlOrRd")+
+  #geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
+  geom_hline(yintercept=7,linetype="dashed")+
+  annotate("text", x=0.5, y=6, label= "7 m", size=2.5) +
+  labs(
+    y = "Width (m)",
+  ) +
+  theme(
+    axis.title.x = element_blank()) 
+
+# ALTO
+
+dimensions.height <- melt(dimensions.raw, id.vars='nsub',
+                          measure.vars=c("SG_RV_height", "SR_height"))
+
+dimensions.height <- dimensions.height %>%
+  mutate(
+    variable = case_when(
+      variable == "SG_RV_height" ~ "Virtual",
+      variable == "SR_height" ~ "Real",
+    )
+  )
+
+dimensions.height <- dimensions.height %>%
+  rename("Alto" = "value",
+         "Condición" = "variable")
+
+dimensions.height <- dimensions.height %>%
+  filter(!Alto >= 6)
+
+dimensions.height_sum <- dimensions.height %>%
+  group_by(Condición) %>%
+  summarise(
+    mean = mean(Alto),
+    median = median(Alto),
+    sd = sd(Alto),
+    se = sd(Alto)/sqrt(n())
+  )
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.2g",
+  dimensions.height_sum$mean[1],
+  dimensions.height_sum$se[1])
+
+eqn2 <- sprintf(
+  "M = %.3g ± %.2g",
+  dimensions.height_sum$mean[2],
+  dimensions.height_sum$se[2])
+
+# Use single color
+violin_height <- ggplot(dimensions.height, aes(x=Condición, y=Alto,  fill=Condición)) +
+  geom_violin(trim=FALSE)+
+  geom_errorbar(data=dimensions.height_sum, 
+                mapping = aes(x = Condición, y = mean, ymin=mean - se,
+                              ymax=mean + se),
+                color = "#22292F",
+                width = .1) +
+  geom_jitter(alpha = 0.1) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.50, # para fig compuesta
+           y = 5.75,
+           label = eqn1,
+           size = 2.35,
+           hjust = 0) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 1.40, # para fig compuesta
+           y = 5.75,
+           label = eqn2,
+           size = 2.35,
+           hjust = 0) +
+  theme_minimal() +
+  guides(fill = "none") +
+  scale_fill_brewer(palette="YlOrRd")+
+  #geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
+  geom_hline(yintercept=3,linetype="dashed") +
+  annotate("text", x=0.5, y=2.5, label= "3 m", size=2.5) +
+  labs(
+    y = "Height (m)",
+  ) +
+  theme(
+    axis.title.x = element_blank()) 
+
+#plot(violin_height)
+
+
+# figure <- ggarrange(violin_depth, violin_width,violin_height,
+#                     ncol = 3, labels = c("B", "C", "D"))
+
+figure <- ggarrange(dim_barchart, 
+                    ggarrange(violin_depth, violin_width,violin_height, widths = c(1.5,2),
+                              nrow = 3, labels = c("B", "C", "D")),
+                    ncol = 2, 
+                    labels ="A",
+                    heights = c(1, 0.75))
+figure
+
+
+
+# save image --------------------------------------------------------------
+
+
+figures_folder = "./Exp_1_VDP/figuras"
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "Perceived_room_size.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot =figure, width = 1400, height=1000, dpi=200, units = "px")
