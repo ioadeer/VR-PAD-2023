@@ -23,7 +23,7 @@ library(effects)
 # Format data -------------------------------------------------------------
 
 rm(list=ls())
-tabla.raw <- read.csv('./Exp_2_ADP_control/data/control_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.raw <- read.csv('./new_Exp_1_ADP/data/S1_S50_2_bloques_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 tabla.raw$abs_bias <-  abs(tabla.raw$respuesta - tabla.raw$distancia)
 
@@ -51,8 +51,8 @@ results_tbl <- tibble(aggregate(cbind(percived_distance,signed_bias,unsigned_bia
 results_tbl <- results_tbl %>%
   mutate(
     room_condition = case_when(
-      room_condition == "OSCURAS" ~ "No visual information",
-      room_condition == "VISUAL" ~ "Visual information"
+      room_condition == "SALA_CHICA" ~ "Coincident VE",
+      room_condition == "SALA_GRANDE" ~ "Smaller VE"
     )
   )
 
@@ -88,4 +88,4 @@ results_tbl %>%
   
   select(-c(percived_distance,signed_bias,unsigned_bias,abs_bias)) %>%
   
-  write_csv("./Exp_2_ADP_control/ResultsData/Dresults.csv")
+  write_csv("./new_Exp_1_ADP/ResultsData/Dresults_S1_S50_2_bloques_sin_outliers.csv")

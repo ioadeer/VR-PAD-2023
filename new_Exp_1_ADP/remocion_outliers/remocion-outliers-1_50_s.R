@@ -116,11 +116,15 @@ res3
 
 filter(tabla.outlier, condicion_sala == 'SALA_GRANDE')[res3$outliers_pos,]
 
-# Outliers para sala grande 11 17 32 y 35
+# Outliers para sala grande 21 32 45
 
 tabla.raw <- subset(tabla.raw, select = -c(SesgoAbs, SesgoRel))
 
+tabla.raw <- tabla.raw %>%
+  filter(nsub != 21) %>%
+  filter(nsub != 32) %>%
+  filter(nsub != 45) 
 
-write.table(tabla.raw, file="new_Exp_1_ADP/data/data-1-50-bloque-1-sin-outliers.csv", row.names = FALSE)
+write.table(tabla.raw, file="new_Exp_1_ADP/data/S1_S50_2_bloques_sin_outliers.csv", row.names = FALSE)
 
 
