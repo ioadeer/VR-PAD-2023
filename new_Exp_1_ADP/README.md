@@ -7,8 +7,10 @@ Incorporando
 - Nuevas formas de remocion de outliers
 
 TODO
-- Hacer analisis de sesgo y modelo de efectos mixtos intra sujetos
+- Hacer comparacion de segundos bloques entre sujetos
+- Hacer comparacion de primeros bloques entre sujetos
 - Cacluar correlacion otra vez>
 - Hacer figuras
 DONE
 - Arme dataset con dos bloques de N50
+- Hacer analisis de sesgo y modelo de efectos mixtos intra sujetos
