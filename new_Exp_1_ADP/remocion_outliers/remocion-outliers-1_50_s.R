@@ -27,7 +27,7 @@ library(Routliers)
 
 # load data new -----------------------------------------------------------
 
-tabla.raw <- read.csv('./analisis-pad-main/data/data-1-32-bloque-1.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.raw <- read.csv('./new_Exp_1_ADP/data/S1_S50_2_bloques.csv', header = TRUE, sep = ',', stringsAsFactors = TRUE)
 
 tabla.raw$SesgoAbs <-  tabla.raw$respuesta - tabla.raw$distancia
 tabla.raw$SesgoRel <- (tabla.raw$respuesta - tabla.raw$distancia) / tabla.raw$distancia
@@ -75,85 +75,18 @@ res3
 
 filter(tabla.outlier, condicion_sala == 'SALA_GRANDE')[res3$outliers_pos,]
 
-# Deteccion outliers condicion sala grande
-# A tibble: 2 × 3
-#nsub condicion_sala mSesgoRel
-#<int> <fct>              <dbl>
-#  1    22 SALA_GRANDE        0.465
-#  2    28 SALA_GRANDE        0.111
-
-res3 <- outliers_mad(x = filter(tabla.outlier,condicion_sala == 'SALA_GRANDE')$mSesgoRel ,na.rm=TRUE)
-
-plot_outliers_mad(res3,x=filter(tabla.outlier,condicion_sala == 'SALA_GRANDE')$mSesgoRel,pos_display=TRUE)
-
-res3$outliers_pos
-
-res3
-
-filter(tabla.outlier, condicion_sala == 'SALA_GRANDE')[res3$outliers_pos,]
-
-tabla.raw <- tabla.raw %>%
-  filter(nsub != 22) %>%
-  filter(nsub != 28)
-
-write.table(tabla.raw, file="./analisis-pad-main/data/data-1-32-bloque-1-sin-outliers.csv", row.names = FALSE)
-
-
-
-
-# load data 33 - 50 -------------------------------------------------------
-
-tabla.1_32 <- read.csv('./analisis-pad-2-salas-vacias/data/data-1-32-bloque-1-sin-outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
-tabla.1_32 <- subset(tabla.1_32, select = -c(SesgoAbs, SesgoRel))
-tabla.33_50 <- read.csv('./analisis-pad-2-salas-vacias/data/33_50_s/data-s33-50-1-block.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
-
-tabla.raw <- do.call("rbind", list(tabla.1_32, tabla.33_50))
-
-tabla.raw$SesgoAbs <-  tabla.raw$respuesta - tabla.raw$distancia
-tabla.raw$SesgoRel <- (tabla.raw$respuesta - tabla.raw$distancia) / tabla.raw$distancia
-
-
-f_promedio <- function(x) c(mean = mean(x),
-                            sd   = sd(x),
-                            var  = var(x),
-                            sem  = sd(x)/sqrt(length(x)),
-                            n    = length(x))
-
-tabla.ind <- tibble(aggregate(cbind(respuesta,SesgoRel) ~ nsub*condicion_sala*distancia*nbloque,
-                              data = tabla.raw,
-                              FUN  = f_promedio,na.action = NULL))
-
-# - Nivel poblacional
-
-tabla.pob <- tibble(aggregate(cbind(respuesta[,"mean"],SesgoRel[,"mean"]) ~ condicion_sala*distancia,
-                              data <- tabla.ind,
-                              FUN  <- f_promedio,na.action = NULL))
-
-
-tabla.pob = tabla.pob %>% rename(respuestapob = V1)
-tabla.pob = tabla.pob %>% rename(sesgorelpob = V2)
-
-
+#Median:
+#  [1] -0.5570613
 #
-# Copia
-# Hacer una nueva tabla que tiene sesgo de cada sujeto sin distancia
-
-tabla.outlier <- tabla.ind %>% 
-  #filter(Bloque == "verbal report" & BlindCat == "Blind") %>% 
-  group_by(nsub, condicion_sala) %>%
-  summarise(mSesgoRel  = mean(SesgoRel[,"mean"],na.rm=TRUE))  %>%
-  ungroup()
-
-
-res3 <- outliers_mad(x = filter(tabla.outlier,condicion_sala == 'SALA_CHICA')$mSesgoRel ,na.rm=TRUE)
-
-plot_outliers_mad(res3,x=filter(tabla.outlier,condicion_sala == 'SALA_CHICA')$mSesgoRel,pos_display=TRUE)
-
-res3$outliers_pos
-
-res3
-
-filter(tabla.outlier, condicion_sala == 'SALA_GRANDE')[res3$outliers_pos,]
+#MAD:
+#  [1] 0.2980083
+#
+#Limits of acceptable range of values:
+#  [1] -1.4510863  0.3369637
+#
+#Number of detected outliers
+#extremely low extremely high          total 
+#0              0              0 
 
 # No hay outliers para sala chica
 
@@ -164,15 +97,30 @@ res3 <- outliers_mad(x = filter(tabla.outlier,condicion_sala == 'SALA_GRANDE')$m
 plot_outliers_mad(res3,x=filter(tabla.outlier,condicion_sala == 'SALA_GRANDE')$mSesgoRel,pos_display=TRUE)
 
 res3$outliers_pos
+# [1] 21 32 45
 
 res3
 
+#Median:
+#  [1] -0.5623279
+#
+#MAD:
+#  [1] 0.2401106
+#
+#Limits of acceptable range of values:
+#  [1] -1.2826596  0.1580037
+#
+#Number of detected outliers
+#extremely low extremely high          total 
+#0              3              3 
+
 filter(tabla.outlier, condicion_sala == 'SALA_GRANDE')[res3$outliers_pos,]
 
-# No hubo remocion de outliers agregando del 33 al 50
+# Outliers para sala grande 11 17 32 y 35
 
 tabla.raw <- subset(tabla.raw, select = -c(SesgoAbs, SesgoRel))
 
-write.table(tabla.raw, file="analisis-pad-2-salas-vacias/data/data-1-50-bloque-1-sin-outliers.csv", row.names = FALSE)
+
+write.table(tabla.raw, file="new_Exp_1_ADP/data/data-1-50-bloque-1-sin-outliers.csv", row.names = FALSE)
 
 
