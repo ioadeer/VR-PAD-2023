@@ -1,0 +1,199 @@
+---
+title: "Analisis Experimento 4 Oscuras VR sala mas grande"
+author: "Joaquin Cervino"
+date: "2024-05-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Experimento 3
+
+
+```{r dependencies, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(Routliers)
+library(lme4)
+library(nlme)
+library(sjPlot)
+library(MuMIn)
+library(lmerTest)
+library(jtools)
+library(gdtools)
+library(broom)
+library(ggstatsplot)
+library(modelsummary)
+library(ggpubr)
+library(flextable)
+library(webshot)
+library(officer)
+library(effects)
+
+```
+
+```{r load data, echo=FALSE}
+rm(list=ls())
+figures_folder = "Figuras"
+results_tbl <- read.csv("./ResultsData/DresultsExp4.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
+
+cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
+
+```
+
+```{r formula_anova}
+m.Dist3 <-  lmer(log10(perc_dist)~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
+                 data = results_tbl) 
+extract_stats(ggcoefstats(m.Dist3))
+r.squaredGLMM(m.Dist3)
+
+anova(m.Dist3)
+anov1 = anova(m.Dist3)
+```
+
+```{r grafico_individual}
+
+results_tbl$Modelfitted3<-predict(m.Dist3)
+
+# Todos los sujetos
+FittedlmPlot1 <-ggplot()+
+  facet_grid(subject ~ room_condition, labeller=label_both)+
+  geom_line(data = results_tbl, aes(x = target_distance, y = 10^Modelfitted3))+
+  geom_point(data = results_tbl, aes(x = target_distance, y =perc_dist, group=subject,colour = subject), size=3)+
+  #  coord_cartesian(ylim = c(.03,.074))+ 
+  xlab("Targent_distance")+ylab("Perceived_distance")
+FittedlmPlot1
+
+```
+
+```{r grafico_pob}
+Final.Fixed<-effect(c("log10(target_distance)*room_condition"), m.Dist3)
+
+# Grafico poblacional
+Final.Fixed<-as.data.frame(Final.Fixed)
+
+Final.Fixed.Plot <-ggplot(data = Final.Fixed, aes(x = target_distance, y =10^fit, group=room_condition))+
+  # coord_cartesian(xlim=c(0,4),ylim = c(0,.7))+ 
+  geom_line(aes(color=room_condition), size=2)+
+  geom_ribbon(aes(ymin=10^fit-10^se, ymax=10^fit+10^se,fill=room_condition),alpha=.2)+
+  xlab("Target_distance")+
+  ylab("Perceived_distance")+
+  # scale_color_manual(values=c("blue", "red"))+
+  # scale_fill_manual(values=c("blue", "red"))+
+  theme_bw()+
+  theme(text=element_text(face="bold", size=12),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        panel.border = element_rect(fill = NA, colour = "NA"),
+        axis.line = element_line(size = 1, colour = "grey80"),
+        legend.title=element_blank(),
+        legend.position = c(.2, .92))
+Final.Fixed.Plot
+```
+``` {r}
+
+
+```
+
+# Falta BIAS
+
+```{r signed bias}
+
+#Bias
+
+cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
+
+results_tbls <- results_tbl %>% 
+  group_by(room_condition,subject) %>%
+  summarise(mBiasSigned  = mean(rel_bias_signed,na.rm=TRUE),
+            SdBiasSigned  = sd(rel_bias_signed,na.rm=TRUE)/sqrt(length(rel_bias_signed)),
+            mBiasUnSigned  = mean(rel_bias_unsigned,na.rm=TRUE),
+            SdBiasUnSigned  = sd(rel_bias_unsigned,na.rm=TRUE)/sqrt(length(rel_bias_unsigned)))  %>%
+  ungroup()
+
+results_tblp <- results_tbls %>% 
+  group_by(room_condition) %>%
+  summarise(MBiasSigned  = mean(mBiasSigned,na.rm=TRUE),
+            SDBiasSigned  = sd(mBiasSigned,na.rm=TRUE)/sqrt(length(mBiasSigned)),
+            MBiasUnSigned  = mean(mBiasUnSigned,na.rm=TRUE),
+            SDBiasUnSigned  = sd(mBiasUnSigned,na.rm=TRUE)/sqrt(length(mBiasUnSigned)))  %>%
+  ungroup()
+# geom_flat_violin(aes(fill = Condicion),position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA)+
+#   geom_point(aes(x = as.numeric(Tiempo)-.15, y = LeqAS, colour = Condicion),position = position_jitter(width = .05, height = 0), size = 1, shape = 20)+
+
+f6 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasSigned, colour = room_condition, fill = room_condition)) +
+  geom_pointrange(aes(x=room_condition, y=MBiasSigned, ymin=MBiasSigned-SDBiasSigned, ymax=MBiasSigned+SDBiasSigned), size = 1.2)+
+  geom_line(aes(group = room_condition),size = 1.2, alpha=.5)+
+  geom_point(data = results_tbls, mapping = aes(x = room_condition,y = mBiasSigned, colour = room_condition, fill = room_condition), alpha = .8)+
+  geom_line(data = results_tbls, mapping = aes(x = room_condition,y = mBiasSigned, group = subject, colour = room_condition, fill = room_condition),alpha = 0.3)+
+  scale_colour_manual(values = cbPalette) + 
+  scale_fill_manual(values = cbPalette) + 
+  geom_abline(slope = 0,
+              intercept = 0,
+              alpha = 0.5,
+              linetype = "dashed") +
+  labs(x = "Condition", 
+       y = "Relative signed \nbias [%]") +
+  # facet_grid(. ~ type) +
+  # annotate("text", x = 1.5, y = 2,  label = "***", size = 4) +
+  # annotate("segment", x = 1, xend = 2, y = 1.9, yend = 1.9, colour = "black", size=.5, alpha=1,)+
+  theme_pubr(base_size = 12, margin = TRUE)+
+  theme(legend.position = "none")
+
+m.RelativBias <- lm(mBiasSigned ~ room_condition, 
+                    data = results_tbls)
+extract_stats(ggcoefstats(m.RelativBias))
+anov = anova(m.RelativBias)
+anov
+f6
+#mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
+#ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
+
+t.test(filter(results_tbls, 
+              room_condition=="No visual information" )$mBiasSigned,
+       filter(results_tbls, 
+              room_condition=="Larger VE")$mBiasSigned, 
+       paired = FALSE)
+
+```
+
+```{r unsignedbias}
+
+#Bias
+
+f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = room_condition, fill = room_condition)) +
+  geom_pointrange(aes(x=room_condition, y=MBiasUnSigned, ymin=MBiasUnSigned-SDBiasUnSigned, ymax=MBiasUnSigned+SDBiasUnSigned), size = 1.2)+
+  geom_line(aes(group = room_condition),size = 1.2, alpha=.5)+
+  geom_point(data = results_tbls, mapping = aes(x = room_condition,y = mBiasUnSigned, colour = room_condition, fill = room_condition), alpha = .8)+
+  geom_line(data = results_tbls, mapping = aes(x = room_condition,y = mBiasUnSigned, group = subject, colour = room_condition, fill = room_condition),alpha = 0.3)+
+  scale_colour_manual(values = cbPalette) + 
+  scale_fill_manual(values = cbPalette) + 
+  geom_abline(slope = 0,
+              intercept = 0,
+              alpha = 0.5,
+              linetype = "dashed") +
+  labs(x = "Condition", 
+       y = "Relative unsigned \nbias [%]") +
+  # facet_grid(. ~ type) +
+  # annotate("text", x = 1.5, y = 2,  label = "***", size = 4) +
+  # annotate("segment", x = 1, xend = 2, y = 1.9, yend = 1.9, colour = "black", size=.5, alpha=1,)+
+  theme_pubr(base_size = 12, margin = TRUE)+
+  theme(legend.position = "none")
+
+m.RelativUnsignedBias <- lm(mBiasUnSigned ~ room_condition, 
+                    data = results_tbls)
+extract_stats(ggcoefstats(m.RelativUnsignedBias))
+anov = anova(m.RelativUnsignedBias)
+anov
+f7
+#mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
+#ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
+
+t.test(filter(results_tbls, 
+              room_condition=="No visual information" )$mBiasUnSigned,
+       filter(results_tbls, 
+              room_condition=="Larger VE")$mBiasUnSigned, 
+       paired = FALSE)
+
+```
