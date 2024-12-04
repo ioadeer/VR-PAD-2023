@@ -442,7 +442,7 @@ dim_barchart <- dimensions.volume_aggr %>%
            size = 3.25,
            hjust = 0) +
   labs(
-    #x = "Condición",
+    #x = "Condición",j
     y = expression("Perceived volume (m"^3*")"),
     #title = "Volumen de sala real vs virtual",
     #caption = "Barra de errores indica desviación estándar"
