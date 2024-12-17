@@ -52,7 +52,7 @@ tabla.analisis_correlacion <- read.csv('Exp_4_ADP_vr/data/analisis_correlacion.c
 
 
 # plot correlacion --------------------------------------------------------
-
+## Lin Lin
 
 ## LOG LOG
 
@@ -70,7 +70,7 @@ correlation_plot <- ggplot(tabla.analisis_correlacion,
   stat_cor(method = "pearson")+
   ggtitle("Correlacion ambas condiciones (log log)") +
   xlab("Profundidad de sala reportada") +
-  theme(legend.title =element_blank(), legend.position = 'none')+
+  #theme(legend.title =element_blank(), legend.position = 'none')+
   ylab("Maxima distancia auditiva")
 
 plot(correlation_plot)
