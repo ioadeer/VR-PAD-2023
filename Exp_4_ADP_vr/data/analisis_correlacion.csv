@@ -1,0 +1,30 @@
+"nsub" "condicion_sala" "distanca_max" "depth"
+1 "Larger VE" 2.5 20
+1 "No Visual Info" 1 2
+10 "No Visual Info" 3.15 4
+11 "Larger VE" 5 12
+11 "No Visual Info" 4.5 6.5
+12 "Larger VE" 5 15
+12 "No Visual Info" 7 20
+13 "Larger VE" 6 30
+13 "No Visual Info" 6 10
+14 "Larger VE" 5 6
+14 "No Visual Info" 3 4
+15 "Larger VE" 3 15
+15 "No Visual Info" 3.5 3
+16 "Larger VE" 5 15
+16 "No Visual Info" 6 2
+2 "Larger VE" 3 7
+2 "No Visual Info" 3 4
+3 "Larger VE" 6 8
+3 "No Visual Info" 7 7
+4 "Larger VE" 5 15
+4 "No Visual Info" 6 10
+6 "Larger VE" 2.5 12.5
+6 "No Visual Info" 0.9 20
+7 "Larger VE" 5 20
+7 "No Visual Info" 7 15
+8 "Larger VE" 4 8
+8 "No Visual Info" 4.5 4
+9 "Larger VE" 4 8
+9 "No Visual Info" 5 4
