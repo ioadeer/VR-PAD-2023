@@ -38,22 +38,22 @@ tabla.visual <- tabla.visual %>%
   separate(No_visual_information, into = c("value1", "value2", "value3"), sep = "x") %>%
   mutate(
     No_visual_info_vol = as.numeric(value1) * as.numeric(value2) * as.numeric(value3),
-    No_visual_info_width = as.numeric(value1),
-    No_visual_info_depth = as.numeric(value2),
+    No_visual_info_depth = as.numeric(value1),
+    No_visual_info_width = as.numeric(value2),
     No_visual_info_height = as.numeric(value3)
   ) %>%
   separate(Virtual_environment, into = c("value1", "value2", "value3"), sep = "x") %>%
   mutate(
     Virtual_environment_vol = as.numeric(value1) * as.numeric(value2) * as.numeric(value3),
-    Virtual_environment_width = as.numeric(value1),
-    Virtual_environment_depth = as.numeric(value2),
+    Virtual_environment_depth = as.numeric(value1),
+    Virtual_environment_width = as.numeric(value2),
     Virtual_environment_height = as.numeric(value3)
   ) %>%
   separate(Real_environment, into = c("value1", "value2", "value3"), sep = "x") %>%
   mutate(
     Real_environment_vol = as.numeric(value1) * as.numeric(value2) * as.numeric(value3),
-    Real_environment_width = as.numeric(value1),
-    Real_environment_depth = as.numeric(value2),
+    Real_environment_depth = as.numeric(value1),
+    Real_environment_width = as.numeric(value2),
     Real_environment_height = as.numeric(value3)
   ) %>%
   select(-c("value1", "value2", "value3"))

@@ -49,7 +49,8 @@ dimensions.volume <- dimensions.volume %>%
 
 # Voy a remover outliers, valores superior 1000 m3
 dimensions.volume <- dimensions.volume %>%
-  filter(!value >= 1000)
+  #filter(!value >= 1000)
+  filter(!value >= 600) # este valor sale de boxplot_ver_outliers
 
 #dimensions.volume <- dimensions.volume %>%
 #  filter(!nsub == 18)
@@ -94,7 +95,7 @@ stat.test <- dimensions.volume  %>%
 
 stat.test
 
-dim_barchart <- dimensions.volume_aggr %>%
+sdim_barchart <- dimensions.volume_aggr %>%
   ggplot(aes(variable, mean_volume)) +
   geom_col(aes(fill = variable), color ="black", width =0.85) +
   scale_x_discrete(labels = c('No visual info','VE','RE'))+
