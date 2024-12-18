@@ -94,6 +94,24 @@ res3
 # extremely low extremely high          total 
 # 0              1              1 
 
+tabla.outlier <- tabla.ind %>% 
+  #filter(Bloque == "verbal report" & BlindCat == "Blind") %>% 
+  group_by(nsub, condicion_sala) %>%
+  summarise(mSesgoRel  = mean(SesgoRel[,"mean"],na.rm=TRUE))  %>%
+  ungroup()
+
+
+res3 <- outliers_mad(x = filter(tabla.outlier,condicion_sala == 'Larger VE')$mSesgoRel ,na.rm=TRUE)
+
+plot_outliers_mad(res3,x=filter(tabla.outlier,condicion_sala == 'Larger VE')$mSesgoRel,pos_display=TRUE)
+
+
+
+res3$outliers_pos
+
+res3
+
+
 
 # SACAR 5
 tabla.raw <- read.csv('Exp_4_ADP_vr/data/1_16_NVI_LVE.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
