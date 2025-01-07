@@ -381,14 +381,16 @@ ggsave(mi_nombre_de_archivo, plot =figure, width = 1400, height=1000, dpi=200, u
 ```
 
 ```{r figures exp 3, message=FALSE, warning=FALSE}
-dimensions.volume <- melt(tabla.exp_3, id.vars='nsub',
-                          measure.vars=c("OSCURAS_volumen", "VIRTUAL_volumen"))
+
+
+dimensions.volume <- melt(tabla.exp_3, id.vars='Subject',
+                          measure.vars=c("No_visual_info_vol", "VE_vol"))
 
 dimensions.volume <- dimensions.volume %>%
   mutate(
     variable = case_when(
-      variable == "OSCURAS_volumen" ~ "No visual Information",
-      variable == "VIRTUAL_volumen" ~ "Virtual Environment",
+      variable == "No_visual_info_vol" ~ "No visual Information",
+      variable == "VE_vol" ~ "Virtual Environment",
     )
   )
 
@@ -478,14 +480,14 @@ dim_barchart <- dim_barchart +
 
 # d,w, h comparasion ------------------------------------------------------
 #DEPTH
-dimensions.depth <- melt(tabla.exp_3, id.vars='nsub',
-                          measure.vars=c("OSCURAS_depth", "VIRTUAL_depth"))
+dimensions.depth <- melt(tabla.exp_3, id.vars='Subject',
+                          measure.vars=c("No_visual_info_depth", "VE_depth"))
 
 dimensions.depth <- dimensions.depth %>%
   mutate(
     variable = case_when(
-      variable == "OSCURAS_depth" ~ "No visual information",
-      variable == "VIRTUAL_depth" ~ "Virtual environment",
+      variable == "No_visual_info_depth" ~ "No visual information",
+      variable == "VE_depth" ~ "Virtual environment",
     )
   )
 dimensions.depth <- dimensions.depth %>%
@@ -554,14 +556,14 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
 
 # ANCHO 
 
-dimensions.width <- melt(tabla.exp_3, id.vars='nsub',
-                         measure.vars=c("OSCURAS_width", "VIRTUAL_width"))
+dimensions.width <- melt(tabla.exp_3, id.vars='Subject',
+                         measure.vars=c("No_visual_info_width", "VE_width"))
 
 dimensions.width <- dimensions.width %>%
   mutate(
     variable = case_when(
-      variable == "OSCURAS_width" ~ "No Visual information",
-      variable == "VIRTUAL_width" ~ "Virtual environment",
+      variable == "No_visual_info_width" ~ "No Visual information",
+      variable == "VE_width" ~ "Virtual environment",
     )
   )
 
@@ -631,14 +633,14 @@ violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Conditi
 
 # ALTO
 
-dimensions.height <- melt(tabla.exp_3, id.vars='nsub',
-                          measure.vars=c("OSCURAS_height", "VIRTUAL_height"))
+dimensions.height <- melt(tabla.exp_3, id.vars='Subject',
+                          measure.vars=c("No_visual_info_height", "VE_height"))
 
 dimensions.height <- dimensions.height %>%
   mutate(
     variable = case_when(
-      variable == "OSCURAS_height" ~ "No visual information",
-      variable == "VIRTUAL_height" ~ "Virtual environment",
+      variable == "No_visual_info_height" ~ "No visual information",
+      variable == "VE_height" ~ "Virtual environment",
     )
   )
 

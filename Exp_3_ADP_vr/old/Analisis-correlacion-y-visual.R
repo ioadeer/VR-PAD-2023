@@ -35,7 +35,8 @@ library(ggpubr)
 
 # importar, formatear y sacar outliers -------------------------------------
 
-tabla.pob_y_perc_size <- read.csv("Exp_3_ADP_vr/data/raw/VIRTUAL_y_poblacional/poblacional_y_tamanio_oscuras_vr.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
+tabla.pob_y_perc_size <- read.csv("Exp_3_ADP_vr/data/raw/visual_y_poblacional/poblacional_y_tamanio_oscuras_vr.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
+
 
 tabla.pob_y_perc_size <- tabla.pob_y_perc_size %>%
   slice(1:20)
@@ -72,8 +73,8 @@ tabla.virtual <-  tabla.virtual %>%
   separate(VIRTUAL, into = c("value1", "value2", "value3"), sep = "x") %>%
   mutate(
     VIRTUAL_volumen = as.numeric(value1) * as.numeric(value2) * as.numeric(value3),
-    VIRTUAL_width = as.numeric(value1),
-    VIRTUAL_depth = as.numeric(value2),
+    VIRTUAL_depth = as.numeric(value1),
+    VIRTUAL_width = as.numeric(value2),
     VIRTUAL_height = as.numeric(value3)
   ) 
 
@@ -96,8 +97,8 @@ tabla.oscuras <-  tabla.oscuras %>%
   separate(OSCURAS, into = c("value1", "value2", "value3"), sep = "x") %>%
   mutate(
     OSCURAS_volumen = as.numeric(value1) * as.numeric(value2) * as.numeric(value3),
-    OSCURAS_width = as.numeric(value1),
-    OSCURAS_depth = as.numeric(value2),
+    OSCURAS_depth = as.numeric(value1),
+    OSCURAS_width = as.numeric(value2),
     OSCURAS_height = as.numeric(value3)
   ) 
 
