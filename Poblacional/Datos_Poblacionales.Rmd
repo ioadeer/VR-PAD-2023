@@ -53,6 +53,7 @@ library(ggpubr)
 tabla.primer_exp <- read.csv("./data/Exp_1_demografico_50.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 tabla.segundo_exp <- read.csv("./data/Exp_2_poblacional_20.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 tabla.tercer_exp <- read.csv("./data/Exp_3_poblacional_20.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.cuarto_exp <- read.csv("./data/Exp_4_demografico_16.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 tabla.primer_exp <- tabla.primer_exp %>%
   mutate("exp" = 1)
@@ -85,7 +86,7 @@ tabla.tercer_exp <- select(tabla.tercer_exp, c("nsub",
                         "exp"
                         ))
 
-tabla.all <- do.call("rbind", list(tabla.primer_exp, tabla.segundo_exp, tabla.tercer_exp))
+tabla.all <- do.call("rbind", list(tabla.primer_exp, tabla.segundo_exp, tabla.tercer_exp, tabla.cuarto_exp))
 
 
 ```
@@ -114,3 +115,9 @@ La edad promedio es `r format(mean(tabla.segundo_exp$age), digits =4)` cubriendo
 Participaron un total de `r count(tabla.tercer_exp)` participantes del tercer experimento. Hubo un total de `r count(filter(tabla.tercer_exp, sex == 'F'))` mujeres y `r count(filter(tabla.tercer_exp, sex == 'M'))` hombres. 
 La edad promedio del tercer experimento es `r format(mean(tabla.tercer_exp$age), digits =4)` cubriendo un rango desde `r min(tabla.tercer_exp$age)` hasta `r max(tabla.tercer_exp$age)`. Del total de participantes,
 `r count(filter(tabla.tercer_exp, problemas_vision == 'No'))` no usaban anteojos, mientras que `r count(filter(tabla.tercer_exp, problemas_vision == 'Si'))` usaban.
+
+## Poblacional del experimento 4
+
+Participaron un total de `r count(tabla.cuarto_exp)` participantes del tercer experimento. Hubo un total de `r count(filter(tabla.cuarto_exp, sex == 'F'))` mujeres y `r count(filter(tabla.cuarto_exp, sex == 'M'))` hombres. 
+La edad promedio del tercer experimento es `r format(mean(tabla.cuarto_exp$age), digits =4)` cubriendo un rango desde `r min(tabla.cuarto_exp$age)` hasta `r max(tabla.cuarto_exp$age)`. Del total de participantes,
+`r count(filter(tabla.cuarto_exp, problemas_vision == 'No'))` no usaban anteojos, mientras que `r count(filter(tabla.cuarto_exp, problemas_vision == 'Si'))` usaban.
