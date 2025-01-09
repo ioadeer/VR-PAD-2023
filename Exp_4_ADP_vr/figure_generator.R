@@ -62,6 +62,9 @@ mDist1stats$tidy_data
 anova(m.Dist1)
 r.squaredGLMM(m.Dist1)
 
+tab_model(m.Dist1, file = "./Exp_4_ADP_vr/Models/LMEM_ADP.html")
+
+tidy(anova(m.Dist1))
 
 eq1 <- substitute("No visual information:" ~~~ italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
@@ -160,8 +163,14 @@ m.RelativBias <- lm(mBiasSigned ~ room_condition,
                     data = results_tbls)
 extract_stats(ggcoefstats(m.RelativBias))
 
+tab_model(m.RelativBias, file = "./Exp_4_ADP_vr/Models/signed_bias.html")
+
 anov = anova(m.RelativBias)
 anov
+#Response: mBiasSigned
+#Df  Sum Sq  Mean Sq F value Pr(>F)
+#room_condition  1 0.00236 0.002365  0.0436 0.8362
+#Residuals      28 1.51987 0.054281
 
 f6
 
@@ -177,14 +186,13 @@ testSigendBias <- t.test(filter(results_tbls,
        paired = FALSE)
 
 testSigendBias
-#t = 0.31268, df = 33.571, p-value = 0.7565
+#t = 0.20873, df = 24.344, p-value = 0.8364
 #alternative hypothesis: true difference in means is not equal to 0
 #95 percent confidence interval:
-#  -0.1130450  0.1541329
+#  -0.1576943  0.1932085
 #sample estimates:
 #  mean of x  mean of y 
-#-0.5812711 -0.6018150 
-
+#-0.4809290 -0.4986861 
 
 
 # unsigned bias -----------------------------------------------------------
@@ -218,14 +226,17 @@ m.RelativUnsignedBias <- lm(mBiasUnSigned ~ room_condition,
 
 extract_stats(ggcoefstats(m.RelativUnsignedBias))
 
+tab_model(m.RelativUnsignedBias, file = "./Exp_4_ADP_vr/Models/unsigned_bias.html")
 # (Intercept)                         0.593   0.95    0.506   0.680 
 # room_conditionVirtual environment   0.0153  0.95   -0.108   0.139
 
 anov = anova(m.RelativUnsignedBias)
 anov
-#               Df Sum Sq  Mean Sq F value Pr(>F)
-#room_condition  1 0.0021 0.002096  0.0632  0.803
-#Residuals      34 1.1273 0.033157   
+#Analysis of Variance Table
+#Response: mBiasUnSigned
+#Df  Sum Sq  Mean Sq F value Pr(>F)
+#room_condition  1 0.00071 0.000712  0.0184 0.8932
+#Residuals      28 1.08499 0.038750   
 f7
 
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
@@ -236,7 +247,17 @@ t.test(filter(results_tbls,
        filter(results_tbls, 
               room_condition=="Larger VE")$mBiasUnSigned, 
        paired = FALSE)
-#t = -0.25141, df = 33.724, p-value = 0.803
+
+#Welch Two Sample t-test
+#
+#data:  filter(results_tbls, room_condition == "No visual information")$mBiasUnSigned and filter(results_tbls, room_condition == "Larger VE")$mBiasUnSigned
+#t = -0.13553, df = 22.946, p-value = 0.8934
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+#  -0.1584546  0.1389707
+#sample estimates:
+#  mean of x mean of y 
+#0.5089846 0.5187265 
 
 # main plot ---------------------------------------------------------------
 
