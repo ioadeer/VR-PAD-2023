@@ -77,8 +77,10 @@ dimensions.volume <- dimensions.volume %>%
          "Condition" = "variable")
 
 stat.test <- dimensions.volume  %>% 
-  t_test(Volume~Condition, paired=TRUE) %>%
+  t_test(Volume~Condition, paired=FALSE) %>%
   add_significance()
+
+t_test_vol <- t.test(Volume~Condition, data= dimensions.volume)
 
 
 dim_barchart <- dimensions.volume_aggr %>%
@@ -128,6 +130,8 @@ stat.test <- stat.test %>% add_xy_position(x = "Condition", fun = "mean", step.i
 dim_barchart <- dim_barchart + 
   stat_pvalue_manual(stat.test, label = "p", tip.length = 0.05, size = 3, bracket.shorten = 0.1)
 
+
+
 # d,w, h comparasion ------------------------------------------------------
 #DEPTH
 dimensions.depth <- melt(tabla.exp_2, id.vars='nsub',
@@ -168,6 +172,12 @@ eqn2 <- sprintf(
   dimensions.depth_sum$se[2],
   dimensions.depth_sum$median[2])
 
+stat.test_depth <- dimensions.depth  %>% 
+  t_test(Depth~Condition, paired=FALSE) %>%
+  add_significance()
+
+t_test_depth <- t.test(Depth~Condition, data= dimensions.depth)
+
 # Use single color
 violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Condition)) +
   geom_violin(trim=FALSE) +
@@ -177,6 +187,13 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
       color = "#22292F",
       width = .1) +
   geom_jitter(alpha = 0.1) +
+  geom_signif(comparisons = list(c("No visual information",
+                                   "Visual information")),   
+              map_signif_level=TRUE,
+              tip_length = 0.0, 
+              size = 0.5,
+              y_position = 13,
+              extend_line = -0.4)+
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.450, # para fig compuesta
@@ -233,6 +250,11 @@ dimensions.width_sum <- dimensions.width %>%
     sd = sd(Width),
     se = sd / sqrt(n())
   )
+
+
+stat.test_w <- dimensions.width  %>% 
+  t_test(Width~Condition, paired=FALSE) %>%
+  add_significance()
 
 eqn1 <- sprintf(
   "M = %.3g ± %.2g \nMdn = %.3g",
