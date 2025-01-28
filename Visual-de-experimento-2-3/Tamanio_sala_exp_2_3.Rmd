@@ -452,6 +452,7 @@ stat.test <- dimensions.volume  %>%
   t_test(Volume~Condition, paired=FALSE) %>%
   add_significance()
 
+t_test_vol<- t.test(Volume~Condition, data= dimensions.volume)
 
 dim_barchart <- dimensions.volume_aggr %>%
   ggplot(aes(variable, mean_volume)) +
@@ -495,10 +496,10 @@ dim_barchart <- dimensions.volume_aggr %>%
 # paired <- ggpaired(dimensions.volume, x = "condicion" , y = "volume")
 # plot(paired)
 
-stat.test <- stat.test %>% add_xy_position(x = "Condition", fun = "mean", step.increase = 10) # step.increase = 28)
+#stat.test <- stat.test %>% add_xy_position(x = "Condition", fun = "mean", step.increase = 10) # step.increase = 28)
 
-dim_barchart <- dim_barchart + 
-  stat_pvalue_manual(stat.test, label = "p", tip.length = 0.05, size = 3, bracket.shorten = 0.1)
+#dim_barchart <- dim_barchart + 
+#  stat_pvalue_manual(stat.test, label = "p", tip.length = 0.05, size = 3, bracket.shorten = 0.1)
 
 # d,w, h comparasion ------------------------------------------------------
 #DEPTH
@@ -527,18 +528,24 @@ dimensions.depth_sum <- dimensions.depth %>%
     sd = sd(Depth),
     se = sd / sqrt(n())
   )
+# antes era asi, con mediana
+#eqn1 <- sprintf(
+#  "M = %.3g ± %.2g \nMdn = %.3g",
+#  dimensions.depth_sum$mean[1],
+#  dimensions.depth_sum$se[1],
+#  dimensions.depth_sum$median[1])
 
 eqn1 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.depth_sum$mean[1],
-  dimensions.depth_sum$se[1],
-  dimensions.depth_sum$median[1])
+  dimensions.depth_sum$se[1])
 
 eqn2 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.depth_sum$mean[2],
-  dimensions.depth_sum$se[2],
-  dimensions.depth_sum$median[2])
+  dimensions.depth_sum$se[2])
+
+t_test_depth <- t.test(Depth~Condition, data= dimensions.depth)
 
 # Use single color
 violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Condition)) +
@@ -551,18 +558,18 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.450, # para fig compuesta
-           y = 12.5,
+           y = 15.5,
            label = eqn1,
            size = 2.35,
            hjust = 0) +
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 1.4, # para fig compuesta
-           y = 12.5,
+           y = 15.5,
            label = eqn2,
            size = 2.35,
            hjust = 0) +
-  labs(
+    labs(
     y = "Depth (m)",
   )+
   theme_minimal() +
@@ -606,17 +613,16 @@ dimensions.width_sum <- dimensions.width %>%
   )
 
 eqn1 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.width_sum$mean[1],
-  dimensions.width_sum$se[1],
-  dimensions.width_sum$median[1])
+  dimensions.width_sum$se[1])
 
 eqn2 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n  ± %.2g",
   dimensions.width_sum$mean[2],
-  dimensions.width_sum$se[2],
-  dimensions.width_sum$median[2])
+  dimensions.width_sum$se[2])
 
+t_test_width <- t.test(Width~Condition, data= dimensions.width)
 # Use single color
 violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Condition)) +
   #geom_violin(trim=FALSE, fill='#A4A4A4', color="darkred")+
@@ -629,17 +635,24 @@ violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Conditi
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.50, # para fig compuesta
-           y = 8.0,
+           y = 9.0,
            label = eqn1,
            size = 2.35,
            hjust = 0) +
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 1.40, # para fig compuesta
-           y = 8.0,
+           y = 9.0,
            label = eqn2,
            size = 2.35,
            hjust = 0) +
+  geom_signif(comparisons = list(c("No visual information",
+                                 "Visual information")),   
+            map_signif_level=TRUE,
+            tip_length = 0.0, 
+            size = 0.5,
+            y_position = 13,
+            extend_line = -0.4)+
   theme_minimal() +
   guides(fill = "none") +
   scale_fill_brewer(palette="YlOrRd")+
@@ -683,17 +696,17 @@ dimensions.height_sum <- dimensions.height %>%
   )
 
 eqn1 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.height_sum$mean[1],
-  dimensions.height_sum$se[1],
-  dimensions.height_sum$median[1])
+  dimensions.height_sum$se[1])
 
 eqn2 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.height_sum$mean[2],
-  dimensions.height_sum$se[2],
-  dimensions.height_sum$median[2])
+  dimensions.height_sum$se[2])
 
+
+t_test_height <- t.test(Height~Condition, data= dimensions.height)
 # Use single color
 violin_height <- ggplot(dimensions.height, aes(x=Condition, y=Height,  fill=Condition)) +
   geom_violin(trim=FALSE)+
