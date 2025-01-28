@@ -114,14 +114,6 @@ dim_barchart <- dimensions.volume_aggr %>%
   geom_hline(yintercept=252,linetype="dashed") +
   annotate("text", x=0.75, y=259, label= expression("252 m"^3*" ")) +
   guides(fill = "none") +
-  #theme(legend.position="none") +
-  geom_signif(comparisons = list(c("No visual information",
-                              "Virtual environment")),   
-         map_signif_level=TRUE,
-         tip_length = 0.0, 
-         size = 0.5,
-         y_position = 200
-        )+
   theme_minimal() +
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
