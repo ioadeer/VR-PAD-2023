@@ -90,12 +90,17 @@ dimensions.volume <- dimensions.volume %>%
          "Condition" = "variable")
 
 stat.test <- dimensions.volume  %>% 
-  t_test(Volume~Condition, paired=FALSE) %>%
+  t_test(Volume~Condition, paired=FALSE, p.adjust.method = "bonferroni") %>%
   add_significance()
 
 stat.test
 
-sdim_barchart <- dimensions.volume_aggr %>%
+#t_test_vol <- t.test(Volume~Condition, data= dimensions.volume)
+
+pwc.vol <- dimensions.volume %>%
+  pairwise_t_test(Volume ~ Condition, p.adjust.method = "bonferroni")
+
+dim_barchart <- dimensions.volume_aggr %>%
   ggplot(aes(variable, mean_volume)) +
   geom_col(aes(fill = variable), color ="black", width =0.85) +
   scale_x_discrete(labels = c('No visual info','VE','RE'))+
@@ -110,6 +115,13 @@ sdim_barchart <- dimensions.volume_aggr %>%
   annotate("text", x=0.75, y=259, label= expression("252 m"^3*" ")) +
   guides(fill = "none") +
   #theme(legend.position="none") +
+  geom_signif(comparisons = list(c("No visual information",
+                              "Virtual environment")),   
+         map_signif_level=TRUE,
+         tip_length = 0.0, 
+         size = 0.5,
+         y_position = 200
+        )+
   theme_minimal() +
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
@@ -145,12 +157,13 @@ sdim_barchart <- dimensions.volume_aggr %>%
 # paired <- ggpaired(dimensions.volume, x = "condicion" , y = "volume")
 # plot(paired)
 
-stat.test <- stat.test %>% add_xy_position(x = "Condition", fun = "mean", step.increase = 10) # step.increase = 28)
+#stat.test <- stat.test %>% add_xy_position(x = "Condition", fun = "mean", step.increase = 10) # step.increase = 28)
 
-dim_barchart <- dim_barchart + 
-  stat_pvalue_manual(stat.test, label = "p", tip.length = 0.05, size = 3, bracket.shorten = 0.1)
 
-#plot(dim_barchart)
+#dim_barchart <- dim_barchart + 
+#  stat_pvalue_manual(stat.test, label = "p", tip.length = 0.05, size = 3, bracket.shorten = 0.1)
+
+plot(dim_barchart)
 
 # d,w, h comparasion ------------------------------------------------------
 #DEPTH
@@ -211,6 +224,9 @@ eqn3 <- sprintf(
   dimensions.depth_sum$median[3])
 
 
+pwc.depth <- dimensions.depth %>%
+  pairwise_t_test(Depth ~ Condition, p.adjust.method = "bonferroni")
+
 # Use single color
 violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Condition)) +
   geom_violin(trim=FALSE) +
@@ -220,6 +236,20 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
           color = "#22292F",
           width = .1) +
   geom_jitter(alpha = 0.1) +
+  geom_signif(comparisons = list(c("No visual information",
+                                  "Virtual environment")),   
+             map_signif_level=TRUE,
+             tip_length = 0.0, 
+             size = 0.5,
+             y_position = 13
+            )+
+    geom_signif(comparisons = list(c("No visual information",
+                                  "Real environment")),   
+             map_signif_level=TRUE,
+             tip_length = 0.0, 
+             size = 0.5,
+             y_position = 15
+            )+
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.450, # para fig compuesta
@@ -319,6 +349,9 @@ eqn3 <- sprintf(
   dimensions.width_sum$se[3],
   dimensions.width_sum$median[3])
 
+pwc.width <- dimensions.width %>%
+  pairwise_t_test(Width ~ Condition, p.adjust.method = "bonferroni")
+
 # Use single color
 violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Condition)) +
   #geom_violin(trim=FALSE, fill='#A4A4A4', color="darkred")+
@@ -328,10 +361,20 @@ violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Conditi
         ymax=mean + se),
         color = "#22292F",
         width = .1) +
-  # geom_text(data = dimensions.width_sum, aes(x = Condición, y = mean, 
-  #   label = paste("Mean: ", round(mean, 1), "\nMedian: ", median, "\nSD: ", round(sd, 1)),
-  #   hjust=0, position = ,
-  # ))+
+  geom_signif(comparisons = list(c("No visual information",
+                                  "Real environment")),   
+             map_signif_level=TRUE,
+             tip_length = 0.0, 
+             size = 0.5,
+             y_position = 10
+            )+
+    geom_signif(comparisons = list(c("Virtual environment",
+                                  "Real environment")),   
+             map_signif_level=TRUE,
+             tip_length = 0.0, 
+             size = 0.5,
+             y_position = 11
+            )+
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.50, # para fig compuesta
