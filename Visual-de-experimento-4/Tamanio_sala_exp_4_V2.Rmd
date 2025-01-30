@@ -62,8 +62,6 @@ dimensions.depth$Condition = factor(dimensions.depth$Condition, levels=c("No vis
                                                                                    "Virtual environment",
                                                                                    "Real environment"))
 
-unique(dimensions.depth$Subject)
-#  1  2  3  4  5  7  8  9 10 11 13 14 15 16  6 12
 
 dimensions.depth_sum <- dimensions.depth %>%
   group_by(Condition) %>%
@@ -71,7 +69,8 @@ dimensions.depth_sum <- dimensions.depth %>%
     mean = mean(Depth),
     median = median(Depth),
     sd = sd(Depth),
-    se = sd / sqrt(n())
+    se = sd / sqrt(n()),
+    n = n()
   )
 
 
@@ -167,7 +166,6 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
 
 ```
 
-
 ```{r figures width exp 4, message=FALSE, warning=FALSE}
 # ANCHO 
 
@@ -197,16 +195,14 @@ dimensions.width$Condition = factor(dimensions.width$Condition, levels=c("No vis
 dimensions.width <- dimensions.width %>%
   filter(!Width >= 10)
 
-unique(dimensions.width$Subject)
-#  1  2  4  5  8  9 10 11 14 15 16  3  6  7
-
 dimensions.width_sum <- dimensions.width %>%
   group_by(Condition) %>%
   summarise(
     mean = mean(Width),
     median = median(Width),
     sd = sd(Width),
-    se = sd / sqrt(n())
+    se = sd / sqrt(n()),
+    n = n()
   )
 
 eqn1 <- sprintf(
@@ -316,22 +312,14 @@ dimensions.height$Condition = factor(dimensions.height$Condition, levels=c("No v
 dimensions.height <- dimensions.height %>%
   filter(!Height >= 6)
 
-unique(dimensions.height$Subject)
-# 1  2  4  5  7  8  9 10 11 13 14 15 16  6
-#Probando filtrar por chavone de volumen
-
-
-#dimensions.height <- dimensions.height %>%
-#  filter(!Height >= 6)
-
-
 dimensions.height_sum <- dimensions.height %>%
   group_by(Condition) %>%
   summarise(
     mean = mean(Height),
     median = median(Height),
     sd = sd(Height),
-    se = sd / sqrt(n())
+    se = sd / sqrt(n()),
+    n = n()
   )
 
 eqn1 <- sprintf(
@@ -417,7 +405,31 @@ no_outliers = as.list(names(num_counts[num_counts >= 3]))
 # "1"  "2"  "4"  "5"  "6"  "7"  "8"  "9"  "10" "11" "14" "15" "16"
 ```
 
+```{r figures vol v2 exp 4, message=FALSE, warning=FALSE}
+dimensions.aggr <- dimensions.depth_sum
+dimensions.aggr$type = "Depth"
 
+dimensions.width_sum$type = "Width"
+
+dimensions.height_sum$type = "Height"
+
+rbind(dimensions.aggr, dimensions.width_sum, dimensions.height_sum)
+dimensions.vol_aggr <- rbind(dimensions.aggr, dimensions.width_sum, dimensions.height_sum)
+
+dimensions.vol_aggr <- dimensions.vol_aggr %>%
+  mutate(rel_error = (sd/mean)^2) %>%
+  mutate(ses_error = (se/mean)^2)
+
+dimensions.volume <- dimensions.vol_aggr %>%
+  group_by(Condition) %>%
+  summarise(
+    mean = prod(mean),
+    sd = mean * sqrt(sum(rel_error)),
+    se = mean * sqrt(sum(ses_error)),
+    n = sum(n)
+  )
+
+```
 
 ```{r figures vol exp 4, message=FALSE, warning=FALSE}
 dimensions.volume <- melt(tabla.exp_4, id.vars='Subject',
@@ -433,6 +445,45 @@ dimensions.volume <- dimensions.volume %>%
       variable == "Real_environment_vol" ~ "Real environment",
     )
   )
+
+#means <- c(10, 15, 20)  # Mean values
+#sds <- c(2, 3, 4)       # Standard deviations
+#
+## Multiply means
+#prod_mean <- prod(means)
+#
+## Propagate standard deviation
+#relative_errors <- (sds / means)^2
+#prod_sd <- prod_mean * sqrt(sum(relative_errors))
+
+# Output results
+#list(Product_Mean = prod_mean, Product_SD = prod_sd)
+#-- nvi
+means_vol_nvi = c(dimensions.depth_sum$mean[1],
+                  dimensions.height_sum$mean[1],
+                  dimensions.width_sum$mean[1])
+
+sd_vol_nvi = c(dimensions.depth_sum$sd[1],
+               dimensions.height_sum$sd[1],
+               dimensions.width_sum$sd[1])
+
+prod_mean_nvi <- prod(means_vol_nvi)
+relative_errors_nvi <- (sd_vol_nvi / means_vol_nvi)^2
+prod_sd_nvi <- prod_mean_nvi * sqrt(sum(relative_errors_nvi))
+
+#-- ve
+means_vol_ve = c(dimensions.depth_sum$mean[2],
+                  dimensions.height_sum$mean[2],
+                  dimensions.width_sum$mean[2])
+
+sd_vol_ve = c(dimensions.depth_sum$sd[2],
+               dimensions.height_sum$sd[2],
+               dimensions.width_sum$sd[2])
+
+prod_mean_ve <- prod(means_vol_nvi)
+relative_errors_ve <- (sd_vol_ve / means_vol_ve)^2
+prod_sd_ve <- prod_mean_ve * sqrt(sum(relative_errors_ve))
+
 
 
 # Voy a remover outliers, valores superior 1000 m3
@@ -617,7 +668,6 @@ dim_barchart <- dimensions.volume_aggr %>%
 
 plot(dim_barchart)
 ```
-
 
 ```{r print all message=FALSE, warning=FALSE}
 # figure <- ggarrange(violin_depth, violin_width,violin_height,
