@@ -1,7 +1,7 @@
 ---
-title: "Tamanio_sala_exp_4"
+title: "Analisis_tamanio_sala"
 author: "Joaquin Cervino"
-date: "2024-12-04"
+date: "2024-05-22"
 output: html_document
 ---
 
@@ -27,30 +27,25 @@ Cómo perciben el tamaño de sala los participantes para el experi 2 y el experi
 
 ```{r load_data experiment 2, message=FALSE, warning=FALSE}
 rm(list=ls())
-tabla.exp_4 <- read.csv("../Visual-de-experimento-4/data/visual_exp_4_con_outliers.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
-
-
+tabla.exp_2 <- read.csv("../Exp_2_ADP_control/data/tamanio_de_sala_sin_outliers_oscuras_visual.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.exp_3 <- read.csv("../Exp_3_ADP_vr/data/tamanio_de_sala_sin_outliers_oscuras_virtual.csv", header = TRUE, sep = ' ',
+                        stringsAsFactors = TRUE)
 ```
 
-```{r figures depth exp 4, message=FALSE, warning=FALSE}
+```{r figures exp 2, message=FALSE, warning=FALSE}
+
 # d,w, h comparasion ------------------------------------------------------
 #DEPTH
-
-dimensions.depth <- melt(tabla.exp_4, id.vars='Subject',
-                          measure.vars=c("No_visual_info_depth",
-                                         "Virtual_environment_depth", 
-                                         "Real_environment_depth"))
+dimensions.depth <- melt(tabla.exp_2, id.vars='nsub',
+                          measure.vars=c("OSCURAS_depth", "VISUAL_depth"))
 
 dimensions.depth <- dimensions.depth %>%
   mutate(
     variable = case_when(
-      variable == "No_visual_info_depth" ~ "No visual information",
-      variable == "Virtual_environment_depth" ~ "Virtual environment",
-      variable == "Real_environment_depth" ~ "Real environment",
+      variable == "OSCURAS_depth" ~ "No visual information",
+      variable == "VISUAL_depth" ~ "Visual information",
     )
   )
-
-
 dimensions.depth <- dimensions.depth %>%
   rename("Depth" = "value",
          "Condition" = "variable")
@@ -58,22 +53,14 @@ dimensions.depth <- dimensions.depth %>%
 dimensions.depth <- dimensions.depth %>%
   filter(!Depth >= 20)
 
-dimensions.depth$Condition = factor(dimensions.depth$Condition, levels=c("No visual information",
-                                                                                   "Virtual environment",
-                                                                                   "Real environment"))
-
-
 dimensions.depth_sum <- dimensions.depth %>%
   group_by(Condition) %>%
   summarise(
     mean = mean(Depth),
     median = median(Depth),
     sd = sd(Depth),
-    se = sd / sqrt(n()),
-    n = n()
+    se = sd/sqrt(n())
   )
-
-
 
 eqn1 <- sprintf(
   "M = %.3g ± %.2g \nMdn = %.3g",
@@ -87,39 +74,28 @@ eqn2 <- sprintf(
   dimensions.depth_sum$se[2],
   dimensions.depth_sum$median[2])
 
-eqn3 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
-  dimensions.depth_sum$mean[3],
-  dimensions.depth_sum$se[3],
-  dimensions.depth_sum$median[3])
+stat.test_depth <- dimensions.depth  %>% 
+  t_test(Depth~Condition, paired=FALSE) %>%
+  add_significance()
 
-
-pwc.depth <- dimensions.depth %>%
-  pairwise_t_test(Depth ~ Condition, p.adjust.method = "bonferroni")
+t_test_depth <- t.test(Depth~Condition, data= dimensions.depth)
 
 # Use single color
 violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Condition)) +
   geom_violin(trim=FALSE) +
   #geom_boxplot(width=0.1) +
   geom_errorbar(data= dimensions.depth_sum, mapping = aes(y= mean , ymin=mean - se,
-          ymax=mean + se),
-          color = "#22292F",
-          width = .1) +
+      ymax=mean + se),
+      color = "#22292F",
+      width = .1) +
   geom_jitter(alpha = 0.1) +
   geom_signif(comparisons = list(c("No visual information",
-                                  "Virtual environment")),   
-             map_signif_level=TRUE,
-             tip_length = 0.0, 
-             size = 0.5,
-             y_position = 13
-            )+
-    geom_signif(comparisons = list(c("No visual information",
-                                  "Real environment")),   
-             map_signif_level=TRUE,
-             tip_length = 0.0, 
-             size = 0.5,
-             y_position = 15
-            )+
+                                   "Visual information")),   
+              map_signif_level=TRUE,
+              tip_length = 0.0, 
+              size = 0.5,
+              y_position = 13,
+              extend_line = -0.4)+
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.450, # para fig compuesta
@@ -132,13 +108,6 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
            x = 1.4, # para fig compuesta
            y = 18.0,
            label = eqn2,
-           size = 2.35,
-           hjust = 0) +
-    annotate("text",                        # Add text for mean
-           #x = 1.5, # para fig sola
-           x = 2.4, # para fig compuesta
-           y = 18.0,
-           label = eqn3,
            size = 2.35,
            hjust = 0) +
   labs(
@@ -155,42 +124,22 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
     axis.title.x = element_blank(),
     axis.title.y = element_text(hjust = 0)) 
 
-
-#stat.test <- dimensions.depth  %>% 
-#  t_test(Depth~Condition, paired=FALSE) %>%
-#  add_significance()
-#
-#stat.test
-
-plot(violin_depth)
-
-```
-
-```{r figures width exp 4, message=FALSE, warning=FALSE}
 # ANCHO 
 
-dimensions.width <- melt(tabla.exp_4, id.vars='Subject',
-                          measure.vars=c("No_visual_info_width",
-                                         "Virtual_environment_width", 
-                                         "Real_environment_width"))
-
+dimensions.width <- melt(tabla.exp_2, id.vars='nsub',
+                         measure.vars=c("OSCURAS_width", "VISUAL_width"))
 
 dimensions.width <- dimensions.width %>%
   mutate(
     variable = case_when(
-      variable == "No_visual_info_width" ~ "No visual information",
-      variable == "Virtual_environment_width" ~ "Virtual environment",
-      variable == "Real_environment_width" ~ "Real environment",
+      variable == "OSCURAS_width" ~ "No visual information",
+      variable == "VISUAL_width" ~ "Visual information",
     )
   )
 
 dimensions.width <- dimensions.width %>%
   rename("Width" = "value",
          "Condition" = "variable")
-
-dimensions.width$Condition = factor(dimensions.width$Condition, levels=c("No visual information",
-                                                                                   "Virtual environment",
-                                                                                   "Real environment"))
 
 dimensions.width <- dimensions.width %>%
   filter(!Width >= 10)
@@ -201,9 +150,13 @@ dimensions.width_sum <- dimensions.width %>%
     mean = mean(Width),
     median = median(Width),
     sd = sd(Width),
-    se = sd / sqrt(n()),
-    n = n()
+    se = sd / sqrt(n())
   )
+
+
+stat.test_w <- dimensions.width  %>% 
+  t_test(Width~Condition, paired=FALSE) %>%
+  add_significance()
 
 eqn1 <- sprintf(
   "M = %.3g ± %.2g \nMdn = %.3g",
@@ -217,38 +170,19 @@ eqn2 <- sprintf(
   dimensions.width_sum$se[2],
   dimensions.width_sum$median[2])
 
-eqn3 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
-  dimensions.width_sum$mean[3],
-  dimensions.width_sum$se[3],
-  dimensions.width_sum$median[3])
-
-pwc.width <- dimensions.width %>%
-  pairwise_t_test(Width ~ Condition, p.adjust.method = "bonferroni")
-
 # Use single color
 violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Condition)) +
   #geom_violin(trim=FALSE, fill='#A4A4A4', color="darkred")+
   geom_violin(trim=FALSE)+
-  geom_jitter(alpha = 0.1) +
   geom_errorbar(data= dimensions.width_sum, mapping = aes(y= mean , ymin=mean - se,
-        ymax=mean + se),
-        color = "#22292F",
-        width = .1) +
-  geom_signif(comparisons = list(c("No visual information",
-                                  "Real environment")),   
-             map_signif_level=TRUE,
-             tip_length = 0.0, 
-             size = 0.5,
-             y_position = 10
-            )+
-    geom_signif(comparisons = list(c("Virtual environment",
-                                  "Real environment")),   
-             map_signif_level=TRUE,
-             tip_length = 0.0, 
-             size = 0.5,
-             y_position = 11
-            )+
+      ymax=mean + se),
+      color = "#22292F",
+      width = .1) +
+  geom_jitter(alpha = 0.1) +
+  # geom_text(data = dimensions.width_sum, aes(x = Condición, y = mean, 
+  #   label = paste("Mean: ", round(mean, 1), "\nMedian: ", median, "\nSD: ", round(sd, 1)),
+  #   hjust=0, position = ,
+  # ))+
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.50, # para fig compuesta
@@ -261,13 +195,6 @@ violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Conditi
            x = 1.40, # para fig compuesta
            y = 8.0,
            label = eqn2,
-           size = 2.35,
-           hjust = 0) +
-    annotate("text",                        # Add text for mean
-           #x = 1.5, # para fig sola
-           x = 2.40, # para fig compuesta
-           y = 8.0,
-           label = eqn3,
            size = 2.35,
            hjust = 0) +
   theme_minimal() +
@@ -280,34 +207,25 @@ violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Conditi
     y = "Width (m)",
   ) +
   theme(
-    axis.text.x=element_blank(),
-    axis.title.x = element_blank()) 
+    axis.title.x = element_blank(),
+    axis.text.x=element_blank()) 
 
 # ALTO
-```
 
-```{r figures height exp 4, message=FALSE, warning=FALSE}
-dimensions.height <- melt(tabla.exp_4, id.vars='Subject',
-                          measure.vars=c("No_visual_info_height",
-                                         "Virtual_environment_height", 
-                                         "Real_environment_height"))
+dimensions.height <- melt(tabla.exp_2, id.vars='nsub',
+                          measure.vars=c("OSCURAS_height", "VISUAL_height"))
 
 dimensions.height <- dimensions.height %>%
   mutate(
     variable = case_when(
-      variable == "No_visual_info_height" ~ "No visual information",
-      variable == "Virtual_environment_height" ~ "Virtual environment",
-      variable == "Real_environment_height" ~ "Real environment",
+      variable == "OSCURAS_height" ~ "No visual information",
+      variable == "VISUAL_height" ~ "Visual information",
     )
   )
 
 dimensions.height <- dimensions.height %>%
   rename("Height" = "value",
          "Condition" = "variable")
-
-dimensions.height$Condition = factor(dimensions.height$Condition, levels=c("No visual information",
-                                                                                   "Virtual environment",
-                                                                                   "Real environment"))
 
 dimensions.height <- dimensions.height %>%
   filter(!Height >= 6)
@@ -318,27 +236,20 @@ dimensions.height_sum <- dimensions.height %>%
     mean = mean(Height),
     median = median(Height),
     sd = sd(Height),
-    se = sd / sqrt(n()),
-    n = n()
+    se = sd / sqrt(n())
   )
 
 eqn1 <- sprintf(
   "M = %.3g ± %.2g \nMdn = %.3g",
   dimensions.height_sum$mean[1],
-  dimensions.height_sum$sd[1],
+  dimensions.height_sum$se[1],
   dimensions.height_sum$median[1])
 
 eqn2 <- sprintf(
   "M = %.3g ± %.2g \nMdn = %.3g",
   dimensions.height_sum$mean[2],
-  dimensions.height_sum$sd[2],
+  dimensions.height_sum$se[2],
   dimensions.height_sum$median[2])
-
-eqn3 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
-  dimensions.height_sum$mean[3],
-  dimensions.height_sum$sd[3],
-  dimensions.height_sum$median[3])
 
 # Use single color
 violin_height <- ggplot(dimensions.height, aes(x=Condition, y=Height,  fill=Condition)) +
@@ -347,27 +258,19 @@ violin_height <- ggplot(dimensions.height, aes(x=Condition, y=Height,  fill=Cond
       ymax=mean + se),
       color = "#22292F",
       width = .1) +
-  scale_x_discrete(labels = c('No visual info','VE','RE'))+
   geom_jitter(alpha = 0.1) +
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.50, # para fig compuesta
-           y = 5.75,
+           y = 4.9,
            label = eqn1,
            size = 2.35,
            hjust = 0) +
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 1.40, # para fig compuesta
-           y = 5.75,
+           y = 4.9,
            label = eqn2,
-           size = 2.35,
-           hjust = 0) +
-    annotate("text",                        # Add text for mean
-           #x = 1.5, # para fig sola
-           x = 2.40, # para fig compuesta
-           y = 5.75,
-           label = eqn3,
            size = 2.35,
            hjust = 0) +
   theme_minimal() +
@@ -384,9 +287,12 @@ violin_height <- ggplot(dimensions.height, aes(x=Condition, y=Height,  fill=Cond
 
 #plot(violin_height)
 
+
+# figure <- ggarrange(violin_depth, violin_width,violin_height,
+#                     ncol = 3, labels = c("B", "C", "D"))
 ```
 
-```{r figures vol v2 exp 4, message=FALSE, warning=FALSE}
+```{r figures vol v2 exp 2, message=FALSE, warning=FALSE}
 dimensions.aggr <- dimensions.depth_sum
 dimensions.aggr$type = "Depth"
 
@@ -399,7 +305,8 @@ dimensions.vol_aggr <- rbind(dimensions.aggr, dimensions.width_sum, dimensions.h
 
 dimensions.vol_aggr <- dimensions.vol_aggr %>%
   mutate(rel_error = (sd/mean)^2) %>%
-  mutate(ses_error = (se/mean)^2)
+  mutate(ses_error = (se/mean)^2) %>%
+  mutate(n = n())
 
 dimensions.volume <- dimensions.vol_aggr %>%
   group_by(Condition) %>%
@@ -412,7 +319,7 @@ dimensions.volume <- dimensions.vol_aggr %>%
 
 ```
 
-```{r figures vol exp 4, message=FALSE, warning=FALSE}
+```{r figures vol exp 2, message=FALSE, warning=FALSE}
 
 dimensions.volume
 
@@ -426,14 +333,6 @@ eqn2 <- sprintf(
   dimensions.volume$mean[2],
   dimensions.volume$se[2])
 
-eqn3 <- sprintf(
-  "M = %.3g ± %.4g",
-  dimensions.volume$mean[3],
-  dimensions.volume$se[3])
-
-stat.test <- dimensions.volume  %>% 
-  t_test(Volume~Condition, paired=FALSE, p.adjust.method = "bonferroni") %>%
-  add_significance()
 
 library(BSDA)
 
@@ -446,34 +345,15 @@ tsum.test(mean.x=dimensions.volume$mean[1],
           n.x=dimensions.volume$n[1],
           mean.y=dimensions.volume$mean[2],
           s.y= dimensions.volume$sd[2],
-          n.y=dimensions.volume$n[2],
-          conf.level = 0.984
+          n.y=dimensions.volume$n[2]
           )
 
-# oscuras real
-tsum.test(mean.x=dimensions.volume$mean[1],
-          s.x= dimensions.volume$sd[1],
-          n.x=dimensions.volume$n[1],
-          mean.y=dimensions.volume$mean[3],
-          s.y= dimensions.volume$sd[3],
-          n.y=dimensions.volume$n[3],
-          conf.level = 0.984
-          )
 
-# virtual real
-tsum.test(mean.x=dimensions.volume$mean[2],
-          s.x= dimensions.volume$sd[2],
-          n.x=dimensions.volume$n[2],
-          mean.y=dimensions.volume$mean[3],
-          s.y= dimensions.volume$sd[3],
-          n.y=dimensions.volume$n[3],
-          conf.level = 0.984
-          )
 
 dim_barchart <- dimensions.volume %>%
   ggplot(aes(Condition, mean)) +
   geom_col(aes(fill = Condition), color ="black", width =0.85) +
-  scale_x_discrete(labels = c('No visual info','VE','RE'))+
+  scale_x_discrete(labels = c('No visual info','RE'))+
   geom_errorbar(aes(ymin=mean - se,
                     ymax=mean + se),
                 color = "#22292F",
@@ -499,13 +379,6 @@ dim_barchart <- dimensions.volume %>%
            label = eqn2,
            size = 3.25,
            hjust = 0) +
-    annotate("text",                        # Add text for mean
-           #x = 1.5, # para fig sola
-           x = 2.50, # para fig compuesta
-           y = 270.0,
-           label = eqn3,
-           size = 3.25,
-           hjust = 0) +
   labs(
     #x = "Condición",
     y = expression("Perceived volume (m"^3*")"),
@@ -528,10 +401,8 @@ dim_barchart <- dimensions.volume %>%
 plot(dim_barchart)
 ```
 
-```{r print all message=FALSE, warning=FALSE}
-# figure <- ggarrange(violin_depth, violin_width,violin_height,
-#                     ncol = 3, labels = c("B", "C", "D"))
 
+``` {r print_all}
 figure <- ggarrange(dim_barchart, 
                     ggarrange(violin_depth, violin_width,violin_height, widths = c(1.5,2),
                               nrow = 3, labels = c("B", "C", "D")),
@@ -541,6 +412,6 @@ figure <- ggarrange(dim_barchart,
 #figure
 
 figures_folder = "./figuras"
-mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "Exp_4_Perceived_room_OSCURAS_VISUAL_2.png", sep = '')
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "Perceived_room_OSCURAS_VISUAL_V2.png", sep = '')
 ggsave(mi_nombre_de_archivo, plot =figure, width = 1400, height=1000, dpi=200, units = "px")
 ```
