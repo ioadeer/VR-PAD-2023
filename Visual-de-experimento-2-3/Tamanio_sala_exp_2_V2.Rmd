@@ -158,6 +158,8 @@ stat.test_w <- dimensions.width  %>%
   t_test(Width~Condition, paired=FALSE) %>%
   add_significance()
 
+t_test_width <- t.test(Width~Condition, data= dimensions.width)
+
 eqn1 <- sprintf(
   "M = %.3g ± %.2g \nMdn = %.3g",
   dimensions.width_sum$mean[1],
@@ -287,7 +289,7 @@ violin_height <- ggplot(dimensions.height, aes(x=Condition, y=Height,  fill=Cond
 
 #plot(violin_height)
 
-
+t_test_height <- t.test(Height~Condition, data= dimensions.height)
 # figure <- ggarrange(violin_depth, violin_width,violin_height,
 #                     ncol = 3, labels = c("B", "C", "D"))
 ```

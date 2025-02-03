@@ -76,26 +76,46 @@ dimensions.depth_sum <- dimensions.depth %>%
 
 
 eqn1 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.depth_sum$mean[1],
-  dimensions.depth_sum$se[1],
-  dimensions.depth_sum$median[1])
+  dimensions.depth_sum$se[1])
 
 eqn2 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.depth_sum$mean[2],
-  dimensions.depth_sum$se[2],
-  dimensions.depth_sum$median[2])
+  dimensions.depth_sum$se[2])
 
 eqn3 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.depth_sum$mean[3],
-  dimensions.depth_sum$se[3],
-  dimensions.depth_sum$median[3])
+  dimensions.depth_sum$se[3])
 
+lm.depth <- lm(Depth ~ Condition, 
+                    data = dimensions.depth)
+
+anova(lm.depth)
 
 pwc.depth <- dimensions.depth %>%
   pairwise_t_test(Depth ~ Condition, p.adjust.method = "bonferroni")
+
+nvi_ve_t_test <- t.test(filter(dimensions.depth, 
+              Condition=="No visual information" )$Depth,
+       filter(dimensions.depth, 
+              Condition=="Virtual environment")$Depth, 
+       paired = FALSE, p.adjust.methods = "bonferroni")
+
+nvi_re_t_test <- t.test(filter(dimensions.depth, 
+              Condition=="No visual information" )$Depth,
+       filter(dimensions.depth, 
+              Condition=="Real environment")$Depth, 
+       paired = FALSE, p.adjust.methods = "bonferroni")
+
+ve_re_t_test <- t.test(filter(dimensions.depth, 
+              Condition=="Virtual environment" )$Depth,
+       filter(dimensions.depth, 
+              Condition=="Real environment")$Depth, 
+       paired = FALSE, p.adjust.methods = "bonferroni")
+
 
 # Use single color
 violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Condition)) +
@@ -106,38 +126,28 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
           color = "#22292F",
           width = .1) +
   geom_jitter(alpha = 0.1) +
-  geom_signif(comparisons = list(c("No visual information",
-                                  "Virtual environment")),   
-             map_signif_level=TRUE,
-             tip_length = 0.0, 
-             size = 0.5,
-             y_position = 13
-            )+
-    geom_signif(comparisons = list(c("No visual information",
-                                  "Real environment")),   
-             map_signif_level=TRUE,
-             tip_length = 0.0, 
-             size = 0.5,
-             y_position = 15
-            )+
+  annotate("text", x = 1.5, y = 21,  label = "**", size = 3) +
+  annotate("segment", x = 1, xend = 2, y = 20, yend = 20, colour = "black", size=.5, alpha=1,)+
+  annotate("text", x = 1.5, y = 23,  label = "***", size = 3) +
+  annotate("segment", x = 1, xend = 3, y = 22, yend = 22, colour = "black", size=.5, alpha=1,)+
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.450, # para fig compuesta
-           y = 18.0,
+           y = 17.0,
            label = eqn1,
            size = 2.35,
            hjust = 0) +
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 1.4, # para fig compuesta
-           y = 18.0,
+           y = 17.0,
            label = eqn2,
            size = 2.35,
            hjust = 0) +
     annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 2.4, # para fig compuesta
-           y = 18.0,
+           y = 17.0,
            label = eqn3,
            size = 2.35,
            hjust = 0) +
@@ -431,9 +441,9 @@ eqn3 <- sprintf(
   dimensions.volume$mean[3],
   dimensions.volume$se[3])
 
-stat.test <- dimensions.volume  %>% 
-  t_test(Volume~Condition, paired=FALSE, p.adjust.method = "bonferroni") %>%
-  add_significance()
+#stat.test <- dimensions.volume  %>% 
+#  t_test(Volume~Condition, paired=FALSE, p.adjust.method = "bonferroni") %>%
+#  add_significance()
 
 library(BSDA)
 
