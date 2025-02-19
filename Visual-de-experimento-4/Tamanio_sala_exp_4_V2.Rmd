@@ -127,9 +127,9 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
           width = .1) +
   geom_jitter(alpha = 0.1) +
   annotate("text", x = 1.5, y = 21,  label = "**", size = 3) +
-  annotate("segment", x = 1, xend = 2, y = 20, yend = 20, colour = "black", size=.5, alpha=1,)+
+  annotate("segment", x = 1.1, xend = 1.9, y = 20, yend = 20, colour = "black", size=.5, alpha=1,)+
   annotate("text", x = 1.5, y = 23,  label = "***", size = 3) +
-  annotate("segment", x = 1, xend = 3, y = 22, yend = 22, colour = "black", size=.5, alpha=1,)+
+  annotate("segment", x = 1.1, xend = 2.9, y = 22, yend = 22, colour = "black", size=.5, alpha=1,)+
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.450, # para fig compuesta
@@ -216,19 +216,19 @@ dimensions.width_sum <- dimensions.width %>%
   )
 
 eqn1 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.width_sum$mean[1],
   dimensions.width_sum$se[1],
   dimensions.width_sum$median[1])
 
 eqn2 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.width_sum$mean[2],
   dimensions.width_sum$se[2],
   dimensions.width_sum$median[2])
 
 eqn3 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.width_sum$mean[3],
   dimensions.width_sum$se[3],
   dimensions.width_sum$median[3])
@@ -274,21 +274,21 @@ violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Conditi
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 0.50, # para fig compuesta
-           y = 8.0,
+           y = 10.0,
            label = eqn1,
            size = 2.35,
            hjust = 0) +
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 1.40, # para fig compuesta
-           y = 8.0,
+           y = 10.0,
            label = eqn2,
            size = 2.35,
            hjust = 0) +
     annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
            x = 2.40, # para fig compuesta
-           y = 8.0,
+           y = 10.0,
            label = eqn3,
            size = 2.35,
            hjust = 0) +
@@ -345,19 +345,19 @@ dimensions.height_sum <- dimensions.height %>%
   )
 
 eqn1 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.height_sum$mean[1],
   dimensions.height_sum$sd[1],
   dimensions.height_sum$median[1])
 
 eqn2 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.height_sum$mean[2],
   dimensions.height_sum$sd[2],
   dimensions.height_sum$median[2])
 
 eqn3 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.height_sum$mean[3],
   dimensions.height_sum$sd[3],
   dimensions.height_sum$median[3])
@@ -539,25 +539,29 @@ dim_barchart <- dimensions.volume %>%
   theme_minimal() +
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
-           x = 0.50, # para fig compuesta
+           x = 0.25, # para fig compuesta
            y = 290.0,
            label = eqn1,
            size = 3.25,
            hjust = 0) +
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
-           x = 1.50, # para fig compuesta
+           x = 1.250, # para fig compuesta
            y = 280.0,
            label = eqn2,
            size = 3.25,
            hjust = 0) +
     annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
-           x = 2.50, # para fig compuesta
+           x = 2.250, # para fig compuesta
            y = 270.0,
            label = eqn3,
            size = 3.25,
            hjust = 0) +
+  annotate("text", x = 1.5, y = 215,  label = "**", size = 3) +
+  annotate("segment", x = 1.1, xend = 1.9, y = 210, yend = 210, colour = "black", size=.5, alpha=1,)+
+  annotate("text", x = 2, y = 235,  label = "***", size = 3) +
+  annotate("segment", x = 1.1, xend = 2.9, y = 230, yend = 230, colour = "black", size=.5, alpha=1,)+
   labs(
     #x = "Condición",
     y = expression("Perceived volume (m"^3*")"),
