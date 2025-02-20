@@ -63,13 +63,13 @@ dimensions.depth_sum <- dimensions.depth %>%
   )
 
 eqn1 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.depth_sum$mean[1],
   dimensions.depth_sum$se[1],
   dimensions.depth_sum$median[1])
 
 eqn2 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.depth_sum$mean[2],
   dimensions.depth_sum$se[2],
   dimensions.depth_sum$median[2])
@@ -161,13 +161,13 @@ stat.test_w <- dimensions.width  %>%
 t_test_width <- t.test(Width~Condition, data= dimensions.width)
 
 eqn1 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.width_sum$mean[1],
   dimensions.width_sum$se[1],
   dimensions.width_sum$median[1])
 
 eqn2 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.width_sum$mean[2],
   dimensions.width_sum$se[2],
   dimensions.width_sum$median[2])
@@ -242,13 +242,13 @@ dimensions.height_sum <- dimensions.height %>%
   )
 
 eqn1 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.height_sum$mean[1],
   dimensions.height_sum$se[1],
   dimensions.height_sum$median[1])
 
 eqn2 <- sprintf(
-  "M = %.3g ± %.2g \nMdn = %.3g",
+  "M = %.3g \n ± %.2g",
   dimensions.height_sum$mean[2],
   dimensions.height_sum$se[2],
   dimensions.height_sum$median[2])
@@ -381,6 +381,8 @@ dim_barchart <- dimensions.volume %>%
            label = eqn2,
            size = 3.25,
            hjust = 0) +
+  annotate("text", x = 1.5, y = 215,  label = "**", size = 3) +
+  annotate("segment", x = 1.1, xend = 1.9, y = 210, yend = 210, colour = "black", size=.5, alpha=1,)+
   labs(
     #x = "Condición",
     y = expression("Perceived volume (m"^3*")"),
