@@ -30,8 +30,9 @@ cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "
 # Primer modelo
 m.Dist1 <-  lmer(log10(perc_dist) ~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
                  data = results_tbl) 
-extract_stats(ggcoefstats(m.Dist1))
+m.Dist1.stats <- extract_stats(ggcoefstats(m.Dist1))
 r.squaredGLMM(m.Dist1)
+#write.table(m.Dist1.stats , file = "new_Exp_1_ADP/stats/m_Dist1_model.csv")
 
 anova(m.Dist1)
 anov1 = anova(m.Dist1)
@@ -71,10 +72,15 @@ Final.Fixed.Plot <-ggplot(data = Final.Fixed, aes(x = target_distance, y =10^fit
         legend.position = c(.2, .92))
 Final.Fixed.Plot
 
-mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
-mDist1stats$tidy_data
-anova(m.Dist1)
+extract_stats(ggcoefstats(m.Dist1))
+
+
+anov1 <- anova(m.Dist1)
+write.csv(anov1, file="new_Exp_1_ADP/stats/all_model_anova.csv")
 r.squaredGLMM(m.Dist1)
+# para imprimir
+tab_model(m.Dist1, file ="new_Exp_1_ADP/stats/all_model.html")
+
 
 eq1 <- substitute("Coincident VE:" ~~~ italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
@@ -177,6 +183,11 @@ anov = anova(m.RelativBias)
 anov
 f6
 
+write.csv(anov, file="new_Exp_1_ADP/stats/all_signed_bias_anova.csv")
+
+tab_model(m.RelativBias, file ="new_Exp_1_ADP/stats/all_signed_bias.html")
+
+
 # no es signficitavo #1 0.18301 0.183011  3.5967 0.06756 .
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
@@ -189,6 +200,9 @@ testSigendBias <- t.test(filter(results_tbls,
                          paired = FALSE)
 
 testSigendBias
+
+testSignedBias.tidy <- tidy(testSigendBias)
+write.csv(testSignedBias.tidy, file="new_Exp_1_ADP/stats/all_signed_bias_t-test.csv")
 
 #95 percent confidence interval:
 #  -0.31498920  0.01249011
@@ -229,16 +243,22 @@ extract_stats(ggcoefstats(m.RelativUnsignedBias))
 anov = anova(m.RelativUnsignedBias)
 anov
 f7
+
+write.csv(anov, file="new_Exp_1_ADP/stats/all_unsigned_bias_anova.csv")
+
+tab_model(m.RelativUnsignedBias, file ="new_Exp_1_ADP/stats/all_unsigned_bias.html")
+
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
 
-t.test(filter(results_tbls, 
+testUnsigendBias <- t.test(filter(results_tbls, 
               room_condition=="Coincident VE" )$mBiasUnSigned,
        filter(results_tbls, 
               room_condition=="Smaller VE")$mBiasUnSigned, 
        paired = FALSE)
 
-
+testUnsigendBias.tidy <- tidy(testUnsigendBias)
+write.csv(testUnsigendBias.tidy, file="new_Exp_1_ADP/stats/all_unsigned_bias_t-test.csv")
 
 
 
