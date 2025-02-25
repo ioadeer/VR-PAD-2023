@@ -1,0 +1,4 @@
+"",".y.","group1","group2","n1","n2","p","p.signif","p.adj","p.adj.signif"
+"1","Depth","Small VE","Congruent VE",45,44,0.000795,"***",0.00239,"**"
+"2","Depth","Small VE","Real environment",45,42,0.000416,"***",0.00125,"**"
+"3","Depth","Congruent VE","Real environment",44,42,0.82,"ns",1,"ns"

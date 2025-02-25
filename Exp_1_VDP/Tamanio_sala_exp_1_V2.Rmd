@@ -15,13 +15,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r dependencies, message=FALSE, warning=FALSE}
 library(dplyr)
-library(tidyverse)
-library(reshape2) # melt
+#library(tidyverse)
+#library(reshape2) # mel.t este fue, usar tidyr gather ahora
+library(tidyr)
 library(rstatix) # stat.test
 library(ggplot2)
-library(ggthemes)
+#library(ggthemes) este no sobrevivio una actualizacion de dependencia
 library(ggpubr)
 library(ggstatsplot)
+library(sjPlot)
 ```
 
 ## Tamaño de sala
@@ -40,10 +42,10 @@ tabla.exp_1 <- read.csv("../Exp_1_VDP/data/dimensiones_de_sala_visual_1_50_sin_o
 # d,w, h comparasion ------------------------------------------------------
 #DEPTH
 
-dimensions.depth <- melt(tabla.exp_1, id.vars='nsub',
-                          measure.vars=c("SC_RV_depth",
-                                         "SG_RV_depth", 
-                                         "SR_depth"))
+dimensions.depth <- tabla.exp_1 %>%
+  pivot_longer(cols = c("SC_RV_depth", "SG_RV_depth", "SR_depth"),
+               names_to = "variable",
+               values_to = "value")
 
 dimensions.depth <- dimensions.depth %>%
   mutate(
@@ -98,29 +100,43 @@ eqn3 <- sprintf(
 lm.depth <- lm(Depth ~ Condition, 
                     data = dimensions.depth)
 
-anova(lm.depth)
+#tab_model(lm.depth, file ="stats/VE_small-VE_RE/depth/depth-lm.html")
+
+anova.depth <- anova(lm.depth)
+
+#write.csv(anova.depth, file="stats/VE_small-VE_RE/depth/depth-lm-anova.csv")
 
 pwc.depth <- dimensions.depth %>%
   pairwise_t_test(Depth ~ Condition, p.adjust.method = "bonferroni")
 
-nvi_ve_t_test <- t.test(filter(dimensions.depth, 
-              Condition=="No visual information" )$Depth,
+#write.csv(pwc.depth, file="stats/VE_small-VE_RE/depth/depth-pairwise-t-test.csv")
+
+sve_cve_t_test <- t.test(filter(dimensions.depth, 
+              Condition=="Small VE")$Depth,
        filter(dimensions.depth, 
-              Condition=="Virtual environment")$Depth, 
+              Condition=="Congruent VE")$Depth, 
        paired = FALSE, p.adjust.methods = "bonferroni")
 
-nvi_re_t_test <- t.test(filter(dimensions.depth, 
-              Condition=="No visual information" )$Depth,
+sve_cve_t_test.tidy <- tidy(sve_cve_t_test)
+#write.csv(sve_cve_t_test.tidy, file="stats/VE_small-VE_RE/depth/depth-t-test-cve-sve.csv")
+
+sve_re_t_test <- t.test(filter(dimensions.depth, 
+              Condition=="Small VE" )$Depth,
        filter(dimensions.depth, 
               Condition=="Real environment")$Depth, 
        paired = FALSE, p.adjust.methods = "bonferroni")
 
-ve_re_t_test <- t.test(filter(dimensions.depth, 
-              Condition=="Virtual environment" )$Depth,
+sve_re_t_test.tidy <- tidy(sve_re_t_test)
+#write.csv(sve_re_t_test.tidy, file="stats/VE_small-VE_RE/depth/depth-t-test-sve-re.csv")
+
+cve_re_t_test <- t.test(filter(dimensions.depth, 
+              Condition=="Congruent VE" )$Depth,
        filter(dimensions.depth, 
               Condition=="Real environment")$Depth, 
        paired = FALSE, p.adjust.methods = "bonferroni")
 
+cve_re_t_test.tidy <- tidy(cve_re_t_test)
+#write.csv(cve_re_t_test.tidy, file="stats/VE_small-VE_RE/depth/depth-t-test-cve-re.csv")
 
 # Use single color
 violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Condition)) +
@@ -133,7 +149,7 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
   geom_jitter(alpha = 0.1) +
   annotate("text", x = 1.5, y = 21,  label = "**", size = 3) +
   annotate("segment", x = 1.1, xend = 1.9, y = 20, yend = 20, colour = "black", size=.5, alpha=1,)+
-  annotate("text", x = 1.5, y = 23,  label = "***", size = 3) +
+  annotate("text", x = 1.5, y = 23,  label = "**", size = 3) +
   annotate("segment", x = 1.1, xend = 2.9, y = 22, yend = 22, colour = "black", size=.5, alpha=1,)+
   annotate("text",                        # Add text for mean
            #x = 1.5, # para fig sola
