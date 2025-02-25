@@ -200,11 +200,10 @@ plot(violin_depth)
 ```{r figures width exp 4, message=FALSE, warning=FALSE}
 # ANCHO 
 
-dimensions.width <- melt(tabla.exp_1, id.vars='nsub',
-                        measure.vars=c("SC_RV_width",
-                                         "SG_RV_width", 
-                                         "SR_width"))
-
+dimensions.width <- tabla.exp_1 %>%
+  pivot_longer(cols = c("SC_RV_width", "SG_RV_width", "SR_width"),
+               names_to = "variable",
+               values_to = "value")
 
 
 dimensions.width <- dimensions.width %>%
@@ -264,26 +263,11 @@ pwc.width
 lm.width <- lm(Width ~ Condition, 
                     data = dimensions.width)
 
-anova(lm.width)
+#tab_model(lm.width, file ="stats/VE_small-VE_RE/width/width-lm.html")
 
+anova.width <- anova(lm.width)
 
-nvi_ve_t_test.width <- t.test(filter(dimensions.width, 
-              Condition=="No visual information" )$Width,
-       filter(dimensions.width, 
-              Condition=="Virtual environment")$Width, 
-       paired = FALSE, p.adjust.methods = "bonferroni")
-
-nvi_re_t_test.width <- t.test(filter(dimensions.width, 
-              Condition=="No visual information" )$Width,
-       filter(dimensions.width, 
-              Condition=="Real environment")$Width, 
-       paired = FALSE, p.adjust.methods = "bonferroni")
-
-ve_re_t_test.width  <- t.test(filter(dimensions.width, 
-              Condition=="Virtual environment" )$Width,
-       filter(dimensions.width, 
-              Condition=="Real environment")$Width, 
-       paired = FALSE, p.adjust.methods = "bonferroni")
+#write.csv(anova.width, file="stats/VE_small-VE_RE/width/width-lm-anova.csv")
 
 # Use single color
 violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Condition)) +
@@ -332,10 +316,13 @@ violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Conditi
 ```
 
 ```{r figures height exp 4, message=FALSE, warning=FALSE}
-dimensions.height <- melt(tabla.exp_1, id.vars='nsub',
-                        measure.vars=c("SC_RV_height",
-                                         "SG_RV_height", 
-                                         "SR_height"))
+
+dimensions.height <- tabla.exp_1 %>%
+  pivot_longer(cols = c("SC_RV_height", 
+                        "SG_RV_height", 
+                           "SR_height"),
+               names_to = "variable",
+               values_to = "value")
 
 dimensions.height <- dimensions.height %>%
   mutate(
@@ -395,27 +382,11 @@ pwc.height
 lm.height <- lm(Height ~ Condition, 
                     data = dimensions.height)
 
-anova(lm.height)
+tab_model(lm.height, file ="stats/VE_small-VE_RE/height/height-lm.html")
 
+anova.height <- anova(lm.height)
 
-nvi_ve_t_test.height <- t.test(filter(dimensions.height, 
-              Condition=="No visual information" )$Height,
-       filter(dimensions.height, 
-              Condition=="Virtual environment")$Height, 
-       paired = FALSE, p.adjust.methods = "bonferroni")
-
-nvi_re_t_test.height <- t.test(filter(dimensions.height, 
-              Condition=="No visual information" )$Height,
-       filter(dimensions.height, 
-              Condition=="Real environment")$Height, 
-       paired = FALSE, p.adjust.methods = "bonferroni")
-
-ve_re_t_test.height  <- t.test(filter(dimensions.height, 
-              Condition=="Virtual environment" )$Height,
-       filter(dimensions.height, 
-              Condition=="Real environment")$Height, 
-       paired = FALSE, p.adjust.methods = "bonferroni")
-
+write.csv(anova.height, file="stats/VE_small-VE_RE/height/height-lm-anova.csv")
 
 # Use single color
 violin_height <- ggplot(dimensions.height, aes(x=Condition, y=Height,  fill=Condition)) +
@@ -517,8 +488,8 @@ library(BSDA)
 # bonferroni 0.05 / 3 = 0.016
 # confidence level
 # 1 - 0.016 = 0.984
-# oscuras virtual
-tsum.test(mean.x=dimensions.volume$mean[1],
+# small ve congreuent ve
+sve_cve_t_test.volume <- tsum.test(mean.x=dimensions.volume$mean[1],
           s.x= dimensions.volume$sd[1],
           n.x=dimensions.volume$n[1],
           mean.y=dimensions.volume$mean[2],
@@ -526,9 +497,11 @@ tsum.test(mean.x=dimensions.volume$mean[1],
           n.y=dimensions.volume$n[2],
           conf.level = 0.984
           )
+sve_cve_t_test_vol.tidy <- tidy(sve_cve_t_test.volume)
+write.csv(sve_cve_t_test_vol.tidy, file="stats/VE_small-VE_RE/volume/volume-t-test-sve-cve.csv")
 
-# oscuras real
-tsum.test(mean.x=dimensions.volume$mean[1],
+# sve real
+sve_re_t_test.volume <- tsum.test(mean.x=dimensions.volume$mean[1],
           s.x= dimensions.volume$sd[1],
           n.x=dimensions.volume$n[1],
           mean.y=dimensions.volume$mean[3],
@@ -537,8 +510,11 @@ tsum.test(mean.x=dimensions.volume$mean[1],
           conf.level = 0.984
           )
 
-# virtual real
-tsum.test(mean.x=dimensions.volume$mean[2],
+sve_re_t_test_vol.tidy <- tidy(sve_re_t_test.volume)
+#write.csv(sve_re_t_test_vol.tidy, file="stats/VE_small-VE_RE/volume/volume-t-test-sve-re.csv")
+
+# cve real
+cve_re_t_test.volume <- tsum.test(mean.x=dimensions.volume$mean[2],
           s.x= dimensions.volume$sd[2],
           n.x=dimensions.volume$n[2],
           mean.y=dimensions.volume$mean[3],
@@ -546,6 +522,9 @@ tsum.test(mean.x=dimensions.volume$mean[2],
           n.y=dimensions.volume$n[3],
           conf.level = 0.984
           )
+
+cve_re_t_test_vol.tidy <- tidy(cve_re_t_test.volume)
+#write.csv(cve_re_t_test_vol.tidy, file="stats/VE_small-VE_RE/volume/volume-t-test-cve-re.csv")
 
 dim_barchart <- dimensions.volume %>%
   ggplot(aes(Condition, mean)) +
@@ -583,7 +562,7 @@ dim_barchart <- dimensions.volume %>%
            label = eqn3,
            size = 3.25,
            hjust = 0) +
-  annotate("text", x = 1.5, y = 215,  label = "**", size = 3) +
+  annotate("text", x = 1.5, y = 215,  label = "***", size = 3) +
   annotate("segment", x = 1.1, xend = 1.9, y = 210, yend = 210, colour = "black", size=.5, alpha=1,)+
   annotate("text", x = 2, y = 235,  label = "***", size = 3) +
   annotate("segment", x = 1.1, xend = 2.9, y = 230, yend = 230, colour = "black", size=.5, alpha=1,)+
