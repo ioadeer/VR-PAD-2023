@@ -463,6 +463,7 @@ dimensions.volume <- dimensions.vol_aggr %>%
 ```{r figures vol exp 4, message=FALSE, warning=FALSE}
 
 dimensions.volume
+write.csv(dimensions.volume, file="stats/VE_small-VE_RE/volume/volume_all.csv")
 
 eqn1 <- sprintf(
   "M = %.3g ± %.4g",
