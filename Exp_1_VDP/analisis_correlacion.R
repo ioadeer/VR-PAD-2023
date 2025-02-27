@@ -52,7 +52,7 @@ congruent_ve <- tabla.analisis_cor %>%
 
 corr_smaller_ve <- cor(smaller_ve$log_perceived_depth,smaller_ve$log_distancia_max , method= 'pearson')
 
-cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
+cbPalette <- c("#E69F00","#000000","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
 
 correlation_plot <- ggplot(tabla.analisis_cor, 
                            aes(x =log_perceived_depth, y = log_distancia_max,
@@ -67,7 +67,7 @@ correlation_plot <- ggplot(tabla.analisis_cor,
   #theme(legend.title =element_blank(), legend.position = 'none')+
   ylab("Maximum Perceived Auditory Distance (m)")+
   labs(color = "Visual condition") +  # Change legend title
-  scale_color_manual(values = c("#000000","#E69F00"), 
+  scale_color_manual(values = c("#E69F00", "#000000"), 
                      labels = c("Smaller VE", "Congruent VE"))+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
