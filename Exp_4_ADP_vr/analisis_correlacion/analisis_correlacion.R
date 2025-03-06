@@ -59,24 +59,50 @@ tabla.analisis_correlacion <- read.csv('Exp_4_ADP_vr/data/analisis_correlacion.c
 tabla.analisis_correlacion <- tabla.analisis_correlacion %>%
   mutate(
     log_distancia_max = log(distanca_max),
-    log_depth = log(depth)
+    log_perc_depth = log(depth)
   )
 
+tabla.analisis_correlacion$condicion_sala = factor(tabla.analisis_correlacion$condicion_sala, levels=c("No Visual Info",
+                                                                                     "Larger VE"))
+#correlation_plot <- ggplot(tabla.analisis_correlacion, 
+#                           aes(x =log_depth, y = log_distancia_max,
+#                               colour = condicion_sala)) +
+#  geom_point() +
+#  geom_smooth(alpha=0.3, method= "lm")+
+#  stat_cor(method = "pearson")+
+#  ggtitle("Correlacion ambas condiciones (log log)") +
+#  xlab("Profundidad de sala reportada") +
+#  #theme(legend.title =element_blank(), legend.position = 'none')+
+#  ylab("Maxima distancia auditiva")
+
+cbPalette <- c("#E69F00","#000000","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
+
 correlation_plot <- ggplot(tabla.analisis_correlacion, 
-                           aes(x =log_depth, y = log_distancia_max,
+                           aes(x =log_perc_depth, y = log_distancia_max,
                                colour = condicion_sala)) +
+  scale_colour_manual(values = cbPalette) +
+  scale_fill_manual(values = cbPalette) +
   geom_point() +
   geom_smooth(alpha=0.3, method= "lm")+
-  stat_cor(method = "pearson")+
-  ggtitle("Correlacion ambas condiciones (log log)") +
-  xlab("Profundidad de sala reportada") +
+  stat_cor(method = "pearson", show.legend= FALSE)+
+  #ggtitle("Correlation between visual and auditory distance assesments (log log)") +
+  xlab("Perceived Room Depth (m)") +
   #theme(legend.title =element_blank(), legend.position = 'none')+
-  ylab("Maxima distancia auditiva")
+  ylab("Maximum Perceived Auditory Distance (m)")+
+  labs(color = "Visual condition") +  # Change legend title
+  scale_color_manual(values = c("#E69F00", "#000000"), 
+                     labels = c("No visual info", "Larger virtual environment"))+
+  theme_pubr(base_size = 12, margin = TRUE)+
+  theme(legend.position = "top",
+        legend.title = element_blank(),
+        text=element_text(family="Arial", size=10)) 
+
 
 plot(correlation_plot)
 
+
 figures_folder = "./Exp_4_ADP_vr/analisis_correlacion/figures/"
-mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "Analisis_correlacion.png", sep = '')
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "Correlation.png", sep = '')
 
 png(mi_nombre_de_archivo, res=600, units="cm", width=15, height=15)
 plot(correlation_plot)
