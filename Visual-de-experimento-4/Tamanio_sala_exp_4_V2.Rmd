@@ -11,11 +11,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r dependencies, message=FALSE, warning=FALSE}
 library(dplyr)
-library(tidyverse)
+library(tidyr)
 library(reshape2) # melt
 library(rstatix) # stat.test
 library(ggplot2)
-library(ggthemes)
+#library(ggthemes)
 library(ggpubr)
 library(ggstatsplot)
 ```
@@ -35,11 +35,16 @@ tabla.exp_4 <- read.csv("../Visual-de-experimento-4/data/visual_exp_4_con_outlie
 ```{r figures depth exp 4, message=FALSE, warning=FALSE}
 # d,w, h comparasion ------------------------------------------------------
 #DEPTH
-
+# murio
 dimensions.depth <- melt(tabla.exp_4, id.vars='Subject',
                           measure.vars=c("No_visual_info_depth",
                                          "Virtual_environment_depth", 
                                          "Real_environment_depth"))
+# asi ahora / corregir
+dimensions.depth <- tabla.exp_1 %>%
+  pivot_longer(cols = c("SC_RV_depth", "SG_RV_depth", "SR_depth"),
+               names_to = "variable",
+               values_to = "value")
 
 dimensions.depth <- dimensions.depth %>%
   mutate(

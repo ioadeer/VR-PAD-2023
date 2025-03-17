@@ -11,11 +11,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r dependencies, message=FALSE, warning=FALSE}
 library(dplyr)
-library(tidyverse)
-library(reshape2) # melt
+library(tidyr)
 library(rstatix) # stat.test
 library(ggplot2)
-library(ggthemes)
+#library(ggthemes)
 library(ggpubr)
 library(ggstatsplot)
 ```
@@ -38,8 +37,12 @@ tabla.exp_3 <- read.csv("../Exp_3_ADP_vr/data/tamanio_de_sala_sin_outliers_oscur
 
 # d,w, h comparasion ------------------------------------------------------
 #DEPTH
-dimensions.depth <- melt(tabla.exp_3, id.vars='Subject',
-                          measure.vars=c("No_visual_info_depth", "VE_depth"))
+
+dimensions.depth <- tabla.exp_3 %>%
+  pivot_longer(cols = c("No_visual_info_depth", "VE_depth"),
+               names_to = "variable",
+               values_to = "value")
+
 
 dimensions.depth <- dimensions.depth %>%
   mutate(
@@ -82,6 +85,19 @@ eqn2 <- sprintf(
 
 t_test_depth <- t.test(Depth~Condition, data= dimensions.depth)
 
+t_test_depth.tidy <- tidy(t_test_depth)
+
+#write.csv(t_test_depth.tidy, file="stats/Exp_3/depth/depth-t-test.csv")
+
+lm.depth <- lm(Depth ~ Condition, 
+                    data = dimensions.depth)
+
+#tab_model(lm.depth, file ="stats/Exp_3/depth/depth-lm.html")
+
+anova.depth <- anova(lm.depth)
+
+#write.csv(anova.depth, file="stats/Exp_3/depth/anova.csv")
+
 # Use single color
 violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Condition)) +
   geom_violin(trim=FALSE) +
@@ -120,8 +136,10 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
 
 # ANCHO 
 
-dimensions.width <- melt(tabla.exp_3, id.vars='Subject',
-                         measure.vars=c("No_visual_info_width", "VE_width"))
+dimensions.width <- tabla.exp_3 %>%
+  pivot_longer(cols = c("No_visual_info_width", "VE_width"),
+               names_to = "variable",
+               values_to = "value")
 
 dimensions.width <- dimensions.width %>%
   mutate(
@@ -158,6 +176,20 @@ eqn2 <- sprintf(
   dimensions.width_sum$se[2])
 
 t_test_width <- t.test(Width~Condition, data= dimensions.width)
+
+t_test_width.tidy <- tidy(t_test_width)
+
+#write.csv(t_test_depth.tidy, file="stats/Exp_3/width/width-t-test.csv")
+
+lm.width <- lm(Width ~ Condition, 
+                    data = dimensions.width)
+
+#tab_model(lm.width, file ="stats/Exp_3/width/width-lm.html")
+
+anova.width <- anova(lm.width)
+
+#write.csv(anova.width, file="stats/Exp_3/width/anova.csv")
+
 # Use single color
 violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Condition)) +
   #geom_violin(trim=FALSE, fill='#A4A4A4', color="darkred")+
@@ -202,9 +234,10 @@ violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Conditi
     axis.title.x = element_blank()) 
 
 # ALTO
-
-dimensions.height <- melt(tabla.exp_3, id.vars='Subject',
-                          measure.vars=c("No_visual_info_height", "VE_height"))
+dimensions.height <- tabla.exp_3 %>%
+  pivot_longer(cols = c("No_visual_info_height", "VE_height"),
+               names_to = "variable",
+               values_to = "value")
 
 dimensions.height <- dimensions.height %>%
   mutate(
@@ -242,6 +275,20 @@ eqn2 <- sprintf(
 
 
 t_test_height <- t.test(Height~Condition, data= dimensions.height)
+
+t_test_height.tidy <- tidy(t_test_height)
+
+#write.csv(t_test_height.tidy, file="stats/Exp_3/height/height-t-test.csv")
+
+lm.height <- lm(Height ~ Condition, 
+                    data = dimensions.height)
+
+#tab_model(lm.height, file ="stats/Exp_3/height/height-lm.html")
+
+anova.height <- anova(lm.height)
+
+#write.csv(anova.height, file="stats/Exp_3/height/anova.csv")
+
 # Use single color
 violin_height <- ggplot(dimensions.height, aes(x=Condition, y=Height,  fill=Condition)) +
   geom_violin(trim=FALSE)+
@@ -313,6 +360,7 @@ dimensions.volume <- dimensions.vol_aggr %>%
 ```{r figures vol exp 3, message=FALSE, warning=FALSE}
 
 dimensions.volume
+#write.csv(dimensions.volume, file="stats/Exp_3/volume/volume_all.csv")
 
 eqn1 <- sprintf(
   "M = %.3g ± %.4g",
@@ -331,7 +379,7 @@ library(BSDA)
 # confidence level
 # 1 - 0.016 = 0.984
 # oscuras virtual
-tsum.test(mean.x=dimensions.volume$mean[1],
+vol.t_test <- tsum.test(mean.x=dimensions.volume$mean[1],
           s.x= dimensions.volume$sd[1],
           n.x=dimensions.volume$n[1],
           mean.y=dimensions.volume$mean[2],
@@ -339,7 +387,8 @@ tsum.test(mean.x=dimensions.volume$mean[1],
           n.y=dimensions.volume$n[2]
           )
 
-
+vol.t_test.tidy <- tidy(vol.t_test)
+#write.csv(vol.t_test.tidy, file="stats/Exp_3/volume/volume-t-test.csv")
 
 dim_barchart <- dimensions.volume %>%
   ggplot(aes(Condition, mean)) +

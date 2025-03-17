@@ -6,6 +6,7 @@
 
 #library(tidyverse)
 library(tidyr)
+library(dplyr)
 library(Routliers)
 library(lme4)
 library(nlme)
@@ -33,7 +34,7 @@ m.Dist1 <-  lmer(log10(perc_dist) ~ log10(target_distance)*room_condition+(1+log
                  data = results_tbl) 
 m.Dist1.stats <- extract_stats(ggcoefstats(m.Dist1))
 r.squaredGLMM(m.Dist1)
-write.table(m.Dist1.stats , file = "new_Exp_1_ADP/stats/m_Dist1_model_all.csv")
+#write.table(m.Dist1.stats , file = "new_Exp_1_ADP/stats/m_Dist1_model_all.csv")
 
 
 
@@ -79,18 +80,18 @@ extract_stats(ggcoefstats(m.Dist1))
 
 
 anov1 <- anova(m.Dist1)
-write.csv(anov1, file="new_Exp_1_ADP/stats/all_model_anova.csv")
+#write.csv(anov1, file="new_Exp_1_ADP/stats/all_model_anova.csv")
 r.squaredGLMM(m.Dist1)
 # para imprimir
-tab_model(m.Dist1, file ="new_Exp_1_ADP/stats/all_model.html")
+#tab_model(m.Dist1, file ="new_Exp_1_ADP/stats/all_model.html")
 
 
-eq1 <- substitute("Coincident VE:" ~~~ italic(y) == k %.% italic(X)^italic(a),
-                  list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
-                       a = round(mDist1stats$tidy_data$estimate[[2]], digits = 2)))
+eq1 <- substitute("Congruent VE:" ~~~ italic(y) == k %.% italic(X)^italic(a),
+                  list(k = round(10^m.Dist1.stats$tidy_data$estimate[[1]],digits = 2),
+                       a = round(m.Dist1.stats$tidy_data$estimate[[2]], digits = 2)))
 eq2 <- substitute("Smaller VE:"~~~italic(y) == k %.% italic(X)^italic(a),
-                  list(k = round(10^(mDist1stats$tidy_data$estimate[[1]]+mDist1stats$tidy_data$estimate[[3]]), digits = 2),
-                       a = round(mDist1stats$tidy_data$estimate[[2]]+mDist1stats$tidy_data$estimate[[4]], digits = 2)))
+                  list(k = round(10^(m.Dist1.stats$tidy_data$estimate[[1]]+m.Dist1.stats$tidy_data$estimate[[3]]), digits = 2),
+                       a = round(m.Dist1.stats$tidy_data$estimate[[2]]+m.Dist1.stats$tidy_data$estimate[[4]], digits = 2)))
 #eq3 <- substitute("r.squared:"~~~italic(R)^italic(2) == italic(b),
 #                  list(b = round(r.squaredGLMM(m.Dist1)[2], digits = 2)))
 eq1
@@ -116,17 +117,22 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
   geom_line(data = Final.Fixed, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
   geom_text(x = 0.2, y = 8.0, label = as.character(as.expression(eq1)), 
             hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#000000",
-            family="Times New Roman")+
+            #family="Times New Roman"
+            )+
   geom_text(x = 0.2, y = 7.0, label = as.character(as.expression(eq2)), 
-            hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = "#E69F00",
-            family="Times New Roman")+
+            hjust = 0, nudge_x =  0,parse = TRUE, size = 4, 
+            color = "#E69F00",
+            #family="Times New Roman"
+            )+
   #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
   scale_y_continuous(name="Perceived distance (m)",   limits = c(0,10)) +
+  scale_color_manual(labels = c("Congruent VE", "SmallerVE"), values = c("#000000", "#E69F00"))+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
         legend.title = element_blank(),
-        text=element_text(family="Times New Roman", size=10)) 
+        #text=element_text(family="Times New Roman"
+        , size=10) 
 
 
 f1
@@ -186,9 +192,9 @@ anov = anova(m.RelativBias)
 anov
 f6
 
-write.csv(anov, file="new_Exp_1_ADP/stats/all_signed_bias_anova.csv")
+#write.csv(anov, file="new_Exp_1_ADP/stats/all_signed_bias_anova.csv")
 
-tab_model(m.RelativBias, file ="new_Exp_1_ADP/stats/all_signed_bias.html")
+#tab_model(m.RelativBias, file ="new_Exp_1_ADP/stats/all_signed_bias.html")
 
 
 # no es signficitavo #1 0.18301 0.183011  3.5967 0.06756 .
@@ -205,7 +211,7 @@ testSigendBias <- t.test(filter(results_tbls,
 testSigendBias
 
 testSignedBias.tidy <- tidy(testSigendBias)
-write.csv(testSignedBias.tidy, file="new_Exp_1_ADP/stats/all_signed_bias_t-test.csv")
+#write.csv(testSignedBias.tidy, file="new_Exp_1_ADP/stats/all_signed_bias_t-test.csv")
 
 #95 percent confidence interval:
 #  -0.31498920  0.01249011
@@ -247,9 +253,9 @@ anov = anova(m.RelativUnsignedBias)
 anov
 f7
 
-write.csv(anov, file="new_Exp_1_ADP/stats/all_unsigned_bias_anova.csv")
+#write.csv(anov, file="new_Exp_1_ADP/stats/all_unsigned_bias_anova.csv")
 
-tab_model(m.RelativUnsignedBias, file ="new_Exp_1_ADP/stats/all_unsigned_bias.html")
+#tab_model(m.RelativUnsignedBias, file ="new_Exp_1_ADP/stats/all_unsigned_bias.html")
 
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
@@ -261,9 +267,7 @@ testUnsigendBias <- t.test(filter(results_tbls,
        paired = FALSE)
 
 testUnsigendBias.tidy <- tidy(testUnsigendBias)
-write.csv(testUnsigendBias.tidy, file="new_Exp_1_ADP/stats/all_unsigned_bias_t-test.csv")
-
-
+#write.csv(testUnsigendBias.tidy, file="new_Exp_1_ADP/stats/all_unsigned_bias_t-test.csv")
 
 # main plot ---------------------------------------------------------------
 
@@ -281,8 +285,8 @@ main_figure
 
 #plot<- ggarrange(ba,mi,fa, ncol=3, nrow=1, common.legend = TRUE,legend="bottom")
 
-main_figure <- annotate_figure(main_figure, top = text_grob("All participants", 
-                                      color = "black", face = "bold", size = 12))
+#main_figure <- annotate_figure(main_figure, #top = text_grob("All participants", 
+#                                      color = "black", face = "bold", size = 12))
 
 # save plot ---------------------------------------------------------------
 

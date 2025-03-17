@@ -8,13 +8,12 @@ library(dplyr)
 library(ggbeeswarm)
 library(gmodels)
 library(ggplot2)
-library(ggthemes)
 library(ggpubr)
 library(ggstatsplot)
 library(gridExtra)
 library(htmlwidgets)
 library(quickpsy)
-library(tidyverse)
+library(tidyr)
 library(lme4)
 library(nlme)
 library(lmerTest)
@@ -26,8 +25,7 @@ library(Routliers)
 library(processx)
 library(rstatix)
 library(orca)
-library(reshape2)
-library(ggpubr)
+
 # figura ------------------------------------------------------------------
 #Con remocion de outliers con criterio de pad
 #dimensions.raw  <- read.csv('./Exp_1_VDP/data/volumen_sin_outliers_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
@@ -35,9 +33,14 @@ library(ggpubr)
 dimensions.raw  <- read.csv('./Exp_1_VDP/data/volumen_1_50.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 #colnames(dimensions.raw)
+# melt murio se puede hacer con dplyr
+#dimensions.volume <- melt(dimensions.raw, id.vars='nsub',
+#                          measure.vars=c("SG_RV_volumen", "SR_volumen"))
 
-dimensions.volume <- melt(dimensions.raw, id.vars='nsub',
-                          measure.vars=c("SG_RV_volumen", "SR_volumen"))
+dimensions.volume <- dimensions.raw %>%
+  pivot_longer(cols = c("SG_RV_volumen", "SR_volumen"),
+               names_to = "variable",
+               values_to = "value")
 
 dimensions.volume <- dimensions.volume %>%
   mutate(

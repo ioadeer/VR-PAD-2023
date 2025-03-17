@@ -5,7 +5,8 @@
 #  Por otro lado tener las dos figuras de sesgo
 
 # dependencies ------------------------------------------------------------
-library(tidyverse)
+#library(tidyverse)
+library(tidyr)
 #library(Routliers)
 library(lme4)
 library(nlme)

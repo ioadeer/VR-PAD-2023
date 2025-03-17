@@ -180,7 +180,7 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
   scale_fill_brewer(palette="YlOrRd")+
   #geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
   geom_hline(yintercept=12,linetype="dashed") +
-  annotate("text", x=0.5, y=10, label= "12 m", size=2.5) +
+  annotate("text", x=0.6, y=10, label= "12 m", size=2.5) +
   theme(
     axis.text.x=element_blank(),
     axis.title.x = element_blank(),
