@@ -1,0 +1,4 @@
+"",".y.","group1","group2","n1","n2","p","p.signif","p.adj","p.adj.signif"
+"1","Height","No visual information","Virtual environment",13,12,0.426,"ns",1,"ns"
+"2","Height","No visual information","Real environment",13,12,0.249,"ns",0.747,"ns"
+"3","Height","Virtual environment","Real environment",12,12,0.721,"ns",1,"ns"

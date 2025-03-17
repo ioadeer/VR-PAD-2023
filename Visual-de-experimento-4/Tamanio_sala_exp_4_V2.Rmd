@@ -12,7 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r dependencies, message=FALSE, warning=FALSE}
 library(dplyr)
 library(tidyr)
-library(reshape2) # melt
 library(rstatix) # stat.test
 library(ggplot2)
 #library(ggthemes)
@@ -35,14 +34,9 @@ tabla.exp_4 <- read.csv("../Visual-de-experimento-4/data/visual_exp_4_con_outlie
 ```{r figures depth exp 4, message=FALSE, warning=FALSE}
 # d,w, h comparasion ------------------------------------------------------
 #DEPTH
-# murio
-dimensions.depth <- melt(tabla.exp_4, id.vars='Subject',
-                          measure.vars=c("No_visual_info_depth",
-                                         "Virtual_environment_depth", 
-                                         "Real_environment_depth"))
-# asi ahora / corregir
-dimensions.depth <- tabla.exp_1 %>%
-  pivot_longer(cols = c("SC_RV_depth", "SG_RV_depth", "SR_depth"),
+
+dimensions.depth <- tabla.exp_4 %>%
+  pivot_longer(cols = c("No_visual_info_depth", "Virtual_environment_depth", "Real_environment_depth"),
                names_to = "variable",
                values_to = "value")
 
@@ -100,8 +94,18 @@ lm.depth <- lm(Depth ~ Condition,
 
 anova(lm.depth)
 
+#tab_model(lm.depth, file ="./stats/depth/depth-lm.html")
+
+anova.depth <- anova(lm.depth)
+
+#write.csv(anova.depth, file="./stats/depth/anova.csv")
+
+#write.csv(t_test_depth.tidy, file="stats/Exp_3/depth/depth-t-test.csv")
+
 pwc.depth <- dimensions.depth %>%
   pairwise_t_test(Depth ~ Condition, p.adjust.method = "bonferroni")
+
+#write.csv(pwc.depth, file="stats/depth/pairwise.csv")
 
 nvi_ve_t_test <- t.test(filter(dimensions.depth, 
               Condition=="No visual information" )$Depth,
@@ -109,17 +113,27 @@ nvi_ve_t_test <- t.test(filter(dimensions.depth,
               Condition=="Virtual environment")$Depth, 
        paired = FALSE, p.adjust.methods = "bonferroni")
 
+nvi_ve_t_test.tidy <- tidy(nvi_ve_t_test)
+#write.csv(nvi_ve_t_test.tidy, file="stats/depth/nvi-ve_t_test.csv")
+
 nvi_re_t_test <- t.test(filter(dimensions.depth, 
               Condition=="No visual information" )$Depth,
        filter(dimensions.depth, 
               Condition=="Real environment")$Depth, 
        paired = FALSE, p.adjust.methods = "bonferroni")
 
+nvi_re_t_test.tidy <- tidy(nvi_re_t_test)
+#write.csv(nvi_re_t_test.tidy, file="stats/depth/nvi_re_t_test.csv")
+
+
 ve_re_t_test <- t.test(filter(dimensions.depth, 
               Condition=="Virtual environment" )$Depth,
        filter(dimensions.depth, 
               Condition=="Real environment")$Depth, 
        paired = FALSE, p.adjust.methods = "bonferroni")
+
+ve_re_t_test.tidy <- tidy(ve_re_t_test)
+#write.csv(ve_re_t_test.tidy, file="stats/depth/ve_re_t_test.csv")
 
 
 # Use single color
@@ -184,10 +198,10 @@ plot(violin_depth)
 ```{r figures width exp 4, message=FALSE, warning=FALSE}
 # ANCHO 
 
-dimensions.width <- melt(tabla.exp_4, id.vars='Subject',
-                          measure.vars=c("No_visual_info_width",
-                                         "Virtual_environment_width", 
-                                         "Real_environment_width"))
+dimensions.width <- tabla.exp_4 %>%
+  pivot_longer(cols = c("No_visual_info_width", "Virtual_environment_width", "Real_environment_width"),
+               names_to = "variable",
+               values_to = "value")
 
 
 dimensions.width <- dimensions.width %>%
@@ -243,11 +257,18 @@ pwc.width <- dimensions.width %>%
 
 pwc.width
 
+#write.csv(pwc.width, file="stats/width/width-t-test.csv")
+
 lm.width <- lm(Width ~ Condition, 
                     data = dimensions.width)
 
 anova(lm.width)
 
+#tab_model(lm.width, file ="stats/width/width-lm.html")
+
+anova.width<- anova(lm.width)
+
+#write.csv(anova.width, file="stats/width/anova.csv")
 
 nvi_ve_t_test.width <- t.test(filter(dimensions.width, 
               Condition=="No visual information" )$Width,
@@ -255,17 +276,26 @@ nvi_ve_t_test.width <- t.test(filter(dimensions.width,
               Condition=="Virtual environment")$Width, 
        paired = FALSE, p.adjust.methods = "bonferroni")
 
+nvi_ve_t_test.width.tidy <- tidy(nvi_ve_t_test.width)
+#write.csv(nvi_ve_t_test.width.tidy, file="stats/width/nvi_ve_t_test.csv")
+
 nvi_re_t_test.width <- t.test(filter(dimensions.width, 
               Condition=="No visual information" )$Width,
        filter(dimensions.width, 
               Condition=="Real environment")$Width, 
        paired = FALSE, p.adjust.methods = "bonferroni")
 
+nvi_re_t_test.width.tidy <- tidy(nvi_re_t_test.width)
+#write.csv(nvi_re_t_test.width.tidy, file="stats/width/nvi_re_t_test.csv")
+
 ve_re_t_test.width  <- t.test(filter(dimensions.width, 
               Condition=="Virtual environment" )$Width,
        filter(dimensions.width, 
               Condition=="Real environment")$Width, 
        paired = FALSE, p.adjust.methods = "bonferroni")
+
+ve_re_t_test.width.tidy <- tidy(ve_re_t_test.width)
+#write.csv(ve_re_t_test.width.tidy, file="stats/width/ve_re_t_test.csv")
 
 # Use single color
 violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Condition)) +
@@ -314,11 +344,10 @@ violin_width <- ggplot(dimensions.width, aes(x=Condition, y=Width,  fill=Conditi
 ```
 
 ```{r figures height exp 4, message=FALSE, warning=FALSE}
-dimensions.height <- melt(tabla.exp_4, id.vars='Subject',
-                          measure.vars=c("No_visual_info_height",
-                                         "Virtual_environment_height", 
-                                         "Real_environment_height"))
-
+dimensions.height <- tabla.exp_4 %>%
+  pivot_longer(cols = c("No_visual_info_height", "Virtual_environment_height", "Real_environment_height"),
+               names_to = "variable",
+               values_to = "value")
 dimensions.height <- dimensions.height %>%
   mutate(
     variable = case_when(
@@ -372,10 +401,14 @@ pwc.height <- dimensions.height %>%
 
 pwc.height
 
+#write.csv(pwc.height, file="stats/height/height-t-test.csv")
+
 lm.height <- lm(Height ~ Condition, 
                     data = dimensions.height)
 
-anova(lm.height)
+anova.height <- anova(lm.height)
+
+#write.csv(anova.height, file="stats/height/anova.csv")
 
 
 nvi_ve_t_test.height <- t.test(filter(dimensions.height, 
@@ -384,17 +417,26 @@ nvi_ve_t_test.height <- t.test(filter(dimensions.height,
               Condition=="Virtual environment")$Height, 
        paired = FALSE, p.adjust.methods = "bonferroni")
 
+nvi_ve_t_test.height.tidy <- tidy(nvi_ve_t_test.height)
+#write.csv(nvi_ve_t_test.height.tidy, file="stats/height/nvi_ve_t_test.csv")
+
 nvi_re_t_test.height <- t.test(filter(dimensions.height, 
               Condition=="No visual information" )$Height,
        filter(dimensions.height, 
               Condition=="Real environment")$Height, 
        paired = FALSE, p.adjust.methods = "bonferroni")
 
+nvi_re_t_test.height.tidy <- tidy(nvi_re_t_test.height)
+#write.csv(nvi_re_t_test.height.tidy, file="stats/height/nvi_re_t_test.csv")
+
 ve_re_t_test.height  <- t.test(filter(dimensions.height, 
               Condition=="Virtual environment" )$Height,
        filter(dimensions.height, 
               Condition=="Real environment")$Height, 
        paired = FALSE, p.adjust.methods = "bonferroni")
+
+ve_re_t_test.height.tidy <- tidy(ve_re_t_test.height)
+#write.csv(ve_re_t_test.height.tidy, file="stats/height/ve_re_t_test.csv")
 
 
 # Use single color
@@ -472,6 +514,7 @@ dimensions.volume <- dimensions.vol_aggr %>%
 ```{r figures vol exp 4, message=FALSE, warning=FALSE}
 
 dimensions.volume
+write.csv(dimensions.volume, file="stats/volume/volume_all.csv")
 
 eqn1 <- sprintf(
   "M = %.3g ± %.4g",
@@ -498,7 +541,7 @@ library(BSDA)
 # confidence level
 # 1 - 0.016 = 0.984
 # oscuras virtual
-tsum.test(mean.x=dimensions.volume$mean[1],
+nvi_ve_t_test_vol <- tsum.test(mean.x=dimensions.volume$mean[1],
           s.x= dimensions.volume$sd[1],
           n.x=dimensions.volume$n[1],
           mean.y=dimensions.volume$mean[2],
@@ -507,8 +550,12 @@ tsum.test(mean.x=dimensions.volume$mean[1],
           conf.level = 0.984
           )
 
+nvi_ve_t_test_vol.tidy <- tidy(nvi_ve_t_test_vol)
+#write.csv(nvi_ve_t_test_vol.tidy, file="stats/volume/nvi_ve_t_test.csv")
+
+
 # oscuras real
-tsum.test(mean.x=dimensions.volume$mean[1],
+nvi_re_t_test_vol <- tsum.test(mean.x=dimensions.volume$mean[1],
           s.x= dimensions.volume$sd[1],
           n.x=dimensions.volume$n[1],
           mean.y=dimensions.volume$mean[3],
@@ -516,9 +563,11 @@ tsum.test(mean.x=dimensions.volume$mean[1],
           n.y=dimensions.volume$n[3],
           conf.level = 0.984
           )
+nvi_re_t_test_vol.tidy <- tidy(nvi_re_t_test_vol)
+#write.csv(nvi_re_t_test_vol.tidy, file="stats/volume/nvi_re_t_test.csv")
 
 # virtual real
-tsum.test(mean.x=dimensions.volume$mean[2],
+vr_re_t_test_vol <- tsum.test(mean.x=dimensions.volume$mean[2],
           s.x= dimensions.volume$sd[2],
           n.x=dimensions.volume$n[2],
           mean.y=dimensions.volume$mean[3],
@@ -526,6 +575,9 @@ tsum.test(mean.x=dimensions.volume$mean[2],
           n.y=dimensions.volume$n[3],
           conf.level = 0.984
           )
+
+vr_re_t_test_vol.tidy <- tidy(vr_re_t_test_vol)
+#write.csv(vr_re_t_test_vol.tidy, file="stats/volume/vr_re_t_test.csv")
 
 dim_barchart <- dimensions.volume %>%
   ggplot(aes(Condition, mean)) +

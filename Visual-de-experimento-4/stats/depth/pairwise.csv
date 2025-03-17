@@ -1,0 +1,4 @@
+"",".y.","group1","group2","n1","n2","p","p.signif","p.adj","p.adj.signif"
+"1","Depth","No visual information","Virtual environment",14,13,0.000741,"***",0.00222,"**"
+"2","Depth","No visual information","Real environment",14,15,0.000298,"***",0.000895,"***"
+"3","Depth","Virtual environment","Real environment",13,15,0.864,"ns",1,"ns"
