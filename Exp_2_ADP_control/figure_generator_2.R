@@ -7,6 +7,7 @@
 # dependencies ------------------------------------------------------------
 #library(tidyverse)
 library(tidyr)
+library(dplyr)
 #library(Routliers)
 library(lme4)
 library(nlme)
@@ -23,7 +24,7 @@ library(flextable)
 library(webshot)
 library(officer)
 library(effects)
-
+library(effectsize)
 
 
 
@@ -61,8 +62,19 @@ Final.Fixed<-as.data.frame(Final.Fixed)
 
 mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
 mDist1stats$tidy_data
-anova(m.Dist1)
+anov1 <- anova(m.Dist1)
+anov1
+#write.csv(anov1, file="Exp_2_ADP_control/stats/model_anova.csv")
+effect_size = eta_squared(anov1)
+#write.csv(effect_size, file="Exp_2_ADP_control/stats/model_eta_squared.csv")
+partial_effect_size = eta_squared(anov1, partial= TRUE)
+#anov1
+# F value, NumDF, DenDF
+F_to_eta2(5.68, df = 1, df_error = 33.425)
+F_to_eta2(4, df = 1, df_error = 114)
 r.squaredGLMM(m.Dist1)
+# para imprimir
+#tab_model(m.Dist1, file ="Exp_2_ADP_control/stats/model.html")
 
 
 eq1 <- substitute("No visual:" ~~~ italic(y) == k %.% italic(X)^italic(a),
@@ -168,6 +180,10 @@ extract_stats(ggcoefstats(m.RelativBias))
 anov = anova(m.RelativBias)
 anov
 f6
+#write.csv(anov, file="Exp_2_ADP_control/stats/signed_bias_anova.csv")
+
+#tab_model(m.RelativBias, file ="Exp_2_ADP_control/stats/signed_bias.html")
+
 
 # no es signficitavo #1 0.18301 0.183011  3.5967 0.06756 .
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
@@ -231,6 +247,9 @@ t.test(filter(results_tbls,
        paired = FALSE)
 
 
+#write.csv(anov, file="Exp_2_ADP_control/stats/unsigned_bias_anova.csv")
+
+#tab_model(m.RelativUnsignedBias, file ="Exp_2_ADP_control/stats/unsigned_bias.html")
 
 
 
