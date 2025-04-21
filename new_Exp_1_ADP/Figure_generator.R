@@ -3,7 +3,6 @@
 
 # dependencies ------------------------------------------------------------
 
-
 #library(tidyverse)
 library(tidyr)
 library(dplyr)
@@ -23,6 +22,10 @@ library(flextable)
 library(webshot)
 library(officer)
 library(effects)
+library(effectsize)
+
+
+# load data ---------------------------------------------------------------
 
 results_tbl <- read.csv("./new_Exp_1_ADP/ResultsData/Dresults_S1_S50_2_bloques_sin_outliers.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
 
@@ -40,6 +43,11 @@ r.squaredGLMM(m.Dist1)
 
 anova(m.Dist1)
 anov1 = anova(m.Dist1)
+
+# libreria effect size
+eta_sqrd = eta_squared(anov1)
+
+#write.csv(eta_sqrd, file="new_Exp_1_ADP/stats/all_effect_size_partial_eta_sqrd.csv")
 
 results_tbl$Modelfitted1<-predict(m.Dist1)
 

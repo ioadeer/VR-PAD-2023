@@ -24,6 +24,7 @@ library(ggplot2)
 library(ggpubr)
 library(ggstatsplot)
 library(sjPlot)
+library(effectsize)
 ```
 
 ## Tamaño de sala
@@ -106,6 +107,10 @@ anova.depth <- anova(lm.depth)
 
 #write.csv(anova.depth, file="stats/VE_small-VE_RE/depth/depth-lm-anova.csv")
 
+eta_sqrd.depth = eta_squared(anova.depth)
+
+#write.csv(eta_sqrd.depth, file="stats/VE_small-VE_RE/depth/depth-lm-anova.csv")
+
 pwc.depth <- dimensions.depth %>%
   pairwise_t_test(Depth ~ Condition, p.adjust.method = "bonferroni")
 
@@ -116,6 +121,7 @@ sve_cve_t_test <- t.test(filter(dimensions.depth,
        filter(dimensions.depth, 
               Condition=="Congruent VE")$Depth, 
        paired = FALSE, p.adjust.methods = "bonferroni")
+
 
 sve_cve_t_test.tidy <- tidy(sve_cve_t_test)
 #write.csv(sve_cve_t_test.tidy, file="stats/VE_small-VE_RE/depth/depth-t-test-cve-sve.csv")
