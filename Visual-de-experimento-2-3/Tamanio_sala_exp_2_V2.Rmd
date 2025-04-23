@@ -18,6 +18,7 @@ library(ggplot2)
 library(ggpubr)
 library(ggstatsplot)
 library(sjPlot)
+library(effectsize)
 ```
 
 ## Tamaño de sala
@@ -92,6 +93,10 @@ t_test_depth.tidy <- tidy(t_test_depth)
 
 #write.csv(t_test_depth.tidy, file="stats/Exp_2/depth/depth-t-test.csv")
 
+d <- cohens_d(Depth~Condition, data= dimensions.depth)
+
+#write.csv(d, file="stats/Exp_2/depth/depth-cohens-d.csv")
+
 lm.depth <- lm(Depth ~ Condition, 
                     data = dimensions.depth)
 
@@ -100,6 +105,12 @@ lm.depth <- lm(Depth ~ Condition,
 anova.depth <- anova(lm.depth)
 
 #write.csv(anova.depth, file="stats/Exp_2/depth/anova.csv")
+
+eta_sqrd.depth = eta_squared(anova.depth)
+
+#write.csv(eta_sqrd.depth, file="stats/VE_small-VE_RE/depth/depth-lm-anova.csv")
+
+omega_sqrd = omega_squared(anova.depth, partial = TRUE)
 
 # Use single color
 violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Condition)) +
@@ -405,7 +416,7 @@ library(BSDA)
 # confidence level
 # 1 - 0.016 = 0.984
 # oscuras virtual
-tsum.test(mean.x=dimensions.volume$mean[1],
+vol.t_test <- tsum.test(mean.x=dimensions.volume$mean[1],
           s.x= dimensions.volume$sd[1],
           n.x=dimensions.volume$n[1],
           mean.y=dimensions.volume$mean[2],
@@ -413,7 +424,8 @@ tsum.test(mean.x=dimensions.volume$mean[1],
           n.y=dimensions.volume$n[2]
           )
 
-
+vol.t_test.tidy <- tidy(vol.t_test)
+write.csv(vol.t_test.tidy, file="stats/Exp_2/volume/volume-t-test.csv")
 
 dim_barchart <- dimensions.volume %>%
   ggplot(aes(Condition, mean)) +

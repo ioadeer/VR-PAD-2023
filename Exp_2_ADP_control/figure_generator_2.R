@@ -196,7 +196,13 @@ testSigendBias <- t.test(filter(results_tbls,
               room_condition=="Visual information")$mBiasSigned, 
        paired = FALSE)
 
-testSigendBias
+testSigendBias.tidy <- tidy(testSigendBias)
+
+#write.csv(testSigendBias.tidy, file="Exp_2_ADP_control/stats/signed_bias_t-test.csv")
+
+cohens_d_testSignedBias <- cohens_d(testSigendBias)
+
+#write.csv(cohens_d_testSignedBias, file="Exp_2_ADP_control/stats/signed_bias_t-test_cohen_d.csv")
 
 #95 percent confidence interval:
 #  -0.31498920  0.01249011
@@ -240,12 +246,19 @@ f7
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
 
-t.test(filter(results_tbls, 
+testUnsignedBias <- t.test(filter(results_tbls, 
               room_condition=="No visual information" )$mBiasUnSigned,
        filter(results_tbls, 
               room_condition=="Visual information")$mBiasUnSigned, 
        paired = FALSE)
 
+testUnsignedBias.tidy <- tidy(testUnsignedBias)
+
+write.csv(testUnsignedBias.tidy, file="Exp_2_ADP_control/stats/unsigned_bias_t-test.csv")
+
+cohens_d_testUnsignedBias <- cohens_d(testUnsignedBias)
+
+write.csv(cohens_d_testUnsignedBias, file="Exp_2_ADP_control/stats/unsigned_bias_t-test_cohen_d.csv")
 
 #write.csv(anov, file="Exp_2_ADP_control/stats/unsigned_bias_anova.csv")
 

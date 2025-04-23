@@ -36,9 +36,6 @@ cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "
 results_tbl$room_condition = factor(results_tbl$room_condition, levels= c("No visual information","Larger VE"))
 
 
-
-
-
 # make model figure -------------------------------------------------------
 
 results_tbl <- results_tbl %>%
@@ -66,10 +63,13 @@ tab_model(m.Dist1, file = "./Exp_4_ADP_vr/Models/LMEM_ADP.html")
 
 tidy(anova(m.Dist1))
 
-eq1 <- substitute("No visual information:" ~~~ italic(y) == k %.% italic(X)^italic(a),
+#Antes
+#eq1 <- substitute("No visual information:" ~~~ italic(y) == k %.% italic(X)^italic(a),
+# Ahora
+eq1 <- substitute("NVI:"~italic(y) == k %.% italic(X)^italic(a),                  
                   list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]], digits = 2)))
-eq2 <- substitute("Larger virtual environment:"~~~italic(y) == k %.% italic(X)^italic(a),
+eq2 <- substitute("LVE:"~italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^(mDist1stats$tidy_data$estimate[[1]]+mDist1stats$tidy_data$estimate[[3]]), digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]]+mDist1stats$tidy_data$estimate[[4]], digits = 2)))
 #eq3 <- substitute("r.squared:"~~~italic(R)^italic(2) == italic(b),
@@ -90,19 +90,19 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
   scale_colour_manual(values = cbPalette) +
   scale_fill_manual(values = cbPalette) +
   geom_line(data = Final.Fixed, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
-  geom_text(x = 0.2, y = 8.0, label = as.character(as.expression(eq1)), 
-            hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#000000",
-            family="Times New Roman")+
-  geom_text(x = 0.2, y = 7.0, label = as.character(as.expression(eq2)), 
-            hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = "#E69F00",
-            family="Times New Roman")+
+  geom_text(x = 5, y = 4.5, label = as.character(as.expression(eq1)), 
+            hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#000000",)+
+            #family="Times New Roman")+
+  geom_text(x = 5, y = 4.25, label = as.character(as.expression(eq2)), 
+            hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = "#E69F00",)+
+            #family="Times New Roman")+
   #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
-  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,10)) +
+  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,5)) +
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
-        legend.title = element_blank(),
-        text=element_text(family="Times New Roman", size=10)) 
+        legend.title = element_blank(),)
+        #text=element_text(family="Arial", size=10)) 
 
 
 f1
@@ -147,7 +147,7 @@ f6 <-  ggplot(results_tblp, aes(x = room_condition,y = MBiasSigned, colour = roo
               alpha = 0.5,
               linetype = "dashed") +
   labs(x = "Condition", 
-       y = "Relative signed \nbias") +
+       y = "Relative signed bias") +
   # facet_grid(. ~ type) +
   #annotate("text", x = 1.5, y = 0.3,  label = "*", size = 4) +
   #annotate("segment", x = 1, xend = 2, y = 0.2, yend = 0.2, colour = "black", size=.5, alpha=1,)+
@@ -163,7 +163,7 @@ m.RelativBias <- lm(mBiasSigned ~ room_condition,
                     data = results_tbls)
 extract_stats(ggcoefstats(m.RelativBias))
 
-tab_model(m.RelativBias, file = "./Exp_4_ADP_vr/Models/signed_bias.html")
+#tab_model(m.RelativBias, file = "./Exp_4_ADP_vr/Models/signed_bias.html")
 
 anov = anova(m.RelativBias)
 anov
@@ -226,7 +226,7 @@ m.RelativUnsignedBias <- lm(mBiasUnSigned ~ room_condition,
 
 extract_stats(ggcoefstats(m.RelativUnsignedBias))
 
-tab_model(m.RelativUnsignedBias, file = "./Exp_4_ADP_vr/Models/unsigned_bias.html")
+#tab_model(m.RelativUnsignedBias, file = "./Exp_4_ADP_vr/Models/unsigned_bias.html")
 # (Intercept)                         0.593   0.95    0.506   0.680 
 # room_conditionVirtual environment   0.0153  0.95   -0.108   0.139
 
@@ -258,6 +258,39 @@ t.test(filter(results_tbls,
 #sample estimates:
 #  mean of x mean of y 
 #0.5089846 0.5187265 
+
+# main plot V2 ---------------------------------------------------------------
+
+#f1 f6 y f7
+main_figure <- ggarrange(f1, 
+                         ggarrange(f6, f7, widths = c(2,2),
+                                   ncol = 1, labels = c("B", "C")),
+                         #nrow = 2, 
+                         ncol = 2,
+                         labels ="A",
+                         heights = c(1, 0.75),
+                         widths = c(1.75,1.25),
+                         common.legend = TRUE)
+#                    legend = "top")
+
+main_figure
+
+
+# save plot V2 ---------------------------------------------------------------
+
+figures_folder = "./Exp_4_ADP_vr/Figura_final/"
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "exp_V2", ".png", sep = '')
+#ggsave(device = "png", mi_nombre_de_archivo, plot=main_figure, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
+
+## asi me lo guarda bien
+png(mi_nombre_de_archivo, res=600, units="cm", width=15, height=15)
+plot(main_figure)
+dev.off()
+#View(systemfonts::system_fonts())
+#device = ragg::agg_png, # this is the relevant part
+
+
+
 
 # main plot ---------------------------------------------------------------
 
