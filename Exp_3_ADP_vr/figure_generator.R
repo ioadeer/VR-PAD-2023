@@ -62,10 +62,10 @@ anova(m.Dist1)
 r.squaredGLMM(m.Dist1)
 
 
-eq1 <- substitute("No visual information:" ~~~ italic(y) == k %.% italic(X)^italic(a),
+eq1 <- substitute("NVI:"~italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]], digits = 2)))
-eq2 <- substitute("Virtual environment:"~~~italic(y) == k %.% italic(X)^italic(a),
+eq2 <- substitute("VE:"~italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^(mDist1stats$tidy_data$estimate[[1]]+mDist1stats$tidy_data$estimate[[3]]), digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]]+mDist1stats$tidy_data$estimate[[4]], digits = 2)))
 #eq3 <- substitute("r.squared:"~~~italic(R)^italic(2) == italic(b),
@@ -86,28 +86,26 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
   scale_colour_manual(values = cbPalette) +
   scale_fill_manual(values = cbPalette) +
   geom_line(data = Final.Fixed, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
-  geom_text(x = 0.2, y = 8.0, label = as.character(as.expression(eq1)), 
+  geom_text(x = 5, y = 4.5, label = as.character(as.expression(eq1)), 
             hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#000000",
-            family="Times New Roman")+
-  geom_text(x = 0.2, y = 7.0, label = as.character(as.expression(eq2)), 
+            )+
+            #family="Times New Roman")+
+  geom_text(x = 5, y = 4.25, label = as.character(as.expression(eq2)), 
             hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = "#E69F00",
-            family="Times New Roman")+
+            )+
+            #family="Times New Roman")+
   #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
-  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,10)) +
+  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,5)) +
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
-        legend.title = element_blank(),
-        text=element_text(family="Times New Roman", size=10)) 
+        legend.title = element_blank(),)
+        #text=element_text(family="Times New Roman", size=10)) 
 
 
 f1
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "5. Lme Lineal-Normal", ".jpg", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f1, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
-
-
-
-
 
 
 # signed bias -------------------------------------------------------------
@@ -143,7 +141,7 @@ f6 <-  ggplot(results_tblp, aes(x = room_condition,y = MBiasSigned, colour = roo
               alpha = 0.5,
               linetype = "dashed") +
   labs(x = "Condition", 
-       y = "Relative signed \nbias") +
+       y = "Relative signed bias") +
   # facet_grid(. ~ type) +
   #annotate("text", x = 1.5, y = 0.3,  label = "*", size = 4) +
   #annotate("segment", x = 1, xend = 2, y = 0.2, yend = 0.2, colour = "black", size=.5, alpha=1,)+
@@ -210,7 +208,7 @@ f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = ro
   # facet_grid(. ~ type) +
  # annotate("text", x = 1.5, y = 1.1,  label = "**", size = 4) +
 #  annotate("segment", x = 1, xend = 2, y = 1.0, yend = 1.0, colour = "black", size=.5, alpha=1,)+
-  theme_pubr(base_size = 12, margin = TRUE)+
+  theme_pubr(base_size = 10.9, margin = TRUE)+
   theme(legend.position = "none",
         axis.title.x = element_blank(),
         axis.text.x = element_blank())
@@ -241,6 +239,36 @@ t.test(filter(results_tbls,
               room_condition=="Virtual environment")$mBiasUnSigned, 
        paired = FALSE)
 #t = -0.25141, df = 33.724, p-value = 0.803
+
+# main plot V2 ---------------------------------------------------------------
+
+#f1 f6 y f7
+main_figure <- ggarrange(f1, 
+                         ggarrange(f6, f7, widths = c(2,2),
+                                   ncol = 1, labels = c("B", "C")),
+                         #nrow = 2, 
+                         ncol = 2,
+                         labels ="A",
+                         heights = c(1, 1),
+                         widths = c(1.75,1.25),
+                         common.legend = TRUE)
+#                    legend = "top")
+
+main_figure
+
+
+# save plot V2 ---------------------------------------------------------------
+
+figures_folder = "./Exp_3_ADP_vr/Figura_final"
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "exp_V2", ".png", sep = '')
+#ggsave(device = "png", mi_nombre_de_archivo, plot=main_figure, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
+
+## asi me lo guarda bien
+png(mi_nombre_de_archivo, res=600, units="cm", width=15, height=15)
+plot(main_figure)
+dev.off()
+#View(systemfonts::system_fonts())
+#device = ragg::agg_png, # this is the relevant part
 
 # main plot ---------------------------------------------------------------
 

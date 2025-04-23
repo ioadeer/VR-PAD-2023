@@ -77,10 +77,10 @@ r.squaredGLMM(m.Dist1)
 #tab_model(m.Dist1, file ="Exp_2_ADP_control/stats/model.html")
 
 
-eq1 <- substitute("No visual:" ~~~ italic(y) == k %.% italic(X)^italic(a),
+eq1 <- substitute("NVI:"~italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]], digits = 2)))
-eq2 <- substitute("Visual:"~~~italic(y) == k %.% italic(X)^italic(a),
+eq2 <- substitute("VI:"~italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^(mDist1stats$tidy_data$estimate[[1]]+mDist1stats$tidy_data$estimate[[3]]), digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]]+mDist1stats$tidy_data$estimate[[4]], digits = 2)))
 #eq3 <- substitute("r.squared:"~~~italic(R)^italic(2) == italic(b),
@@ -101,19 +101,21 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
   scale_colour_manual(values = cbPalette) +
   scale_fill_manual(values = cbPalette) +
   geom_line(data = Final.Fixed, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
-  geom_text(x = 0.2, y = 8.0, label = as.character(as.expression(eq1)), 
+  geom_text(x = -0.1, y = 5.0, label = as.character(as.expression(eq1)), 
             hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#000000",
-            family="Times New Roman")+
-  geom_text(x = 0.2, y = 7.0, label = as.character(as.expression(eq2)), 
+            )+
+            #family="Times New Roman")+
+  geom_text(x = -0.1, y = 4.75, label = as.character(as.expression(eq2)), 
             hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = "#E69F00",
-            family="Times New Roman")+
+            )+
+            #family="Times New Roman")+
   #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
-  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,10)) +
+  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,5)) +
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
-        legend.title = element_blank(),
-        text=element_text(family="Times New Roman", size=10)) 
+        legend.title = element_blank(),)
+        #text=element_text(family="Times New Roman", size=10)) 
 
 
 f1
@@ -159,7 +161,7 @@ f6 <-  ggplot(results_tblp, aes(x = room_condition,y = MBiasSigned, colour = roo
               alpha = 0.5,
               linetype = "dashed") +
   labs(x = "Condition", 
-       y = "Relative signed \nbias") +
+       y = "Relative signed bias") +
   # facet_grid(. ~ type) +
   #annotate("text", x = 1.5, y = 0.3,  label = "*", size = 4) +
   #annotate("segment", x = 1, xend = 2, y = 0.2, yend = 0.2, colour = "black", size=.5, alpha=1,)+
@@ -254,18 +256,45 @@ testUnsignedBias <- t.test(filter(results_tbls,
 
 testUnsignedBias.tidy <- tidy(testUnsignedBias)
 
-write.csv(testUnsignedBias.tidy, file="Exp_2_ADP_control/stats/unsigned_bias_t-test.csv")
+#write.csv(testUnsignedBias.tidy, file="Exp_2_ADP_control/stats/unsigned_bias_t-test.csv")
 
 cohens_d_testUnsignedBias <- cohens_d(testUnsignedBias)
 
-write.csv(cohens_d_testUnsignedBias, file="Exp_2_ADP_control/stats/unsigned_bias_t-test_cohen_d.csv")
+#write.csv(cohens_d_testUnsignedBias, file="Exp_2_ADP_control/stats/unsigned_bias_t-test_cohen_d.csv")
 
 #write.csv(anov, file="Exp_2_ADP_control/stats/unsigned_bias_anova.csv")
 
 #tab_model(m.RelativUnsignedBias, file ="Exp_2_ADP_control/stats/unsigned_bias.html")
 
+# main plot V2 ---------------------------------------------------------------
+
+#f1 f6 y f7
+main_figure <- ggarrange(f1, 
+                         ggarrange(f6, f7, widths = c(2,2),
+                                   ncol = 1, labels = c("B", "C")),
+                         #nrow = 2, 
+                         ncol = 2,
+                         labels ="A",
+                         heights = c(1, 1),
+                         widths = c(1.75,1.25),
+                         common.legend = TRUE)
+#                    legend = "top")
+
+main_figure
 
 
+# save plot V2 ---------------------------------------------------------------
+
+figures_folder = "./Exp_2_ADP_control/Figura_final_3"
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "exp_V2", ".png", sep = '')
+#ggsave(device = "png", mi_nombre_de_archivo, plot=main_figure, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
+
+## asi me lo guarda bien
+png(mi_nombre_de_archivo, res=600, units="cm", width=15, height=15)
+plot(main_figure)
+dev.off()
+#View(systemfonts::system_fonts())
+#device = ragg::agg_png, # this is the relevant part
 
 # main plot ---------------------------------------------------------------
 
