@@ -44,38 +44,40 @@ eqn2 <- sprintf(
 
 cbPalette <- c("#E69F00","#000000","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
 
+myViridis <- viridisLite::viridis(alpha=0.75, n= 3)
+
+
 correlation_plot <- ggplot(tabla.analisis_cor, 
                            aes(x =log_perceived_depth, y = log_distancia_max,
                                colour = room_condition)) +
   #scale_fill_brewer(palette="YlOrRd")+
-  scale_colour_manual(values = cbPalette) +
-  scale_fill_manual(values = cbPalette) +
+  scale_colour_manual(values = c(myViridis[1], myViridis[2]),
+                      labels = c("Smaller VE", "Congruent VE")) +
+  scale_fill_manual(values = c(myViridis[1], myViridis[2])) +
   geom_point() +
   geom_smooth(alpha=0.3, method= "lm")+
   #stat_cor(method = "pearson", show.legend= FALSE,  position = "jitter")+
-  annotate("text",                        # Add text for mean
+  annotate("label",                        # Add text for mean
            x = 0, # para fig compuesta
            y = 3.0,
            label = eqn1,
            size = 4,
            hjust = 0,
-           color="#E69F00" ) +
-  annotate("text",                        # Add text for mean
+           color = myViridis[1],
+           ) +
+  annotate("label",                        # Add text for mean
            x = 0, # para fig compuesta
            y = 2.65,
            label = eqn2,
            size = 4,
            hjust = 0,
-           color="#000000" ) +
+           color = myViridis[2],
+           ) +
   #ggtitle("Correlation between visual and auditory distance assesments (log log)") +
   xlab("Perceived Virtual Room Depth (m)") +
-  #theme(legend.title =element_blank(), legend.position = 'none')+
   ylab("Maximum Perceived Auditory Distance (m)")+
   labs(color = "Visual condition") +  # Change legend title
-  scale_color_manual(values = c("#E69F00", "#000000"), 
-                     labels = c("Smaller VE", "Congruent VE"))+
   theme_minimal()+
-  #theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
         legend.title = element_blank(),
         #text=element_text(family="Arial", size=10)
@@ -147,12 +149,11 @@ eqn3 <- sprintf(
 # Use single color
 violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Condition)) +
   geom_violin(trim=FALSE) +
-  #geom_boxplot(width=0.1) +
+  geom_point(data= dimensions.depth_sum, mapping = aes(y=mean))+
   geom_errorbar(data= dimensions.depth_sum, mapping = aes(y= mean , ymin=mean - se,
                                                           ymax=mean + se),
                 color = "#22292F",
-                width = .1) +
-  geom_jitter(alpha = 0.1) +
+                width = .25) +
   annotate("text", x = 1.5, y = 18.5,  label = "**", size = 3) +
   annotate("segment", x = 1.1, xend = 1.9, y = 18, yend = 18, colour = "black", size=.5, alpha=1,)+
   annotate("text", x = 1.5, y = 20.5,  label = "**", size = 3) +
@@ -162,11 +163,11 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
   )+
   theme_minimal() +
   guides(fill = "none") +
-  scale_fill_brewer(palette="YlOrRd")+
-  #geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
   geom_hline(yintercept=12,linetype="dashed") +
   annotate("text", x=1.5, y=13, label= "12 m", size=3.5) +
 #  theme_pubr(base_size = 12, margin = TRUE)+
+  scale_colour_manual(values =myViridis) +
+  scale_fill_manual(values = myViridis) +
   theme(
     #axis.text.x=element_blank(),
     axis.title.x = element_blank(),
