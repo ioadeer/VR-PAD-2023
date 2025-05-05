@@ -46,20 +46,25 @@ cbPalette <- c("#E69F00","#000000","#009E73", "#999999", "#D55E00", "#0072B2", "
 
 myViridis <- viridisLite::viridis(alpha=0.75, n= 3)
 
+tabla.analisis_cor$room_condition <- factor(tabla.analisis_cor$room_condition,
+                                            levels = c(
+                                              "Sala Grande",
+                                              "Sala Chica"
+                                            ))
 
 correlation_plot <- ggplot(tabla.analisis_cor, 
                            aes(x =log_perceived_depth, y = log_distancia_max,
                                colour = room_condition)) +
   #scale_fill_brewer(palette="YlOrRd")+
-  scale_colour_manual(values = c(myViridis[1], myViridis[2]),
-                      labels = c("Smaller VE", "Congruent VE")) +
-  scale_fill_manual(values = c(myViridis[1], myViridis[2])) +
+  scale_colour_manual(values = c(myViridis[2], myViridis[1]),
+                      labels = c("Congruet VE", "Smaller VE")) +
+  scale_fill_manual(values = c(myViridis[2], myViridis[1])) +
   geom_point() +
   geom_smooth(alpha=0.3, method= "lm")+
   #stat_cor(method = "pearson", show.legend= FALSE,  position = "jitter")+
   annotate("label",                        # Add text for mean
            x = 0, # para fig compuesta
-           y = 3.0,
+           y = 2.65,
            label = eqn1,
            size = 4,
            hjust = 0,
@@ -67,7 +72,7 @@ correlation_plot <- ggplot(tabla.analisis_cor,
            ) +
   annotate("label",                        # Add text for mean
            x = 0, # para fig compuesta
-           y = 2.65,
+           y = 3,
            label = eqn2,
            size = 4,
            hjust = 0,
