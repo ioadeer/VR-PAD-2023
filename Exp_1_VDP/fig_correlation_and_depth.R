@@ -32,17 +32,17 @@ congruent_ve <- tabla.analisis_cor %>%
 corr_smaller_ve <- cor.test(smaller_ve$log_perceived_depth,smaller_ve$log_distancia_max , method= 'pearson')
 
 eqn1 <- sprintf(
-  "R = %.2g, p < 0.01",
+  "SVE: R = %.2g, p < 0.01",
   corr_smaller_ve[4][[1]][[1]])
 
 corr_congruent_ve <- cor.test(congruent_ve$log_perceived_depth,congruent_ve$log_distancia_max , method= 'pearson')
 
 eqn2 <- sprintf(
-  "R = %.2g, p =  %.2g",
+  "LVE: R = %.2g, p =  %.2g",
   corr_congruent_ve[4][[1]][[1]],
   corr_congruent_ve[3][[1]][[1]])
 
-cbPalette <- c("#E69F00","#000000","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
+#cbPalette <- c("#E69F00","#000000","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
 
 myViridis <- viridisLite::viridis(alpha=0.75, n= 3)
 
@@ -57,7 +57,7 @@ correlation_plot <- ggplot(tabla.analisis_cor,
                                colour = room_condition)) +
   #scale_fill_brewer(palette="YlOrRd")+
   scale_colour_manual(values = c(myViridis[2], myViridis[1]),
-                      labels = c("Congruet VE", "Smaller VE")) +
+                      labels = c("Large VE", "Small VE")) +
   scale_fill_manual(values = c(myViridis[2], myViridis[1])) +
   geom_point() +
   geom_smooth(alpha=0.3, method= "lm")+
@@ -107,7 +107,7 @@ dimensions.depth <- dimensions.depth %>%
   mutate(
     variable = case_when(
       variable == "SC_RV_depth" ~ "SVE",
-      variable == "SG_RV_depth" ~ "CVE",
+      variable == "SG_RV_depth" ~ "LVE",
       variable == "SR_depth" ~ "RE",
     )
   )
@@ -122,7 +122,7 @@ dimensions.depth <- dimensions.depth %>%
 
 dimensions.depth$Condition = factor(dimensions.depth$Condition, 
                                     levels=c("SVE", 
-                                             "CVE",
+                                             "LVE",
                                              "RE"))
 
 
@@ -151,6 +151,7 @@ eqn3 <- sprintf(
   dimensions.depth_sum$mean[3],
   dimensions.depth_sum$se[3])
 
+myViridis <- viridisLite::viridis(alpha=0.5, n= 3)
 # Use single color
 violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Condition)) +
   geom_violin(trim=FALSE) +
