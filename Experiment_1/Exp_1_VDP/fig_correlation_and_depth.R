@@ -14,7 +14,7 @@ library(effectsize)
 
 # correlation  ---------------------------------------------------------------
 
-tabla.exp_1.corr <- read.csv("./Exp_1_VDP/data/max_audiovisual_depth_1_50_dos_bloques.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.exp_1.corr <- read.csv("./Experiment_1/Exp_1_VDP/data/max_audiovisual_depth_1_50_dos_bloques.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 tabla.analisis_cor <- tabla.exp_1.corr %>%
   mutate(
@@ -31,13 +31,13 @@ congruent_ve <- tabla.analisis_cor %>%
 
 corr_smaller_ve <- cor.test(smaller_ve$log_perceived_depth,smaller_ve$log_distancia_max , method= 'pearson')
 
-eqn1 <- sprintf(
+eqn1_cor <- sprintf(
   "SVE: R = %.2g, p < 0.01",
   corr_smaller_ve[4][[1]][[1]])
 
 corr_congruent_ve <- cor.test(congruent_ve$log_perceived_depth,congruent_ve$log_distancia_max , method= 'pearson')
 
-eqn2 <- sprintf(
+eqn2_cor <- sprintf(
   "LVE: R = %.2g, p =  %.2g",
   corr_congruent_ve[4][[1]][[1]],
   corr_congruent_ve[3][[1]][[1]])
@@ -64,8 +64,8 @@ correlation_plot <- ggplot(tabla.analisis_cor,
   #stat_cor(method = "pearson", show.legend= FALSE,  position = "jitter")+
   annotate("label",                        # Add text for mean
            x = 0, # para fig compuesta
-           y = 2.65,
-           label = eqn1,
+           y = 2.55,
+           label = eqn1_cor,
            size = 4,
            hjust = 0,
            color = myViridis[1],
@@ -73,14 +73,14 @@ correlation_plot <- ggplot(tabla.analisis_cor,
   annotate("label",                        # Add text for mean
            x = 0, # para fig compuesta
            y = 3,
-           label = eqn2,
+           label = eqn2_cor,
            size = 4,
            hjust = 0,
            color = myViridis[2],
            ) +
   #ggtitle("Correlation between visual and auditory distance assesments (log log)") +
   xlab("Perceived Virtual Room Depth (m)") +
-  ylab("Maximum Perceived Auditory Distance (m)")+
+  ylab("Maximum Perceived \n Auditory Distance (m)")+
   labs(color = "Visual condition") +  # Change legend title
   theme_minimal()+
   theme(legend.position = "top",
@@ -94,7 +94,7 @@ plot(correlation_plot)
 
 # depth -------------------------------------------------------------------
 
-tabla.exp_1 <- read.csv("./Exp_1_ADP/data/dimensiones_de_sala_visual_1_50_sin_outliers.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.exp_1 <- read.csv("./Experiment_1/Exp_1_ADP/data/dimensiones_de_sala_visual_1_50_sin_outliers.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 #DEPTH
 
@@ -177,8 +177,8 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
   theme(
     #axis.text.x=element_blank(),
     axis.title.x = element_blank(),
-    axis.title.y = element_text(hjust = 1),
-    plot.margin = unit(c(1.75,0,1.25,0.25), "cm")# top right botom left
+   # axis.title.y = element_text(hjust = 1),
+    plot.margin = unit(c(1.25,0,1.00,0.25), "cm")# top right botom left
     ) 
 
 plot(violin_depth)

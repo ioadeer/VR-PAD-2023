@@ -27,7 +27,7 @@ library(effectsize)
 
 # load data ---------------------------------------------------------------
 
-results_tbl <- read.csv("./Exp_1_ADP/ResultsData/Dresults_S1_S50_2_bloques_sin_outliers.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
+results_tbl <- read.csv("./Experiment_1/Exp_1_ADP/ResultsData/Dresults_S1_S50_2_bloques_sin_outliers.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
 
 #cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
 
@@ -145,7 +145,8 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
   scale_y_continuous(name="Perceived distance (m)",   limits = c(0,5)) +
   scale_color_manual(labels = c("Large VE", "Small VE"), values =c(myViridis[2], myViridis[1]))+
-  theme_pubr(base_size = 12, margin = TRUE)+
+  #theme_pubr(base_size = 12, margin = TRUE)+
+  theme_minimal() +
   theme(legend.position = "top",
         legend.title = element_blank(),
         #text=element_text(family="Times New Roman"
@@ -195,7 +196,7 @@ f6 <-  ggplot(results_tblp, aes(x = room_condition,y = MBiasSigned, colour = roo
   theme(legend.position = "none",
         axis.title.x = element_blank(),
         axis.text.x = element_blank(),
-        plot.margin = unit(c(1.0,0.25,0.25,0), "cm"))
+        plot.margin = unit(c(1.5,0,1.00,0.25), "cm"))
 
 f6
 
@@ -255,15 +256,16 @@ f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = ro
               alpha = 0.5,
               linetype = "dashed") +
   labs(x = "Condition", 
-       y = "Relative\n unsigned bias") +
+       y = "Relative unsigned bias") +
   # facet_grid(. ~ type) +
   #annotate("text", x = 1.5, y = 1.1,  label = "**", size = 4) +
   #annotate("segment", x = 1, xend = 2, y = 1.0, yend = 1.0, colour = "black", size=.5, alpha=1,)+
-  theme_pubr(base_size = 10.95, margin = TRUE)+
+  #theme_pubr(base_size = 10.95, margin = TRUE)+
+  theme_minimal() +
   theme(legend.position = "none",
         axis.title.x = element_blank(),
         #axis.text.x = element_blank(),
-        plot.margin = unit(c(0.75,0.27,0.5,0), "cm"))
+        plot.margin = unit(c(1.75,0,1.25,0.25), "cm"))
 
 f7
 
