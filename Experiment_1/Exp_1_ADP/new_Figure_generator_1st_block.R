@@ -22,9 +22,14 @@ library(ggpubr)
 #library(officer)
 library(effects)
 
+
+
+# load data ---------------------------------------------------------------
+
+
 results_tbl <- read.csv("./Experiment_1/Exp_1_ADP/ResultsData/Dresults_S1_S50_2_bloques_sin_outliers.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
 
-cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
+myViridis <- viridisLite::viridis(alpha=1, n= 3)
 
 results_tbl <- results_tbl %>%
   subset(block == 1)
@@ -36,10 +41,19 @@ m.Dist1 <-  lmer(log10(perc_dist) ~ log10(target_distance)*room_condition+(1+log
 mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
 r.squaredGLMM(m.Dist1)
 #write.table(m.Dist1.stats , file = "new_Exp_1_ADP/stats/m_Dist1_model.csv")
+tidy(m.Dist1)
+#write.csv(tidy(m.Dist1) , file = "./Experiment_1/Exp_1_ADP/stats/first_block/model.csv")
 #write.table(m.Dist1.stats)
 
 anova(m.Dist1)
 anov1 = anova(m.Dist1)
+
+#write.csv(anov1 , file = "./Experiment_1/Exp_1_ADP/stats/first_block/anova.csv")
+
+# libreria effect size
+eta_sqrd = eta_squared(anov1)
+
+#write.csv(eta_sqrd, file="./Experiment_1/Exp_1_ADP/stats/first_block/efect_size_partial_eta_sqrd.csv")
 
 results_tbl$Modelfitted1<-predict(m.Dist1)
 
@@ -79,17 +93,17 @@ Final.Fixed.Plot
 extract_stats(ggcoefstats(m.Dist1))
 
 
-anov1 <- anova(m.Dist1)
+#anov1 <- anova(m.Dist1)
 #write.csv(anov1, file="new_Exp_1_ADP/stats/all_model_anova.csv")
-r.squaredGLMM(m.Dist1)
+#r.squaredGLMM(m.Dist1)
 # para imprimir
 #tab_model(m.Dist1, file ="new_Exp_1_ADP/stats/all_model.html")
 
 
-eq1 <- substitute("Coincident VE:" ~~~ italic(y) == k %.% italic(X)^italic(a),
+eq1 <- substitute("Large VE:" ~~~ italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]], digits = 2)))
-eq2 <- substitute("Smaller VE:"~~~italic(y) == k %.% italic(X)^italic(a),
+eq2 <- substitute("Small VE:"~~~italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^(mDist1stats$tidy_data$estimate[[1]]+mDist1stats$tidy_data$estimate[[3]]), digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]]+mDist1stats$tidy_data$estimate[[4]], digits = 2)))
 #eq3 <- substitute("r.squared:"~~~italic(R)^italic(2) == italic(b),
@@ -112,22 +126,28 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
                                                   jitter.height = 0,
                                                   dodge.width = .1 ))+
   geom_abline(intercept = 0, slope = 1, linetype=2) +
-  scale_colour_manual(values = cbPalette) +
-  scale_fill_manual(values = cbPalette) +
+  scale_colour_manual(values = c(myViridis[1], myViridis[2])) +
+  scale_fill_manual(values = c(myViridis[1], myViridis[2])) +
   geom_line(data = Final.Fixed, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
-  geom_text(x = 0.2, y = 8.0, label = as.character(as.expression(eq1)), 
-            hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#000000",
-            family="Times New Roman")+
-  geom_text(x = 0.2, y = 7.0, label = as.character(as.expression(eq2)), 
-            hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = "#E69F00",
-            family="Times New Roman")+
+  geom_label(x = -0.1, y = 3.8, label = as.character(as.expression(eq1)), 
+             hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = myViridis[2],
+             #family="Times New Roman"
+  )+
+  geom_label(x = -0.1, y = 4.75, label = as.character(as.expression(eq2)), 
+             hjust = 0, nudge_x =  0,parse = TRUE, size = 4, 
+             color = myViridis[1],
+             #family="Times New Roman"
+  )+
   #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
-  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,10)) +
-  theme_pubr(base_size = 12, margin = TRUE)+
+  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,5)) +
+  scale_color_manual(labels = c("Large VE", "Small VE"), values =c(myViridis[2], myViridis[1]))+
+  #theme_pubr(base_size = 12, margin = TRUE)+
+  theme_minimal() +
   theme(legend.position = "top",
         legend.title = element_blank(),
-        text=element_text(family="Times New Roman", size=10)) 
+        #text=element_text(family="Times New Roman"
+        ) 
 
 
 f1
@@ -155,42 +175,45 @@ results_tblp <- results_tbls %>%
 f6 <-  ggplot(results_tblp, aes(x = room_condition,y = MBiasSigned, colour = room_condition, fill = room_condition)) +
   geom_pointrange(aes(x=room_condition, y=MBiasSigned, ymin=MBiasSigned-SDBiasSigned, ymax=MBiasSigned+SDBiasSigned), size = 0.5)+
   geom_line(aes(group = 1),size = 1.2, alpha=.5)+
-  geom_point(data = results_tbls, mapping = aes(x = room_condition,y = mBiasSigned, colour = room_condition, fill = room_condition), alpha = 0.3)+
-  geom_line(data = results_tbls, mapping = aes(x = room_condition,y = mBiasSigned, group = subject, colour = room_condition),alpha = 0.3)+
+  geom_point(data = results_tbls, mapping = aes(x = room_condition,y = mBiasSigned, colour = room_condition, fill = room_condition), alpha = 0.1)+
+  geom_line(data = results_tbls, mapping = aes(x = room_condition,y = mBiasSigned, group = subject, colour = room_condition),alpha = 0.1)+
   geom_violin(data= results_tbls,aes(x = room_condition,y = mBiasSigned), trim=TRUE, alpha=0)+
-  scale_colour_manual(values = cbPalette) + 
-  scale_fill_manual(values = cbPalette) + 
+  scale_colour_manual(values = c(myViridis[2], myViridis[1])) + 
+  scale_fill_manual(values = c(myViridis[2], myViridis[1])) + 
   geom_abline(slope = 0,
               intercept = 0,
               alpha = 0.5,
               linetype = "dashed") +
   labs(x = "Condition", 
-       y = "Relative signed \nbias") +
+       y = "Relative signed bias") +
   # facet_grid(. ~ type) +
   #annotate("text", x = 1.5, y = 0.3,  label = "*", size = 4) +
   #annotate("segment", x = 1, xend = 2, y = 0.2, yend = 0.2, colour = "black", size=.5, alpha=1,)+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "none",
         axis.title.x = element_blank(),
-        axis.text.x = element_blank())
+        axis.text.x = element_blank(),
+        plot.margin = unit(c(1.5,0,1.00,0.25), "cm"))
 
 f6
 
 
 m.RelativBias <- lm(mBiasSigned ~ room_condition, 
                     data = results_tbls)
+
+#write.csv(tidy(m.RelativBias), file="./Experiment_1/Exp_1_ADP/stats/first_block/signed_bias_model.csv")
 extract_stats(ggcoefstats(m.RelativBias))
 #1 (Intercept)                        -0.509
 # room_conditionVisual information    0.151 
 
 anov = anova(m.RelativBias)
+#write.csv(anov, file="./Experiment_1/Exp_1_ADP/stats/first_block/signed_bias_anova.csv")
 anov
 f6
-
-#write.csv(anov, file="new_Exp_1_ADP/stats/all_signed_bias_anova.csv")
+eta_sqrd_rsb = eta_squared(anov)
+#write.csv(eta_sqrd_rsb, file="./Experiment_1/Exp_1_ADP/stats/first_block/signed_bias_eta_sqrd.csv")
 
 #tab_model(m.RelativBias, file ="new_Exp_1_ADP/stats/all_signed_bias.html")
-
 
 # no es signficitavo #1 0.18301 0.183011  3.5967 0.06756 .
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
@@ -206,7 +229,7 @@ testSigendBias <- t.test(filter(results_tbls,
 testSigendBias
 
 testSignedBias.tidy <- tidy(testSigendBias)
-#write.csv(testSignedBias.tidy, file="new_Exp_1_ADP/stats/all_signed_bias_t-test.csv")
+write.csv(testSignedBias.tidy, file="./Experiment_1/Exp_1_ADP/stats/first_block/signed_bias_t-test.csv")
 
 #95 percent confidence interval:
 #  -0.31498920  0.01249011
@@ -219,38 +242,46 @@ testSignedBias.tidy <- tidy(testSigendBias)
 
 f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = room_condition, fill = room_condition)) +
   geom_pointrange(aes(x=room_condition, y=MBiasUnSigned, ymin=MBiasUnSigned-SDBiasUnSigned, ymax=MBiasUnSigned+SDBiasUnSigned), size = 0.5)+
-  geom_point(data = results_tbls, mapping = aes(x = room_condition,y = mBiasUnSigned, colour = room_condition, fill = room_condition), alpha = .3)+
+  geom_point(data = results_tbls, mapping = aes(x = room_condition,y = mBiasUnSigned, colour = room_condition, fill = room_condition), alpha = .1)+
   geom_line(aes(group = 1),size = 1.2, alpha=.5)+
-  geom_line(data = results_tbls, mapping = aes(x = room_condition,y = mBiasUnSigned, group = subject, colour = room_condition),alpha = 0.3)+
+  #geom_line(data = results_tbls, mapping = aes(x = room_condition,y = mBiasUnSigned, group = subject, colour = room_condition),alpha = 0.1)+
   geom_violin(data= results_tbls,aes(x = room_condition,y = mBiasUnSigned), trim=TRUE, alpha=0)+
-  scale_colour_manual(values = cbPalette) + 
-  scale_fill_manual(values = cbPalette) + 
+  scale_colour_manual(values = c(myViridis[2], myViridis[1])) + 
+  scale_fill_manual(values = c(myViridis[2], myViridis[1])) + 
+  # correr con esto
+  scale_x_discrete(labels = c('LVE','SVE'))+
   geom_abline(slope = 0,
               intercept = 0,
               alpha = 0.5,
               linetype = "dashed") +
   labs(x = "Condition", 
-       y = "Relative unsigned \nbias") +
+       y = "Relative unsigned bias") +
   # facet_grid(. ~ type) +
   #annotate("text", x = 1.5, y = 1.1,  label = "**", size = 4) +
   #annotate("segment", x = 1, xend = 2, y = 1.0, yend = 1.0, colour = "black", size=.5, alpha=1,)+
-  theme_pubr(base_size = 12, margin = TRUE)+
+  #theme_pubr(base_size = 10.95, margin = TRUE)+
+  theme_minimal() +
   theme(legend.position = "none",
         axis.title.x = element_blank(),
-        axis.text.x = element_blank())
+        #axis.text.x = element_blank(),
+        plot.margin = unit(c(1.75,0,1.25,0.25), "cm"))
 
 f7
 
 m.RelativUnsignedBias <- lm(mBiasUnSigned ~ room_condition, 
                             data = results_tbls)
+#write.csv(tidy(m.RelativUnsignedBias) , file = "./Experiment_1/Exp_1_ADP/stats/first_block/unsiged_bias_model.csv")
 extract_stats(ggcoefstats(m.RelativUnsignedBias))
 anov = anova(m.RelativUnsignedBias)
+#write.csv(anov , file = "./Experiment_1/Exp_1_ADP/stats/first_block/unsiged_bias_anova.csv")
 anov
 f7
 
 #write.csv(anov, file="new_Exp_1_ADP/stats/all_unsigned_bias_anova.csv")
 
-#tab_model(m.RelativUnsignedBias, file ="new_Exp_1_ADP/stats/all_unsigned_bias.html")
+
+eta_sqrd_rub = eta_squared(anov)
+#write.csv(eta_sqrd_rub, file="./Experiment_1/Exp_1_ADP/stats/first_block/unsigned_bias_eta_sqrd.csv")
 
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
@@ -262,7 +293,7 @@ testUnsigendBias <- t.test(filter(results_tbls,
        paired = FALSE)
 
 testUnsigendBias.tidy <- tidy(testUnsigendBias)
-#write.csv(testUnsigendBias.tidy, file="new_Exp_1_ADP/stats/all_unsigned_bias_t-test.csv")
+write.csv(testUnsigendBias.tidy, file="./Experiment_1/Exp_1_ADP/stats/first_block/unsigned_bias_t-test.csv")
 
 
 

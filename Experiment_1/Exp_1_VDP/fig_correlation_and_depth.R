@@ -178,7 +178,7 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
     #axis.text.x=element_blank(),
     axis.title.x = element_blank(),
    # axis.title.y = element_text(hjust = 1),
-    plot.margin = unit(c(1.25,0,1.00,0.25), "cm")# top right botom left
+    plot.margin = unit(c(0.0,0,1.00,0.25), "cm")# top right botom left
     ) 
 
 plot(violin_depth)

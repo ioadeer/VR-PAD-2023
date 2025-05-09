@@ -1,0 +1,12 @@
+"","effect","group","term","estimate","std.error","statistic","df","p.value"
+"1","fixed",NA,"(Intercept)",-0.498219514148622,0.0805463908413616,-6.18549768579798,35.5184184633469,4.14867425320947e-07
+"2","fixed",NA,"log10(target_distance)",1.08277181641391,0.0658580718940721,16.4409887091057,45.9613652268083,7.09444351825313e-21
+"3","fixed",NA,"room_conditionSmaller VE",0.0953924681499351,0.0893612568092255,1.06749246324484,59.4823678551607,0.290062947962491
+"4","fixed",NA,"log10(target_distance):room_conditionSmaller VE",-0.0822455680608755,0.0901113532986102,-0.912710386096754,50.1484688425543,0.365761998601217
+"5","ran_pars","subject","sd__(Intercept)",0.201612639918001,NA,NA,NA,NA
+"6","ran_pars","subject","cor__(Intercept).log10(target_distance)",-1,NA,NA,NA,NA
+"7","ran_pars","subject","sd__log10(target_distance)",0.185663792277414,NA,NA,NA,NA
+"8","ran_pars","subject.1","sd__room_conditionCoincident VE",0.34334079579315,NA,NA,NA,NA
+"9","ran_pars","subject.1","cor__room_conditionCoincident VE.room_conditionSmaller VE",0.999999999442728,NA,NA,NA,NA
+"10","ran_pars","subject.1","sd__room_conditionSmaller VE",0.258946192811502,NA,NA,NA,NA
+"11","ran_pars","Residual","sd__Observation",0.136353808881311,NA,NA,NA,NA

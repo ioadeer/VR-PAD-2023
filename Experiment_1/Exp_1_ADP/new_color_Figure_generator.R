@@ -39,7 +39,7 @@ m.Dist1 <-  lmer(log10(perc_dist) ~ log10(target_distance)*room_condition+(1+log
                  data = results_tbl) 
 m.Dist1.stats <- extract_stats(ggcoefstats(m.Dist1))
 r.squaredGLMM(m.Dist1)
-#write.table(m.Dist1.stats , file = "new_Exp_1_ADP/stats/m_Dist1_model_all.csv")
+#write.table(m.Dist1.stats , file = "/stats/first_block/m_Dist1_model_all.csv")
 
 anova(m.Dist1)
 anov1 = anova(m.Dist1)
