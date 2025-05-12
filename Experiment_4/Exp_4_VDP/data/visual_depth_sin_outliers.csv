@@ -1,0 +1,43 @@
+"Subject" "Condition" "Depth"
+1 "No visual information" 2
+2 "No visual information" 4
+2 "Virtual environment" 7
+2 "Real environment" 10
+3 "No visual information" 7
+3 "Virtual environment" 8
+3 "Real environment" 10
+4 "No visual information" 10
+4 "Virtual environment" 15
+4 "Real environment" 8
+5 "No visual information" 5
+5 "Virtual environment" 10
+5 "Real environment" 10
+6 "Virtual environment" 12.5
+6 "Real environment" 15
+7 "No visual information" 15
+7 "Real environment" 15
+8 "No visual information" 4
+8 "Virtual environment" 8
+8 "Real environment" 8
+9 "No visual information" 4
+9 "Virtual environment" 8
+9 "Real environment" 8
+10 "No visual information" 4
+10 "Virtual environment" 6
+10 "Real environment" 10
+11 "No visual information" 6.5
+11 "Virtual environment" 12
+11 "Real environment" 10
+12 "Virtual environment" 15
+12 "Real environment" 15
+13 "No visual information" 10
+13 "Real environment" 15
+14 "No visual information" 4
+14 "Virtual environment" 6
+14 "Real environment" 6
+15 "No visual information" 3
+15 "Virtual environment" 15
+15 "Real environment" 12
+16 "No visual information" 2
+16 "Virtual environment" 15
+16 "Real environment" 10

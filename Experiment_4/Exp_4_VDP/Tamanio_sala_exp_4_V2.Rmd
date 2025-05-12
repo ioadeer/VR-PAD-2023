@@ -26,7 +26,7 @@ Cómo perciben el tamaño de sala los participantes para el experi 2 y el experi
 
 ```{r load_data experiment 2, message=FALSE, warning=FALSE}
 rm(list=ls())
-tabla.exp_4 <- read.csv("../Visual-de-experimento-4/data/visual_exp_4_con_outliers.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.exp_4 <- read.csv("../Exp_4_VDP/data/visual_exp_4_con_outliers.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 
 ```
@@ -61,6 +61,10 @@ dimensions.depth$Condition = factor(dimensions.depth$Condition, levels=c("No vis
                                                                                    "Virtual environment",
                                                                                    "Real environment"))
 
+dimensions.depth <- dimensions.depth %>%
+  select(c("Subject", "Condition", "Depth"))
+
+write.table(dimensions.depth, file="./data/visual_depth_sin_outliers.csv", row.names = FALSE)
 
 dimensions.depth_sum <- dimensions.depth %>%
   group_by(Condition) %>%

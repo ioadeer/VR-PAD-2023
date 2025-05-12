@@ -18,18 +18,18 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
   scale_fill_manual(values = c(myViridis[1], myViridis[2])) +
   geom_line(data = Final.Fixed, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
   geom_label(x = -0.1, y = 4.75, label = as.character(as.expression(eq1)), 
-             hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = myViridis[2],
+             hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = myViridis[1],
              #family="Times New Roman"
   )+
   geom_label(x = -0.1, y = 4.3, label = as.character(as.expression(eq2)), 
              hjust = 0, nudge_x =  0,parse = TRUE, size = 4, 
-             color = myViridis[1],
+             color = myViridis[2],
              #family="Times New Roman"
   )+
   #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
   scale_y_continuous(name="Perceived distance (m)",   limits = c(0,5)) +
-  scale_color_manual(labels = c("Large VE", "Small VE"), values =c(myViridis[2], myViridis[1]))+
+  scale_color_manual(labels = c("No Visual Information", "Larger VE"), values =c(myViridis[1], myViridis[2]))+
   #theme_pubr(base_size = 12, margin = TRUE)+
   theme_minimal() +
   theme(legend.position = "top",
@@ -48,7 +48,7 @@ f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = ro
   scale_colour_manual(values = c(myViridis[2], myViridis[1])) + 
   scale_fill_manual(values = c(myViridis[2], myViridis[1])) + 
   # correr con esto
-  scale_x_discrete(labels = c('LVE','SVE'))+
+  scale_x_discrete(labels = c('NVI','LVE'))+
   geom_abline(slope = 0,
               intercept = 0,
               alpha = 0.5,
@@ -114,7 +114,7 @@ main_figure <- ggarrange(
                          common.legend = TRUE)
 
 
-figures_folder = "./Experiment_1/figuras/"
+figures_folder = "./Experiment_4/Figuras/"
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "main_3", ".png", sep = '')
 #ggsave(device = "png", mi_nombre_de_archivo, plot=correlation_plot, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
 
