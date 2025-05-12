@@ -12,7 +12,7 @@ library(effectsize)
 
 # correlation ---------------------------------------------------------
 
-tabla.raw <- read.csv('./Experiment_2/Exp_2_ADP_control/data/control_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.raw <- read.csv('./Experiment_3/Exp_3_ADP_vr/data/oscuras_vr_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 tabla.dimensions <- read.csv('./Experiment_2/Exp_2_ADP_control/data/tamanio_de_sala_sin_outliers_oscuras_visual.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 tabla.dist_max <- tabla.raw %>%
@@ -102,20 +102,20 @@ plot(correlation_plot)
 
 # depth -------------------------------------------------------------------
 
-tabla.exp_2 <- read.csv("./Experiment_2/Exp_2_VDP/data/visual_exp_2_sin_outliers.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.exp_2 <- read.csv("./Experiment_3/Exp_3_ADP_vr/data/tamanio_de_sala_sin_outliers_oscuras_virtual.csv", header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 #DEPTH
 
 dimensions.depth <- tabla.exp_2 %>%
-  pivot_longer(cols = c("No_Visual_depth", "Visual_depth"),
+  pivot_longer(cols = c("No_visual_info_depth", "VE_depth"),
                names_to = "variable",
                values_to = "value")
 
 dimensions.depth <- dimensions.depth %>%
   mutate(
     variable = case_when(
-      variable == "No_Visual_depth" ~ "NVI",
-      variable == "Visual_depth" ~ "VI"
+      variable == "No_visual_info_depth" ~ "NVI",
+      variable == "VE_depth" ~ "VE"
     )
   )
 
@@ -129,7 +129,7 @@ dimensions.depth <- dimensions.depth %>%
 
 dimensions.depth$Condition = factor(dimensions.depth$Condition, 
                                     levels=c("NVI", 
-                                             "VI"
+                                             "VE"
                                              ))
 
 
@@ -167,8 +167,6 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
                                                           ymax=mean + se),
                 color = "#22292F",
                 width = .25) +
-  annotate("text", x = 1.5, y = 18.5,  label = "**", size = 3) +
-  annotate("segment", x = 1.1, xend = 1.9, y = 18, yend = 18, colour = "black", size=.5, alpha=1,)+
   labs(
     y = "Mean perceived depth ± SEM (m)",
   )+

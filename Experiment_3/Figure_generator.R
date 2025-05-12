@@ -29,7 +29,7 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
   #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
   scale_y_continuous(name="Perceived distance (m)",   limits = c(0,5)) +
-  scale_color_manual(labels = c("No Visual Information", "Visual Information"), values =c(myViridis[2], myViridis[1]))+
+  scale_color_manual(labels = c("No Visual Information", "Virtual Environment"), values =c(myViridis[2], myViridis[1]))+
   #theme_pubr(base_size = 12, margin = TRUE)+
   theme_minimal() +
   theme(legend.position = "top",
@@ -47,9 +47,7 @@ f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = ro
   geom_violin(data= results_tbls,aes(x = room_condition,y = mBiasUnSigned), trim=TRUE, alpha=0)+
   scale_colour_manual(values = c(myViridis[2], myViridis[1])) + 
   scale_fill_manual(values = c(myViridis[2], myViridis[1])) + 
-  annotate("text", x = 1.5, y = 1.1,  label = "**", size = 4) +
-  annotate("segment", x = 1, xend = 2, y = 1.0, yend = 1.0, colour = "black", size=.5, alpha=1,)+
-  scale_x_discrete(labels = c('NVI','VI'))+
+  scale_x_discrete(labels = c('NVI','VE'))+
   geom_abline(slope = 0,
               intercept = 0,
               alpha = 0.5,
@@ -76,8 +74,6 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
                                                           ymax=mean + se),
                 color = "#22292F",
                 width = .25) +
-  annotate("text", x = 1.5, y = 18.5,  label = "**", size = 3) +
-  annotate("segment", x = 1.1, xend = 1.9, y = 18, yend = 18, colour = "black", size=.5, alpha=1,)+
   labs(
     y = "Mean perceived depth \n± SEM (m)",
   )+
@@ -114,7 +110,7 @@ main_figure <- ggarrange(
                          common.legend = TRUE)
 
 
-figures_folder = "./Experiment_2/Figuras"
+figures_folder = "./Experiment_3/Figuras"
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "main_3", ".png", sep = '')
 #ggsave(device = "png", mi_nombre_de_archivo, plot=correlation_plot, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
 
