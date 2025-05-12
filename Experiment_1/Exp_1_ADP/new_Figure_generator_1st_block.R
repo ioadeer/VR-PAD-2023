@@ -43,7 +43,9 @@ r.squaredGLMM(m.Dist1)
 #write.table(m.Dist1.stats , file = "new_Exp_1_ADP/stats/m_Dist1_model.csv")
 tidy(m.Dist1)
 #write.csv(tidy(m.Dist1) , file = "./Experiment_1/Exp_1_ADP/stats/first_block/model.csv")
+#write.csv(mDist1stats$tidy_data, file = "./Experiment_1/Exp_1_ADP/stats/first_block/model_1.csv")
 #write.table(m.Dist1.stats)
+#tab_model(m.Dist1, file ="./Experiment_1/Exp_1_ADP/stats/first_block/first_block_model.html")
 
 anova(m.Dist1)
 anov1 = anova(m.Dist1)
@@ -202,6 +204,7 @@ m.RelativBias <- lm(mBiasSigned ~ room_condition,
                     data = results_tbls)
 
 #write.csv(tidy(m.RelativBias), file="./Experiment_1/Exp_1_ADP/stats/first_block/signed_bias_model.csv")
+#tab_model(m.RelativBias, file ="./Experiment_1/Exp_1_ADP/stats/first_block/signed_bias_model.html")
 extract_stats(ggcoefstats(m.RelativBias))
 #1 (Intercept)                        -0.509
 # room_conditionVisual information    0.151 
@@ -270,6 +273,8 @@ f7
 
 m.RelativUnsignedBias <- lm(mBiasUnSigned ~ room_condition, 
                             data = results_tbls)
+
+#tab_model(m.RelativUnsignedBias, file ="./Experiment_1/Exp_1_ADP/stats/first_block/unsigned_bias_model.html")
 #write.csv(tidy(m.RelativUnsignedBias) , file = "./Experiment_1/Exp_1_ADP/stats/first_block/unsiged_bias_model.csv")
 extract_stats(ggcoefstats(m.RelativUnsignedBias))
 anov = anova(m.RelativUnsignedBias)

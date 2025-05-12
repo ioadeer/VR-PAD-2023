@@ -1,0 +1,2 @@
+"term" "estimate" "std.error" "conf.level" "conf.low" "conf.high" "statistic" "df.error" "p.value" "effect" "group" "conf.method" "expression"
+"1" "(Intercept)" -0.448954066852662 0.0562717062197431 0.95 -0.559494657523483 -0.33841347618184 -7.97832688952916 535 9.07465371479974e-15 "fixed" "" "residual" 

@@ -33,8 +33,8 @@ library(effectsize)
 
 #theme_set(theme_gray(base_family = "DejaVuSerif"))
 rm(list=ls())
-figures_folder = "Exp_2_ADP_control/Figura_final"
-results_tbl <- read.csv("Exp_2_ADP_control/ResultsData/Dresults.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
+figures_folder = "./Experiment_2/Figuras"
+results_tbl <- read.csv("Experiment_2/Exp_2_ADP_control/ResultsData/Dresults.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
 
 #cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
 
@@ -98,8 +98,6 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
                                                   jitter.height = 0,
                                                   dodge.width = .1 ))+
   geom_abline(intercept = 0, slope = 1, linetype=2) +
-  scale_colour_manual(values = cbPalette) +
-  scale_fill_manual(values = cbPalette) +
   geom_line(data = Final.Fixed, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
   geom_label(x = -0.1, y = 4.0, label = as.character(as.expression(eq1)), 
             hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = myViridis[1],

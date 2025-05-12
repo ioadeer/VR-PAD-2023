@@ -12,8 +12,8 @@ library(effectsize)
 
 # correlation ---------------------------------------------------------
 
-tabla.raw <- read.csv('./Exp_2_ADP_control/data/control_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
-tabla.dimensions <- read.csv('./Exp_2_ADP_control/data/tamanio_de_sala_sin_outliers_oscuras_visual.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.raw <- read.csv('./Experiment_2/Exp_2_ADP_control/data/control_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.dimensions <- read.csv('./Experiment_2/Exp_2_ADP_control/data/tamanio_de_sala_sin_outliers_oscuras_visual.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 tabla.dist_max <- tabla.raw %>%
   group_by(nsub, condicion_sala) %>%
