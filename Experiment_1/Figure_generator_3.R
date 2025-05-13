@@ -29,7 +29,7 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
   #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
   scale_y_continuous(name="Perceived distance (m)",   limits = c(0,5)) +
-  scale_color_manual(labels = c("Large VE", "Small VE"), values =c(myViridis[2], myViridis[1]))+
+  scale_color_manual(labels = c("Congruent VE", "Small VE"), values =c(myViridis[2], myViridis[1]))+
   #theme_pubr(base_size = 12, margin = TRUE)+
   theme_minimal() +
   theme(legend.position = "top",
@@ -48,7 +48,7 @@ f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = ro
   scale_colour_manual(values = c(myViridis[2], myViridis[1])) + 
   scale_fill_manual(values = c(myViridis[2], myViridis[1])) + 
   # correr con esto
-  scale_x_discrete(labels = c('LVE','SVE'))+
+  scale_x_discrete(labels = c('CVE','SVE'))+
   geom_abline(slope = 0,
               intercept = 0,
               alpha = 0.5,

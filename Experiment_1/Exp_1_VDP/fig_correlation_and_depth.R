@@ -107,7 +107,7 @@ dimensions.depth <- dimensions.depth %>%
   mutate(
     variable = case_when(
       variable == "SC_RV_depth" ~ "SVE",
-      variable == "SG_RV_depth" ~ "LVE",
+      variable == "SG_RV_depth" ~ "CVE",
       variable == "SR_depth" ~ "RE",
     )
   )
@@ -122,7 +122,7 @@ dimensions.depth <- dimensions.depth %>%
 
 dimensions.depth$Condition = factor(dimensions.depth$Condition, 
                                     levels=c("SVE", 
-                                             "LVE",
+                                             "CVE",
                                              "RE"))
 
 
