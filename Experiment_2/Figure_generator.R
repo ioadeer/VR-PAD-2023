@@ -86,8 +86,8 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
   geom_hline(yintercept=12,linetype="dashed") +
   annotate("text", x=1.5, y=14, label= "12 m", size=3.5) +
   #  theme_pubr(base_size = 12, margin = TRUE)+
-  scale_colour_manual(values =myViridis) +
-  scale_fill_manual(values = myViridis) +
+  scale_colour_manual(values = c(myViridis[2], myViridis[1])) + 
+  scale_fill_manual(values = c(myViridis[2], myViridis[1])) + 
   theme(
     #axis.text.x=element_blank(),
     axis.title.x = element_blank(),

@@ -45,8 +45,8 @@ f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = ro
   geom_line(aes(group = 1),size = 1.2, alpha=.5)+
 #  geom_line(data = results_tbls, mapping = aes(x = room_condition,y = mBiasUnSigned, group = subject, colour = room_condition),alpha = 0.1)+
   geom_violin(data= results_tbls,aes(x = room_condition,y = mBiasUnSigned), trim=TRUE, alpha=0)+
-  scale_colour_manual(values = c(myViridis[2], myViridis[1])) + 
-  scale_fill_manual(values = c(myViridis[2], myViridis[1])) + 
+  scale_colour_manual(values = c(myViridis[1], myViridis[2])) + 
+  scale_fill_manual(values = c(myViridis[1], myViridis[2])) + 
   # correr con esto
   scale_x_discrete(labels = c('NVI','LVE'))+
   geom_abline(slope = 0,

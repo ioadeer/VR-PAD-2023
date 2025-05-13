@@ -80,7 +80,7 @@ r.squaredGLMM(m.Dist1)
 eq1 <- substitute("NVI:"~italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]], digits = 2)))
-eq2 <- substitute("VE:"~italic(y) == k %.% italic(X)^italic(a),
+eq2 <- substitute("CVE:"~italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^(mDist1stats$tidy_data$estimate[[1]]+mDist1stats$tidy_data$estimate[[3]]), digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]]+mDist1stats$tidy_data$estimate[[4]], digits = 2)))
 #eq3 <- substitute("r.squared:"~~~italic(R)^italic(2) == italic(b),

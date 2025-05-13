@@ -29,7 +29,7 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
   #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
   scale_y_continuous(name="Perceived distance (m)",   limits = c(0,5)) +
-  scale_color_manual(labels = c("No Visual Information", "Virtual Environment"), values =c(myViridis[2], myViridis[1]))+
+  scale_color_manual(labels = c("No Visual Information", "Congruent VE"), values =c(myViridis[2], myViridis[1]))+
   #theme_pubr(base_size = 12, margin = TRUE)+
   theme_minimal() +
   theme(legend.position = "top",
@@ -47,7 +47,7 @@ f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = ro
   geom_violin(data= results_tbls,aes(x = room_condition,y = mBiasUnSigned), trim=TRUE, alpha=0)+
   scale_colour_manual(values = c(myViridis[2], myViridis[1])) + 
   scale_fill_manual(values = c(myViridis[2], myViridis[1])) + 
-  scale_x_discrete(labels = c('NVI','VE'))+
+  scale_x_discrete(labels = c('NVI','CVE'))+
   geom_abline(slope = 0,
               intercept = 0,
               alpha = 0.5,
@@ -82,8 +82,8 @@ violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Conditi
   geom_hline(yintercept=12,linetype="dashed") +
   annotate("text", x=1.5, y=14, label= "12 m", size=3.5) +
   #  theme_pubr(base_size = 12, margin = TRUE)+
-  scale_colour_manual(values =myViridis) +
-  scale_fill_manual(values = myViridis) +
+  scale_colour_manual(values = c(myViridis[2], myViridis[1])) + 
+  scale_fill_manual(values = c(myViridis[2], myViridis[1])) + 
   theme(
     #axis.text.x=element_blank(),
     axis.title.x = element_blank(),

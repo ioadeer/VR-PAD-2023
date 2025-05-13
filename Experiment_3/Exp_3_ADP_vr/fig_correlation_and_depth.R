@@ -115,7 +115,7 @@ dimensions.depth <- dimensions.depth %>%
   mutate(
     variable = case_when(
       variable == "No_visual_info_depth" ~ "NVI",
-      variable == "VE_depth" ~ "VE"
+      variable == "VE_depth" ~ "CVE"
     )
   )
 
@@ -129,7 +129,7 @@ dimensions.depth <- dimensions.depth %>%
 
 dimensions.depth$Condition = factor(dimensions.depth$Condition, 
                                     levels=c("NVI", 
-                                             "VE"
+                                             "CVE"
                                              ))
 
 
