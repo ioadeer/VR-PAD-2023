@@ -23,14 +23,18 @@ library(effects)
 # Format data -------------------------------------------------------------
 
 rm(list=ls())
-tabla.raw <- read.csv('./Exp_2_ADP_control/data/control_sin_outliers.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
+tabla.raw <- read.csv('./Experiment_2/Exp_2_ADP_control/data/1_20_control.csv', header = TRUE, sep = ' ', stringsAsFactors = TRUE)
 
 tabla.raw$abs_bias <-  abs(tabla.raw$respuesta - tabla.raw$distancia)
+tabla.raw$log_bias <-  log10(tabla.raw$respuesta/tabla.raw$distancia)
 
 # signed bias
 tabla.raw$signed_bias <- (tabla.raw$respuesta - tabla.raw$distancia) / tabla.raw$distancia
 # unsigen bias
 tabla.raw$unsigned_bias <- abs(tabla.raw$signed_bias)
+
+#  unsigned log bias
+tabla.raw$log_bias_unsigned <- abs(tabla.raw$log_bias)
 
 tabla.raw = tabla.raw %>% rename(subject = nsub)   # renombro columnas
 tabla.raw = tabla.raw %>% rename(percived_distance = respuesta)   # renombro columnas
@@ -44,7 +48,7 @@ f_promedio <- function(x) c(mean = mean(x),
                             sem  = sd(x)/sqrt(length(x)),
                             n    = length(x))
 
-results_tbl <- tibble(aggregate(cbind(percived_distance,signed_bias,unsigned_bias,abs_bias) ~ subject*room_condition*target_distance*block,
+results_tbl <- tibble(aggregate(cbind(percived_distance,signed_bias,unsigned_bias,abs_bias, log_bias, log_bias_unsigned) ~ subject*room_condition*target_distance*block,
                                 data = tabla.raw,
                                 FUN  = f_promedio,na.action = NULL))
 
@@ -84,8 +88,22 @@ results_tbl %>%
          abs_bias_sem = abs_bias[,"sem"],
          abs_bias_var = abs_bias[,"var"],
          abs_bias_n = abs_bias[,"n"],
-         abs_bias = abs_bias[,"mean"]) %>%
+         abs_bias = abs_bias[,"mean"],
+         
+         log_bias_sd = log_bias[,"sd"],
+         log_bias_sem = log_bias[,"sem"],
+         log_bias_var = log_bias[,"var"],
+         log_bias_n = log_bias[,"n"],
+         log_bias_m = log_bias[,"mean"],
+         
+         
+         log_bias_unsigned_sd = log_bias_unsigned[,"sd"],
+         log_bias_unsigned_sem = log_bias_unsigned[,"sem"],
+         log_bias_unsigned_var = log_bias_unsigned[,"var"],
+         log_bias_unsigned_n = log_bias_unsigned[,"n"],
+         log_bias_unsigned_m = log_bias_unsigned[,"mean"]) %>%
   
-  select(-c(percived_distance,signed_bias,unsigned_bias,abs_bias)) %>%
-  
-  write_csv("./Exp_2_ADP_control/ResultsData/Dresults.csv")
+ select(-c(percived_distance,signed_bias,unsigned_bias,abs_bias,log_bias,log_bias_unsigned ))  %>%
+
+# descomentar para escirbir nuevos dataset (primerop sacar outliers)
+ write_csv("./Experiment_2/Exp_2_ADP_control/ResultsData/results_log_bias.csv")
