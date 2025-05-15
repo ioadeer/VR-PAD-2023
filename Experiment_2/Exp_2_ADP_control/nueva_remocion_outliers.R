@@ -28,49 +28,25 @@ results_tbl <- read.csv('./Experiment_2/Exp_2_ADP_control/ResultsData/results_lo
 
 
 # remocion ----------------------------------------------------------------
-# idx = results_tbl$subject == "1" & results_tbl$room_condition == 'No visual information'
-# results_tbl = results_tbl[!idx,]
+idx = results_tbl$subject == "1" & results_tbl$room_condition == 'No visual information'
+results_tbl = results_tbl[!idx,]
 
 tabla.outlier <- results_tbl %>% 
   filter(room_condition == 'No visual information') %>% 
   group_by(subject, room_condition, target_distance) %>%
-  summarise(mBiasUnsigned  = mean(log_bias_m,na.rm=TRUE))  %>%
+  summarise(mBiasUnsigned  = mean(log_bias_unsigned_m,na.rm=TRUE))  %>%
   ungroup()
-
-res3 <- outliers_mad(x = tabla.outlier$mBiasUnsigned,threshold = 2 ,na.rm=TRUE)
+res3 <- outliers_mad(x = tabla.outlier$mBiasUnsigned,threshold = 3 ,na.rm=TRUE)
 plot_outliers_mad(res3,x=tabla.outlier$mBiasUnsigned,pos_display=TRUE)
 tabla.outlier[res3$outliers_pos,] 
 
-idx = results_tbl$subject == "1" & results_tbl$room_condition == 'No visual information' & 
-  results_tbl$target_distance == 2  
-results_tbl = results_tbl[!idx,]
-idx = results_tbl$subject == "1" & results_tbl$room_condition == 'No visual information' & 
-  results_tbl$target_distance == 2.7  
-results_tbl = results_tbl[!idx,]
-idx = results_tbl$subject == "1" & results_tbl$room_condition == 'No visual information' & 
-  results_tbl$target_distance == 3.65  
-results_tbl = results_tbl[!idx,]
-idx = results_tbl$subject == "1" & results_tbl$room_condition == 'No visual information' & 
-  results_tbl$target_distance == 4.9  
-results_tbl = results_tbl[!idx,]
-idx = results_tbl$subject == "1" & results_tbl$room_condition == 'No visual information' & 
-  results_tbl$target_distance == 6.65  
-results_tbl = results_tbl[!idx,]
-idx = results_tbl$subject == "1" & results_tbl$room_condition == 'No visual information' & 
-  results_tbl$target_distance == 9  
-results_tbl = results_tbl[!idx,]
 idx = results_tbl$subject == "18" & results_tbl$room_condition == 'No visual information' & 
   results_tbl$target_distance == 2  
 results_tbl = results_tbl[!idx,]
 idx = results_tbl$subject == "18" & results_tbl$room_condition == 'No visual information' & 
   results_tbl$target_distance == 2.7  
 results_tbl = results_tbl[!idx,]
-idx = results_tbl$subject == "18" & results_tbl$room_condition == 'No visual information' & 
-  results_tbl$target_distance == 6.65  
-results_tbl = results_tbl[!idx,]
-idx = results_tbl$subject == "11" & results_tbl$room_condition == 'No visual information' & 
-  results_tbl$target_distance == 3.65  
-results_tbl = results_tbl[!idx,]
+
 idx = results_tbl$subject == "11" & results_tbl$room_condition == 'No visual information' & 
   results_tbl$target_distance == 4.9  
 results_tbl = results_tbl[!idx,]
@@ -79,64 +55,15 @@ results_tbl = results_tbl[!idx,]
 tabla.outlier <- results_tbl %>% 
   filter(room_condition == 'Visual information') %>% 
   group_by(subject, room_condition, target_distance) %>%
-  summarise(mBiasUnsigned  = mean(log_bias_m,na.rm=TRUE))  %>%
+  summarise(mBiasUnsigned  = mean(log_bias_unsigned_m,na.rm=TRUE))  %>%
   ungroup()
-
-res3 <- outliers_mad(x = tabla.outlier$mBiasUnsigned,threshold = 2 ,na.rm=TRUE)
+res3 <- outliers_mad(x = tabla.outlier$mBiasUnsigned,threshold = 3 ,na.rm=TRUE)
 plot_outliers_mad(res3,x=tabla.outlier$mBiasUnsigned,pos_display=TRUE)
 tabla.outlier[res3$outliers_pos,] 
 
-idx = results_tbl$subject == "1" & results_tbl$room_condition == 'Visual information' & 
+idx = results_tbl$subject == "19" & results_tbl$room_condition == 'Visual information' & 
   results_tbl$target_distance == 2  
-  results_tbl = results_tbl[!idx,]
-  idx = results_tbl$subject == "1" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance == 3.65  
-  results_tbl = results_tbl[!idx,]
-  idx = results_tbl$subject == "1" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance == 4.9  
-  results_tbl = results_tbl[!idx,]
-  idx = results_tbl$subject == "1" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance == 6.65  
-  results_tbl = results_tbl[!idx,]
- 
-  idx = results_tbl$subject == "2" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance == 2    
-  results_tbl = results_tbl[!idx,]
-  idx = results_tbl$subject == "2" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance != 2.7  
-  results_tbl = results_tbl[!idx,]
-  idx = results_tbl$subject == "2" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance == 3.65  
-  results_tbl = results_tbl[!idx,]
-  idx = results_tbl$subject == "2" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance == 4.9 
-  results_tbl = results_tbl[!idx,]
-  idx = results_tbl$subject == "2" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance == 6.65 
-  results_tbl = results_tbl[!idx,]
-   idx = results_tbl$subject == "2" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance != 9  
-  results_tbl = results_tbl[!idx,]
-  
-  idx = results_tbl$subject == "16" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance == 4.9  
-  results_tbl = results_tbl[!idx,]
-  idx = results_tbl$subject == "16" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance == 9  
-  results_tbl = results_tbl[!idx,]
-  
-  idx = results_tbl$subject == "19" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance == 2  
-  results_tbl = results_tbl[!idx,]
-  idx = results_tbl$subject == "19" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance == 4.9 
-  results_tbl = results_tbl[!idx,]
-  idx = results_tbl$subject == "19" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance == 6.65 
-  results_tbl = results_tbl[!idx,]
-  idx = results_tbl$subject == "19" & results_tbl$room_condition == 'Visual information' & 
-    results_tbl$target_distance != 9  
-  results_tbl = results_tbl[!idx,]
+results_tbl = results_tbl[!idx,]
 
 f1 <- ggplot(results_tbl , aes(x= target_distance, y= perc_dist, color = room_condition)) +
   facet_grid(subject~room_condition) +
