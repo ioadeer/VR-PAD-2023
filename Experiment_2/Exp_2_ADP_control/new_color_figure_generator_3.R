@@ -1,4 +1,5 @@
-#  Oscuras vs real
+#  Ultimo con outliers scados con sesgo logaritmico
+# y hacemos modelo d eefectos mixtos con sesgo logaritmico
 #  En este script voy a armar la figura
 #  La idea es tener por una lado
 #  Un grafico con el modelo, y las medidas promedio de PAD
@@ -64,17 +65,16 @@ mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
 mDist1stats$tidy_data
 anov1 <- anova(m.Dist1)
 anov1
-#write.csv(anov1, file="Exp_2_ADP_control/stats/model_anova.csv")
+#write.csv(anov1, file="./Experiment_2/Exp_2_ADP_control/stats/model_anova.csv")
 effect_size = eta_squared(anov1)
-#write.csv(effect_size, file="Exp_2_ADP_control/stats/model_eta_squared.csv")
+#write.csv(effect_size, file="./Experiment_2/Exp_2_ADP_control/stats/model_eta_squared.csv")
 partial_effect_size = eta_squared(anov1, partial= TRUE)
 #anov1
 # F value, NumDF, DenDF
-F_to_eta2(5.68, df = 1, df_error = 33.425)
-F_to_eta2(4, df = 1, df_error = 114)
+
 r.squaredGLMM(m.Dist1)
 # para imprimir
-#tab_model(m.Dist1, file ="Exp_2_ADP_control/stats/model.html")
+tab_model(m.Dist1, file ="./Experiment_2/Exp_2_ADP_control/stats/model.html")
 
 
 eq1 <- substitute("NVI:"~italic(y) == k %.% italic(X)^italic(a),
@@ -120,8 +120,8 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
 f1
 #mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "5. Lme Lineal-Normal", ".jpg", sep = '')
 #ggsave(mi_nombre_de_archivo, plot=f1, width=15, height=15, units="cm", limitsize=FALSE, dpi=600)
-anov = anova(m.Dist1)
-anov
+#anov = anova(m.Dist1)
+#anov
 
 
 
@@ -129,143 +129,215 @@ anov
 
 # signed bias -------------------------------------------------------------
 
-results_tbls <- results_tbl %>% 
-  group_by(room_condition,subject) %>%
-  summarise(mBiasSigned  = mean(rel_bias_signed,na.rm=TRUE),
-            SdBiasSigned  = sd(rel_bias_signed,na.rm=TRUE)/sqrt(length(rel_bias_signed)),
-            mBiasUnSigned  = mean(rel_bias_unsigned,na.rm=TRUE),
-            SdBiasUnSigned  = sd(rel_bias_unsigned,na.rm=TRUE)/sqrt(length(rel_bias_unsigned)))  %>%
+
+#m.logSignedBias <-  lmer(log_bias_m ~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
+#                 data = results_tbl)
+
+#Final.FixedlogSB <-effect(c("log10(target_distance)*room_condition"), m.logSignedBias)
+
+
+m.logSignedBias <-  lmer(log_bias_m ~target_distance*room_condition+(1+target_distance|subject)+(0+room_condition|subject),
+                         data = results_tbl)
+
+Final.FixedlogSB <-effect(c("target_distance*room_condition"), m.logSignedBias)
+
+Final.FixedlogSB<-as.data.frame(Final.FixedlogSB)
+
+logSignedBiasStats <- extract_stats(ggcoefstats(m.logSignedBias))
+logSignedBiasStats$tidy_data
+anovlogSB <- anova(m.logSignedBias)
+anovlogSB
+
+effect_size = eta_squared(anovlogSB)
+
+#results_tbls <- results_tbl %>% 
+#  group_by(room_condition,subject) %>%
+#  summarise(mBiasSigned  = mean(rel_bias_signed,na.rm=TRUE),
+#            SdBiasSigned  = sd(rel_bias_signed,na.rm=TRUE)/sqrt(length(rel_bias_signed)),
+#            mBiasUnSigned  = mean(rel_bias_unsigned,na.rm=TRUE),
+#            SdBiasUnSigned  = sd(rel_bias_unsigned,na.rm=TRUE)/sqrt(length(rel_bias_unsigned)))  %>%
+#  ungroup()
+
+tabla.pob_logSB <- results_tbl %>% group_by(target_distance,room_condition) %>%
+  summarise(MlogSB  = mean(log_bias_m),
+            SDlogSB = sd(log_bias_m)/sqrt(n()))  %>%
   ungroup()
 
-results_tblp <- results_tbls %>% 
-  group_by(room_condition) %>%
-  summarise(MBiasSigned  = mean(mBiasSigned,na.rm=TRUE),
-            SDBiasSigned  = sd(mBiasSigned,na.rm=TRUE)/sqrt(length(mBiasSigned)),
-            MBiasUnSigned  = mean(mBiasUnSigned,na.rm=TRUE),
-            SDBiasUnSigned  = sd(mBiasUnSigned,na.rm=TRUE)/sqrt(length(mBiasUnSigned)))  %>%
+
+f2 <- ggplot(tabla.pob_logSB, aes(x=target_distance, 
+                                  #y =10^MlogSB,
+                                  y =MlogSB, 
+                                  group = room_condition, 
+                                  color  = room_condition)) +
+  geom_pointrange(aes(x = target_distance, 
+                      #y = 10^MlogSB, 
+                      #ymin = 10^(MlogSB-SDlogSB), 
+                      #ymax = 10^(MlogSB+SDlogSB)),
+                      y = MlogSB, 
+                      ymin = (MlogSB-SDlogSB), 
+                      ymax = (MlogSB+SDlogSB)),
+                      alpha = 1,
+                      position = position_jitterdodge(jitter.width = .1,
+                                                      jitter.height = 0,
+                                                      dodge.width = .1 ))+
+  #geom_abline(intercept = 0, slope = 1, linetype=2) +
+  #geom_line(data = Final.FixedlogSB, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
+  geom_line(data = Final.FixedlogSB, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
+  scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
+  scale_y_continuous(name="Mean log bias (m)",   limits = c(-1,0)) +
+  scale_color_manual(labels = c("NVI", "VI"), values =c(myViridis[1], myViridis[2]))+
+  theme_pubr(base_size = 12, margin = TRUE)+
+  theme(legend.position = "top",
+        legend.title = element_blank(),)
+#text=element_text(family="Times New Roman", size=10)) 
+f2
+
+
+
+
+
+
+
+
+
+
+
+
+# signed bias var -------------------------------------------------------------
+
+
+#m.logSignedBias <-  lmer(log_bias_m ~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
+#                 data = results_tbl)
+
+#Final.FixedlogSB <-effect(c("log10(target_distance)*room_condition"), m.logSignedBias)
+
+
+m.logSignedBiasVar <-  lmer(log_bias_var ~target_distance*room_condition+(1+target_distance|subject)+(0+room_condition|subject),
+                         data = results_tbl)
+
+Final.FixedlogSBVar <-effect(c("target_distance*room_condition"), m.logSignedBiasVar)
+
+Final.FixedlogSBVar<-as.data.frame(Final.FixedlogSBVar)
+
+logSignedBiasVarStats <- extract_stats(ggcoefstats(m.logSignedBiasVar))
+logSignedBiasVarStats$tidy_data
+anovlogSBVar <- anova(m.logSignedBiasVar)
+anovlogSBVar
+
+#effect_size = eta_squared(anovlogSB)
+
+tabla.pob_logSBVar <- results_tbl %>% group_by(target_distance,room_condition) %>%
+  summarise(MlogSBVar  = mean(log_bias_var),
+            SDlogSBVar= sd(log_bias_var)/sqrt(n()))  %>%
   ungroup()
-# geom_flat_violin(aes(fill = Condicion),position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA)+
-#   geom_point(aes(x = as.numeric(Tiempo)-.15, y = LeqAS, colour = Condicion),position = position_jitter(width = .05, height = 0), size = 1, shape = 20)+
 
-f6 <-  ggplot(results_tblp, aes(x = room_condition,y = MBiasSigned, colour = room_condition, fill = room_condition)) +
-  geom_pointrange(aes(x=room_condition, y=MBiasSigned, ymin=MBiasSigned-SDBiasSigned, ymax=MBiasSigned+SDBiasSigned), size = 0.5)+
-  geom_line(aes(group = 1),size = 1.2, alpha=.5)+
-  geom_point(data = results_tbls, mapping = aes(x = room_condition,y = mBiasSigned, colour = room_condition, fill = room_condition), alpha = 0.3)+
-  geom_line(data = results_tbls, mapping = aes(x = room_condition,y = mBiasSigned, group = subject, colour = room_condition),alpha = 0.3)+
-  geom_violin(data= results_tbls,aes(x = room_condition,y = mBiasSigned), trim=TRUE, alpha=0)+
-  scale_fill_manual(values = c(myViridis[1], myViridis[2])) + 
-  scale_color_manual(values =c(myViridis[1], myViridis[2]))+
-  geom_abline(slope = 0,
-              intercept = 0,
-              alpha = 0.5,
-              linetype = "dashed") +
-  labs(x = "Condition", 
-       y = "Relative signed bias") +
+
+f2_var <- ggplot(tabla.pob_logSBVar, aes(x=target_distance, 
+                                  #y =10^MlogSB,
+                                  y =MlogSBVar, 
+                                  group = room_condition, 
+                                  color  = room_condition)) +
+  geom_pointrange(aes(x = target_distance, 
+                      #y = 10^MlogSB, 
+                      #ymin = 10^(MlogSB-SDlogSB), 
+                      #ymax = 10^(MlogSB+SDlogSB)),
+                      y = MlogSBVar, 
+                      ymin = (MlogSBVar-SDlogSBVar), 
+                      ymax = (MlogSBVar+SDlogSBVar)),
+                  alpha = 1,
+                  position = position_jitterdodge(jitter.width = .1,
+                                                  jitter.height = 0,
+                                                  dodge.width = .1 ))+
+  #geom_abline(intercept = 0, slope = 1, linetype=2) +
+  #geom_line(data = Final.FixedlogSB, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
+  geom_line(data = Final.FixedlogSBVar, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
+  scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
+  scale_y_continuous(name="Signed log bias var (m)",   limits = c(0,.075)) +
+  scale_color_manual(labels = c("NVI", "VI"), values =c(myViridis[1], myViridis[2]))+
   theme_pubr(base_size = 12, margin = TRUE)+
-  theme(legend.position = "none",
-        axis.title.x = element_blank(),
-        axis.text.x = element_blank(),
-        plot.margin = unit(c(1.0,0.25,0.25,0), "cm")
-        )
-
-f6
+  theme(legend.position = "top",
+        legend.title = element_blank(),)
+#text=element_text(family="Times New Roman", size=10)) 
+f2_var
 
 
-m.RelativBias <- lm(mBiasSigned ~ room_condition, 
-                    data = results_tbls)
-extract_stats(ggcoefstats(m.RelativBias))
-#1 (Intercept)                        -0.509
-# room_conditionVisual information    0.151 
-
-anov = anova(m.RelativBias)
-anov
-f6
-#write.csv(anov, file="Exp_2_ADP_control/stats/signed_bias_anova.csv")
-
-#tab_model(m.RelativBias, file ="Exp_2_ADP_control/stats/signed_bias.html")
 
 
-# no es signficitavo #1 0.18301 0.183011  3.5967 0.06756 .
-#mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
-#ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
 
-# NO ES PAREADO
-testSigendBias <- t.test(filter(results_tbls, 
-              room_condition=="No visual information" )$mBiasSigned,
-       filter(results_tbls, 
-              room_condition=="Visual information")$mBiasSigned, 
-       paired = FALSE)
-
-testSigendBias.tidy <- tidy(testSigendBias)
-
-#write.csv(testSigendBias.tidy, file="Exp_2_ADP_control/stats/signed_bias_t-test.csv")
-
-cohens_d_testSignedBias <- cohens_d(testSigendBias)
-
-#write.csv(cohens_d_testSignedBias, file="Exp_2_ADP_control/stats/signed_bias_t-test_cohen_d.csv")
-
-#95 percent confidence interval:
-#  -0.31498920  0.01249011
-#sample estimates:
-#  mean of x  mean of y 
-#-0.5090052 -0.3577557 
+# unsigned bias -------------------------------------------------------------
 
 
-# unsigned bias -----------------------------------------------------------
+#m.logUnsignedBias <-  lmer(log_bias_unsigned_m ~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
+#                         data = results_tbl)
 
-f7 =  ggplot(results_tblp, aes(x = room_condition,y = MBiasUnSigned, colour = room_condition, fill = room_condition)) +
-  geom_pointrange(aes(x=room_condition, y=MBiasUnSigned, ymin=MBiasUnSigned-SDBiasUnSigned, ymax=MBiasUnSigned+SDBiasUnSigned), size = 0.5)+
-  geom_point(data = results_tbls, mapping = aes(x = room_condition,y = mBiasUnSigned, colour = room_condition, fill = room_condition), alpha = .3)+
-  geom_line(aes(group = 1),size = 1.2, alpha=.5)+
-  geom_line(data = results_tbls, mapping = aes(x = room_condition,y = mBiasUnSigned, group = subject, colour = room_condition),alpha = 0.3)+
-  geom_violin(data= results_tbls,aes(x = room_condition,y = mBiasUnSigned), trim=TRUE, alpha=0)+
-  scale_colour_manual(values = c(myViridis[1], myViridis[2])) + 
-  scale_fill_manual(values = c(myViridis[1], myViridis[2])) + 
-  scale_x_discrete(labels = c('NVI','VI'))+
-  geom_abline(slope = 0,
-              intercept = 0,
-              alpha = 0.5,
-              linetype = "dashed") +
-  labs(x = "Condition", 
-       y = "Relative \n unsigned bias") +
-  # facet_grid(. ~ type) +
-  annotate("text", x = 1.5, y = 1.1,  label = "**", size = 4) +
-  annotate("segment", x = 1, xend = 2, y = 1.0, yend = 1.0, colour = "black", size=.5, alpha=1,)+
+#Final.FixedlogUB <-effect(c("log10(target_distance)*room_condition"), m.logUnsignedBias)
+
+
+m.logSignedBias <-  lmer(log_bias_m ~target_distance*room_condition+(1+target_distance|subject)+(0+room_condition|subject),
+                         data = results_tbl)
+
+Final.FixedlogSB <-effect(c("target_distance*room_condition"), m.logSignedBias)
+
+Final.FixedlogUB<-as.data.frame(Final.FixedlogUB)
+
+logUnsignedBiasStats <- extract_stats(ggcoefstats(m.logUnsignedBias))
+logUnsignedBiasStats$tidy_data
+anovlogUB <- anova(m.logUnsignedBias)
+anovlogUB
+
+effect_sizeUB = eta_squared(anovlogUB)
+
+#results_tbls <- results_tbl %>% 
+#  group_by(room_condition,subject) %>%
+#  summarise(mBiasSigned  = mean(rel_bias_signed,na.rm=TRUE),
+#            SdBiasSigned  = sd(rel_bias_signed,na.rm=TRUE)/sqrt(length(rel_bias_signed)),
+#            mBiasUnSigned  = mean(rel_bias_unsigned,na.rm=TRUE),
+#            SdBiasUnSigned  = sd(rel_bias_unsigned,na.rm=TRUE)/sqrt(length(rel_bias_unsigned)))  %>%
+#  ungroup()
+
+tabla.pob_logUB <- results_tbl %>% group_by(target_distance,room_condition) %>%
+  summarise(MlogUB  = mean(log_bias_unsigned_m),
+            SDlogUB = sd(log_bias_unsigned_m)/sqrt(n()))  %>%
+  ungroup()
+
+
+f3 <- ggplot(tabla.pob_logUB, aes(x=target_distance, 
+                                  #y =10^MlogUB,
+                                  y =MlogUB, 
+                                  group = room_condition, 
+                                  color  = room_condition)) +
+  geom_pointrange(aes(x = target_distance, 
+                      #y = 10^MlogUB, 
+                      #ymin = 10^(MlogUB-SDlogUB), 
+                      #ymax = 10^(MlogUB+SDlogUB)),
+                      y = MlogUB, 
+                      ymin = (MlogUB-SDlogUB), 
+                      ymax = (MlogUB+SDlogUB)),
+                  alpha = 1,
+                  position = position_jitterdodge(jitter.width = .1,
+                                                  jitter.height = 0,
+                                                  dodge.width = .1 ))+
+  #geom_line(data = Final.FixedlogUB, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
+  geom_line(data = Final.FixedlogUB, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
+  #geom_label(x = -0.1, y = 4.0, label = as.character(as.expression(eq1)), 
+  #           hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = myViridis[1],
+  #)+
+  ##family="Times New Roman")+
+  #geom_label(x = -0.1, y = 4.85, label = as.character(as.expression(eq2)), 
+  #           hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = myViridis[2],
+  #)+
+  #family="Times New Roman")+
+  #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
+  scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
+  scale_y_continuous(name="Unsigned log bias (m)",   limits = c(0,.5)) +
+  scale_color_manual(labels = c("NVI", "VI"), values =c(myViridis[1], myViridis[2]))+
   theme_pubr(base_size = 12, margin = TRUE)+
-  theme(legend.position = "none",
-        axis.title.x = element_blank(),
-        #axis.text.x = element_blank(),
-        plot.margin = unit(c(0.75,0.27,0.25,0), "cm")
-        )
+  theme(legend.position = "top",
+        legend.title = element_blank(),)
+#text=element_text(family="Times New Roman", size=10)) 
+f3
 
-f7
 
-m.RelativUnsignedBias <- lm(mBiasUnSigned ~ room_condition, 
-                            data = results_tbls)
-extract_stats(ggcoefstats(m.RelativUnsignedBias))
-anov = anova(m.RelativUnsignedBias)
-anov
-f7
-#mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "13. Bias signed", ".png", sep = '')
-#ggsave(mi_nombre_de_archivo, plot=f6, width=15, height=10, units="cm", limitsize=FALSE, dpi=600)
-
-testUnsignedBias <- t.test(filter(results_tbls, 
-              room_condition=="No visual information" )$mBiasUnSigned,
-       filter(results_tbls, 
-              room_condition=="Visual information")$mBiasUnSigned, 
-       paired = FALSE)
-
-testUnsignedBias.tidy <- tidy(testUnsignedBias)
-
-#write.csv(testUnsignedBias.tidy, file="Exp_2_ADP_control/stats/unsigned_bias_t-test.csv")
-
-cohens_d_testUnsignedBias <- cohens_d(testUnsignedBias)
-
-#write.csv(cohens_d_testUnsignedBias, file="Exp_2_ADP_control/stats/unsigned_bias_t-test_cohen_d.csv")
-
-#write.csv(anov, file="Exp_2_ADP_control/stats/unsigned_bias_anova.csv")
-
-#tab_model(m.RelativUnsignedBias, file ="Exp_2_ADP_control/stats/unsigned_bias.html")
 
 # main plot V2 ---------------------------------------------------------------
 
