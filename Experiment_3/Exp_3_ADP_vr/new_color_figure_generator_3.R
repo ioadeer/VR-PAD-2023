@@ -1,4 +1,4 @@
-# Experiment 2
+# Experimento 3
 #  Ultimo con outliers scados con sesgo logaritmico
 # y hacemos modelo d eefectos mixtos con sesgo logaritmico
 #  En este script voy a armar la figura
@@ -35,8 +35,8 @@ library(effectsize)
 
 #theme_set(theme_gray(base_family = "DejaVuSerif"))
 rm(list=ls())
-figures_folder = "./Experiment_2/Figuras"
-results_tbl <- read.csv("Experiment_2/Exp_2_ADP_control/ResultsData/Dresults_nuevos.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
+figures_folder = "./Experiment_3/Exp_3_ADP_vr/Figura_final"
+results_tbl <- read.csv("Experiment_3/Exp_3_ADP_vr/ResultsData/Dresults_nuevos.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
 
 #cbPalette <- c("#000000","#E69F00","#009E73", "#999999", "#D55E00", "#0072B2", "#CC79A7", "#F0E442")
 
@@ -75,13 +75,13 @@ partial_effect_size = eta_squared(anov1, partial= TRUE)
 
 r.squaredGLMM(m.Dist1)
 # para imprimir
-tab_model(m.Dist1, file ="./Experiment_2/Exp_2_ADP_control/stats/model.html")
+#tab_model(m.Dist1, file ="./Experiment_2/Exp_2_ADP_control/stats/model.html")
 
 
 eq1 <- substitute("NVI:"~italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]], digits = 2)))
-eq2 <- substitute("VI:"~italic(y) == k %.% italic(X)^italic(a),
+eq2 <- substitute("VE:"~italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^(mDist1stats$tidy_data$estimate[[1]]+mDist1stats$tidy_data$estimate[[3]]), digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]]+mDist1stats$tidy_data$estimate[[4]], digits = 2)))
 #eq3 <- substitute("r.squared:"~~~italic(R)^italic(2) == italic(b),
@@ -111,7 +111,7 @@ f1 <- ggplot(tabla.pob, aes(x=target_distance, y =10^Mperc_dist, group = room_co
   #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
   scale_y_continuous(name="Perceived distance (m)",   limits = c(0,10)) +
-  scale_color_manual(labels = c("NVI", "VI"), values =c(myViridis[1], myViridis[2]))+
+  scale_color_manual(labels = c("NVI", "VE"), values =c(myViridis[1], myViridis[2]))+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
         legend.title = element_blank(),)
@@ -193,24 +193,7 @@ f2 <- ggplot(tabla.pob_logSB, aes(x=target_distance,
 #text=element_text(family="Times New Roman", size=10)) 
 f2
 
-
-
-
-
-
-
-
-
-
-
-
 # signed bias var -------------------------------------------------------------
-
-
-#m.logSignedBias <-  lmer(log_bias_m ~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
-#                 data = results_tbl)
-
-#Final.FixedlogSB <-effect(c("log10(target_distance)*room_condition"), m.logSignedBias)
 
 
 m.logSignedBiasVar <-  lmer(log_bias_var ~target_distance*room_condition+(1+target_distance|subject)+(0+room_condition|subject),
@@ -254,7 +237,7 @@ f2_var <- ggplot(tabla.pob_logSBVar, aes(x=target_distance,
   geom_line(data = Final.FixedlogSBVar, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
   scale_y_continuous(name="Signed log bias var (m)",   limits = c(0,.075)) +
-  scale_color_manual(labels = c("NVI", "VI"), values =c(myViridis[1], myViridis[2]))+
+  scale_color_manual(labels = c("NVI", "VE"), values =c(myViridis[1], myViridis[2]))+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
         legend.title = element_blank(),)
@@ -274,10 +257,10 @@ f2_var
 #Final.FixedlogUB <-effect(c("log10(target_distance)*room_condition"), m.logUnsignedBias)
 
 
-m.logSignedBias <-  lmer(log_bias_m ~target_distance*room_condition+(1+target_distance|subject)+(0+room_condition|subject),
+m.logUnsignedBias <-  lmer(log_bias_unsigned_m ~target_distance*room_condition+(1+target_distance|subject)+(0+room_condition|subject),
                          data = results_tbl)
 
-Final.FixedlogSB <-effect(c("target_distance*room_condition"), m.logSignedBias)
+Final.FixedlogUB <-effect(c("target_distance*room_condition"), m.logUnsignedBias)
 
 Final.FixedlogUB<-as.data.frame(Final.FixedlogUB)
 
@@ -320,17 +303,8 @@ f3 <- ggplot(tabla.pob_logUB, aes(x=target_distance,
                                                   dodge.width = .1 ))+
   #geom_line(data = Final.FixedlogUB, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
   geom_line(data = Final.FixedlogUB, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
-  #geom_label(x = -0.1, y = 4.0, label = as.character(as.expression(eq1)), 
-  #           hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = myViridis[1],
-  #)+
-  ##family="Times New Roman")+
-  #geom_label(x = -0.1, y = 4.85, label = as.character(as.expression(eq2)), 
-  #           hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = myViridis[2],
-  #)+
-  #family="Times New Roman")+
-  #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
-  scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
-  scale_y_continuous(name="Unsigned log bias (m)",   limits = c(0,.5)) +
+    scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
+  scale_y_continuous(name="Unsigned log bias (m)",   limits = c(0,.75)) +
   scale_color_manual(labels = c("NVI", "VI"), values =c(myViridis[1], myViridis[2]))+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
