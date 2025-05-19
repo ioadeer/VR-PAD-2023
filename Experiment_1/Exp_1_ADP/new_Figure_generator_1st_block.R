@@ -40,22 +40,22 @@ m.Dist1 <-  lmer(log10(perc_dist) ~ log10(target_distance)*room_condition+(1+log
                  data = results_tbl) 
 mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
 r.squaredGLMM(m.Dist1)
-#write.table(m.Dist1.stats , file = "new_Exp_1_ADP/stats/m_Dist1_model.csv")
+#write.table(m.Dist1.stats , file = "./stats/m_Dist1_model.csv")
 tidy(m.Dist1)
 #write.csv(tidy(m.Dist1) , file = "./Experiment_1/Exp_1_ADP/stats/first_block/model.csv")
 #write.csv(mDist1stats$tidy_data, file = "./Experiment_1/Exp_1_ADP/stats/first_block/model_1.csv")
 #write.table(m.Dist1.stats)
-#tab_model(m.Dist1, file ="./Experiment_1/Exp_1_ADP/stats/first_block/first_block_model.html")
+tab_model(m.Dist1, file ="./Experiment_1/Exp_1_ADP/stats/first_block_model.html")
 
 anova(m.Dist1)
 anov1 = anova(m.Dist1)
 
-#write.csv(anov1 , file = "./Experiment_1/Exp_1_ADP/stats/first_block/anova.csv")
+write.csv(anov1 , file = "./Experiment_1/Exp_1_ADP/stats/anova.csv")
 
 # libreria effect size
 eta_sqrd = eta_squared(anov1)
 
-#write.csv(eta_sqrd, file="./Experiment_1/Exp_1_ADP/stats/first_block/efect_size_partial_eta_sqrd.csv")
+#write.csv(eta_sqrd, file="./Experiment_1/Exp_1_ADP/statsefect_size_partial_eta_sqrd.csv")
 
 results_tbl$Modelfitted1<-predict(m.Dist1)
 
