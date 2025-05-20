@@ -75,7 +75,7 @@ partial_effect_size = eta_squared(anov1, partial= TRUE)
 
 r.squaredGLMM(m.Dist1)
 # para imprimir
-tab_model(m.Dist1, file ="./Experiment_2/Exp_2_ADP_control/stats/model.html")
+#tab_model(m.Dist1, file ="./Experiment_2/Exp_2_ADP_control/stats/model.html")
 
 
 eq1 <- substitute("NVI:"~italic(y) == k %.% italic(X)^italic(a),
@@ -124,21 +124,18 @@ f1
 #anov = anova(m.Dist1)
 #anov
 
-
-
-
-
 # signed bias -------------------------------------------------------------
-
-
 #m.logSignedBias <-  lmer(log_bias_m ~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
 #                 data = results_tbl)
 
 #Final.FixedlogSB <-effect(c("log10(target_distance)*room_condition"), m.logSignedBias)
 
-
+# este me tira que no converge
 m.logSignedBias <-  lmer(log_bias_m ~target_distance*room_condition+(1+target_distance|subject)+(0+room_condition|subject),
                          data = results_tbl)
+
+#tab_model(m.logSignedBias, file="./Experiment_2/Exp_2_ADP_control/stats/logSignedBias_model.html")
+#AIC(m.logSignedBias)
 
 Final.FixedlogSB <-effect(c("target_distance*room_condition"), m.logSignedBias)
 
@@ -148,32 +145,22 @@ logSignedBiasStats <- extract_stats(ggcoefstats(m.logSignedBias))
 logSignedBiasStats$tidy_data
 anovlogSB <- anova(m.logSignedBias)
 anovlogSB
+#write.csv(anovlogSB, file ="./Experiment_2/Exp_2_ADP_control/stats/logSignedBias_anova.csv")
 
 effect_size = eta_squared(anovlogSB)
 
-#results_tbls <- results_tbl %>% 
-#  group_by(room_condition,subject) %>%
-#  summarise(mBiasSigned  = mean(rel_bias_signed,na.rm=TRUE),
-#            SdBiasSigned  = sd(rel_bias_signed,na.rm=TRUE)/sqrt(length(rel_bias_signed)),
-#            mBiasUnSigned  = mean(rel_bias_unsigned,na.rm=TRUE),
-#            SdBiasUnSigned  = sd(rel_bias_unsigned,na.rm=TRUE)/sqrt(length(rel_bias_unsigned)))  %>%
-#  ungroup()
+#write.csv(effect_size, file="./Experiment_2/Exp_2_ADP_control/stats/logSignedBias_effectsize.csv")
 
 tabla.pob_logSB <- results_tbl %>% group_by(target_distance,room_condition) %>%
   summarise(MlogSB  = mean(log_bias_m),
             SDlogSB = sd(log_bias_m)/sqrt(n()))  %>%
   ungroup()
 
-
 f2 <- ggplot(tabla.pob_logSB, aes(x=target_distance, 
-                                  #y =10^MlogSB,
                                   y =MlogSB, 
                                   group = room_condition, 
                                   color  = room_condition)) +
   geom_pointrange(aes(x = target_distance, 
-                      #y = 10^MlogSB, 
-                      #ymin = 10^(MlogSB-SDlogSB), 
-                      #ymax = 10^(MlogSB+SDlogSB)),
                       y = MlogSB, 
                       ymin = (MlogSB-SDlogSB), 
                       ymax = (MlogSB+SDlogSB)),
@@ -181,28 +168,15 @@ f2 <- ggplot(tabla.pob_logSB, aes(x=target_distance,
                       position = position_jitterdodge(jitter.width = .1,
                                                       jitter.height = 0,
                                                       dodge.width = .1 ))+
-  #geom_abline(intercept = 0, slope = 1, linetype=2) +
-  #geom_line(data = Final.FixedlogSB, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
-  geom_line(data = Final.FixedlogSB, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
+    geom_line(data = Final.FixedlogSB, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
-  scale_y_continuous(name="Mean log bias (m)",   limits = c(-1,0)) +
+  scale_y_continuous(name="Mean log signed bias (m)",   limits = c(-1,0)) +
   scale_color_manual(labels = c("NVI", "VI"), values =c(myViridis[1], myViridis[2]))+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
         legend.title = element_blank(),)
 #text=element_text(family="Times New Roman", size=10)) 
 f2
-
-
-
-
-
-
-
-
-
-
-
 
 # signed bias var -------------------------------------------------------------
 
@@ -218,6 +192,8 @@ m.logSignedBiasVar <-  lmer(log_bias_var ~target_distance*room_condition+(1+targ
 
 Final.FixedlogSBVar <-effect(c("target_distance*room_condition"), m.logSignedBiasVar)
 
+#tab_model(m.logSignedBiasVar, file ="./Experiment_2/Exp_2_ADP_control/stats/logSignedBiasVar_model.html")
+
 Final.FixedlogSBVar<-as.data.frame(Final.FixedlogSBVar)
 
 logSignedBiasVarStats <- extract_stats(ggcoefstats(m.logSignedBiasVar))
@@ -225,7 +201,11 @@ logSignedBiasVarStats$tidy_data
 anovlogSBVar <- anova(m.logSignedBiasVar)
 anovlogSBVar
 
-#effect_size = eta_squared(anovlogSB)
+#write.csv(anovlogSBVar, file ="./Experiment_2/Exp_2_ADP_control/stats/logSignedBiasVar_anova.csv")
+
+effect_size = eta_squared(anovlogSBVar)
+
+#write.csv(effect_size, file ="./Experiment_2/Exp_2_ADP_control/stats/logSignedBiasVar_effectsize.csv")
 
 tabla.pob_logSBVar <- results_tbl %>% group_by(target_distance,room_condition) %>%
   summarise(MlogSBVar  = mean(log_bias_var),
@@ -249,8 +229,6 @@ f2_var <- ggplot(tabla.pob_logSBVar, aes(x=target_distance,
                   position = position_jitterdodge(jitter.width = .1,
                                                   jitter.height = 0,
                                                   dodge.width = .1 ))+
-  #geom_abline(intercept = 0, slope = 1, linetype=2) +
-  #geom_line(data = Final.FixedlogSB, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
   geom_line(data = Final.FixedlogSBVar, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
   scale_y_continuous(name="Signed log bias var (m)",   limits = c(0,.075)) +
@@ -261,23 +239,15 @@ f2_var <- ggplot(tabla.pob_logSBVar, aes(x=target_distance,
 #text=element_text(family="Times New Roman", size=10)) 
 f2_var
 
-
-
-
-
 # unsigned bias -------------------------------------------------------------
 
 
-#m.logUnsignedBias <-  lmer(log_bias_unsigned_m ~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
-#                         data = results_tbl)
-
-#Final.FixedlogUB <-effect(c("log10(target_distance)*room_condition"), m.logUnsignedBias)
-
-
-m.logSignedBias <-  lmer(log_bias_m ~target_distance*room_condition+(1+target_distance|subject)+(0+room_condition|subject),
+m.logUnsignedBias <-  lmer(log_bias_unsigned_m ~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
                          data = results_tbl)
 
-Final.FixedlogSB <-effect(c("target_distance*room_condition"), m.logSignedBias)
+Final.FixedlogUB <-effect(c("log10(target_distance)*room_condition"), m.logUnsignedBias)
+
+tab_model(m.logUnsignedBias, file ="./Experiment_2/Exp_2_ADP_control/stats/logUnsignedBias_model.html")
 
 Final.FixedlogUB<-as.data.frame(Final.FixedlogUB)
 
@@ -286,7 +256,11 @@ logUnsignedBiasStats$tidy_data
 anovlogUB <- anova(m.logUnsignedBias)
 anovlogUB
 
+#write.csv(anovlogUB, file ="./Experiment_2/Exp_2_ADP_control/stats/logUnsignedBias_anova.csv")
+
 effect_sizeUB = eta_squared(anovlogUB)
+
+#write.csv(effect_sizeUB, file="./Experiment_2/Exp_2_ADP_control/stats/logUnsignedBias_effectsize.csv")
 
 #results_tbls <- results_tbl %>% 
 #  group_by(room_condition,subject) %>%
@@ -303,14 +277,10 @@ tabla.pob_logUB <- results_tbl %>% group_by(target_distance,room_condition) %>%
 
 
 f3 <- ggplot(tabla.pob_logUB, aes(x=target_distance, 
-                                  #y =10^MlogUB,
                                   y =MlogUB, 
                                   group = room_condition, 
                                   color  = room_condition)) +
   geom_pointrange(aes(x = target_distance, 
-                      #y = 10^MlogUB, 
-                      #ymin = 10^(MlogUB-SDlogUB), 
-                      #ymax = 10^(MlogUB+SDlogUB)),
                       y = MlogUB, 
                       ymin = (MlogUB-SDlogUB), 
                       ymax = (MlogUB+SDlogUB)),
@@ -318,17 +288,7 @@ f3 <- ggplot(tabla.pob_logUB, aes(x=target_distance,
                   position = position_jitterdodge(jitter.width = .1,
                                                   jitter.height = 0,
                                                   dodge.width = .1 ))+
-  #geom_line(data = Final.FixedlogUB, aes(x = target_distance, y =10^fit, group=room_condition, color=room_condition))+
   geom_line(data = Final.FixedlogUB, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
-  #geom_label(x = -0.1, y = 4.0, label = as.character(as.expression(eq1)), 
-  #           hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = myViridis[1],
-  #)+
-  ##family="Times New Roman")+
-  #geom_label(x = -0.1, y = 4.85, label = as.character(as.expression(eq2)), 
-  #           hjust = 0, nudge_x =  0,parse = TRUE, size = 4, color = myViridis[2],
-  #)+
-  #family="Times New Roman")+
-  #geom_text(x = 0.2, y = 6.0, label = as.character(as.expression(eq3)), hjust = 0, nudge_x =  0, parse = TRUE, size = 4, color = "#009E73")+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
   scale_y_continuous(name="Unsigned log bias (m)",   limits = c(0,.5)) +
   scale_color_manual(labels = c("NVI", "VI"), values =c(myViridis[1], myViridis[2]))+

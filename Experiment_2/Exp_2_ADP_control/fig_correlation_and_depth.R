@@ -124,6 +124,7 @@ dimensions.depth <- dimensions.depth %>%
   rename("Depth" = "value",
          "Condition" = "variable")
 
+# acordarse de sacar outliers
 dimensions.depth <- dimensions.depth %>%
   filter(!Depth >= 20)
 
