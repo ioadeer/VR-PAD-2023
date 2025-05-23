@@ -24,10 +24,12 @@ results_tbl.exp_3 <- read.csv("Experiment_3/Exp_3_ADP_vr/ResultsData/Dresults_nu
 results_tbl.exp_3$experiment = "3"
 
 # Experiment 4 FALTA 
-results_tbl.exp_4 <- read.csv("Experiment_4/Exp_4_ADP_vr/ResultsData/DresultsExp4.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
+results_tbl.exp_4 <- read.csv("Experiment_4/Exp_4_ADP_vr/ResultsData/Dresults_nuevos.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE)
 results_tbl.exp_4$experiment = "4"
 
 result_tbl.all <- rbind(results_tbl.exp_1,
                         results_tbl.exp_2,
                         results_tbl.exp_3,
                         results_tbl.exp_4)
+
+write.csv(result_tbl.all, file="./Integration/data/ADP.csv")

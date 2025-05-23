@@ -66,16 +66,16 @@ mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
 mDist1stats$tidy_data
 anov1 <- anova(m.Dist1)
 anov1
-#write.csv(anov1, file="./Experiment_2/Exp_2_ADP_control/stats/model_anova.csv")
+#write.csv(anov1, file="Experiment_3/Exp_3_ADP_vr/stats/model_anova.csv")
 effect_size = eta_squared(anov1)
-#write.csv(effect_size, file="./Experiment_2/Exp_2_ADP_control/stats/model_eta_squared.csv")
+#write.csv(effect_size, file="Experiment_3/Exp_3_ADP_vr/stats/model_eta_squared.csv")
 partial_effect_size = eta_squared(anov1, partial= TRUE)
 #anov1
 # F value, NumDF, DenDF
 
 r.squaredGLMM(m.Dist1)
 # para imprimir
-#tab_model(m.Dist1, file ="./Experiment_2/Exp_2_ADP_control/stats/model.html")
+tab_model(m.Dist1, file ="Experiment_3/Exp_3_ADP_vr/stats/model.html")
 
 
 eq1 <- substitute("NVI:"~italic(y) == k %.% italic(X)^italic(a),
@@ -130,13 +130,6 @@ f1
 
 # signed bias -------------------------------------------------------------
 
-
-#m.logSignedBias <-  lmer(log_bias_m ~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
-#                 data = results_tbl)
-
-#Final.FixedlogSB <-effect(c("log10(target_distance)*room_condition"), m.logSignedBias)
-
-
 m.logSignedBias <-  lmer(log_bias_m ~target_distance*room_condition+(1+target_distance|subject)+(0+room_condition|subject),
                          data = results_tbl)
 
@@ -148,16 +141,12 @@ logSignedBiasStats <- extract_stats(ggcoefstats(m.logSignedBias))
 logSignedBiasStats$tidy_data
 anovlogSB <- anova(m.logSignedBias)
 anovlogSB
+# modelo
+#tab_model(m.logSignedBias, file="./Experiment_3/Exp_3_ADP_vr/stats/logSignedBias_model.html")
+#write.csv(anovlogSB, file="./Experiment_3/Exp_3_ADP_vr/stats/logSignedBias_anova.csv")
+#write.csv(anovlogSB, file="./Experiment_3/Exp_3_ADP_vr/stats/logSignedBias_anova.csv")
 
 effect_size = eta_squared(anovlogSB)
-
-#results_tbls <- results_tbl %>% 
-#  group_by(room_condition,subject) %>%
-#  summarise(mBiasSigned  = mean(rel_bias_signed,na.rm=TRUE),
-#            SdBiasSigned  = sd(rel_bias_signed,na.rm=TRUE)/sqrt(length(rel_bias_signed)),
-#            mBiasUnSigned  = mean(rel_bias_unsigned,na.rm=TRUE),
-#            SdBiasUnSigned  = sd(rel_bias_unsigned,na.rm=TRUE)/sqrt(length(rel_bias_unsigned)))  %>%
-#  ungroup()
 
 tabla.pob_logSB <- results_tbl %>% group_by(target_distance,room_condition) %>%
   summarise(MlogSB  = mean(log_bias_m),
@@ -208,7 +197,12 @@ logSignedBiasVarStats$tidy_data
 anovlogSBVar <- anova(m.logSignedBiasVar)
 anovlogSBVar
 
-#effect_size = eta_squared(anovlogSB)
+#tab_model(m.logSignedBiasVar, file="./Experiment_3/Exp_3_ADP_vr/stats/logSignedBiasVar_model.html")
+#write.csv(anovlogSBVar, file="./Experiment_3/Exp_3_ADP_vr/stats/logSignedBiasVar_anova.csv")
+
+effect_size = eta_squared(anovlogSBVar)
+#write.csv(effect_size, file="./Experiment_3/Exp_3_ADP_vr/stats/logSignedBiasVar_effectsize.csv")
+
 
 tabla.pob_logSBVar <- results_tbl %>% group_by(target_distance,room_condition) %>%
   summarise(MlogSBVar  = mean(log_bias_var),
@@ -244,18 +238,7 @@ f2_var <- ggplot(tabla.pob_logSBVar, aes(x=target_distance,
 #text=element_text(family="Times New Roman", size=10)) 
 f2_var
 
-
-
-
-
 # unsigned bias -------------------------------------------------------------
-
-
-#m.logUnsignedBias <-  lmer(log_bias_unsigned_m ~ log10(target_distance)*room_condition+(1+log10(target_distance)|subject)+(0+room_condition|subject),
-#                         data = results_tbl)
-
-#Final.FixedlogUB <-effect(c("log10(target_distance)*room_condition"), m.logUnsignedBias)
-
 
 m.logUnsignedBias <-  lmer(log_bias_unsigned_m ~target_distance*room_condition+(1+target_distance|subject)+(0+room_condition|subject),
                          data = results_tbl)
@@ -271,13 +254,8 @@ anovlogUB
 
 effect_sizeUB = eta_squared(anovlogUB)
 
-#results_tbls <- results_tbl %>% 
-#  group_by(room_condition,subject) %>%
-#  summarise(mBiasSigned  = mean(rel_bias_signed,na.rm=TRUE),
-#            SdBiasSigned  = sd(rel_bias_signed,na.rm=TRUE)/sqrt(length(rel_bias_signed)),
-#            mBiasUnSigned  = mean(rel_bias_unsigned,na.rm=TRUE),
-#            SdBiasUnSigned  = sd(rel_bias_unsigned,na.rm=TRUE)/sqrt(length(rel_bias_unsigned)))  %>%
-#  ungroup()
+#tab_model(m.logUnsignedBias, file="./Experiment_3/Exp_3_ADP_vr/stats/logUnsignedBias_model.html")
+#write.csv(anovlogUB, file="./Experiment_3/Exp_3_ADP_vr/stats/logUnsignedBias_anova.csvl")
 
 tabla.pob_logUB <- results_tbl %>% group_by(target_distance,room_condition) %>%
   summarise(MlogUB  = mean(log_bias_unsigned_m),
@@ -311,7 +289,6 @@ f3 <- ggplot(tabla.pob_logUB, aes(x=target_distance,
         legend.title = element_blank(),)
 #text=element_text(family="Times New Roman", size=10)) 
 f3
-
 
 
 # main plot V2 ---------------------------------------------------------------
