@@ -11,7 +11,7 @@ library(tidyverse)
 # load and format data ---------------------------------------------------------------
 
 rm(list=ls())
-tabla.pob_y_visual = read.csv("./Exp_2_ADP_control/data/raw/visual_y_poblacional/Datos_poblacionales_y_visuales_oscuras_real.csv")
+tabla.pob_y_visual = read.csv("Experiment_2/Exp_2_ADP_control/data/raw/visual_y_poblacional/Datos_poblacionales_y_visuales_oscuras_real.csv")
 
 tabla.pob_y_visual <- tabla.pob_y_visual %>%
   rename(
@@ -44,11 +44,11 @@ tabla.visual <- tabla.visual %>%
 # Estan calculados aca:
 # './Exp_2_ADP_control/old/remocion_outliers.R'
 
-tabla.visual <- tabla.visual %>%
-  filter(Subject != 1) %>%
-  filter(Subject != 2) %>%
-  filter(Subject != 10) %>%
-  filter(Subject != 16) 
+#tabla.visual <- tabla.visual %>%
+#  filter(Subject != 1) %>%
+#  filter(Subject != 2) %>%
+#  filter(Subject != 10) %>%
+#  filter(Subject != 16) 
 
-write.table(tabla.visual, file="./Visual-de-experimento-2-3/data/visual_exp_2_sin_outliers.csv", row.names = FALSE)
+write.table(tabla.visual, file="Experiment_2/Exp_2_VDP/data/visual_exp_2.csv", row.names = FALSE)
 
