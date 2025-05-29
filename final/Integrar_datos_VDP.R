@@ -273,7 +273,15 @@ df_vdp <- df_vdp %>%
   filter(!(Dimension == "Height" & Value >= 6))
 
 
+df_vdp <- df_vdp %>%
+  rename(
+    "subject" = "Subject",
+    "room_condition" = "Condition",
+    "dimension" = "Dimension",
+    "value" = "Value",
+    "experiment" = "Experiment"
+  )
 # save all ---------------------------------------------------------------
 
 
-write.csv(df_vdp, file = "./final/data/VDP.csv")
+write.csv(df_vdp, file = "./final/data/VDP.csv", row.names = FALSE)
