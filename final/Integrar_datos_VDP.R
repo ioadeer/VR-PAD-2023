@@ -161,9 +161,119 @@ tabla.exp_2.all <- tabla.exp_2.all %>%
   arrange(c("Subject")) %>%
   mutate( Experiment = 2)
 
+# exp 3 -------------------------------------------------------------------
+
+tabla.exp_3 <- read.csv(file ="./Experiment_3/Exp_2_3_VDP/data/visual_exp_3.csv", sep =' ')
+
+tabla.exp_3.depth <- tabla.exp_3 %>%
+  pivot_longer(cols = c("No_visual_info_depth", "VE_depth"),
+               names_to = "Measure",
+               values_to = "Value") %>%
+  select(c("Subject", "Measure", "Value"))
+
+tabla.exp_3.width <- tabla.exp_3 %>%
+  pivot_longer(cols = c("No_visual_info_width", "VE_width"),
+               names_to = "Measure",
+               values_to = "Value")  %>%
+  select(c("Subject", "Measure", "Value"))
+
+tabla.exp_3.height <- tabla.exp_3 %>%
+  pivot_longer(cols = c("No_visual_info_height", "VE_height"),
+               names_to = "Measure",
+               values_to = "Value")  %>%
+  select(c("Subject", "Measure", "Value"))
+
+tabla.exp_3.all <- rbind(tabla.exp_3.depth, tabla.exp_3.width, tabla.exp_3.height)
+
+tabla.exp_3.all <- tabla.exp_3.all %>%
+  mutate(
+    Condition = case_when(
+      Measure == "No_visual_info_depth" ~ "No visual info",
+      Measure == "No_visual_info_width" ~ "No visual info",
+      Measure == "No_visual_info_height" ~ "No visual info",
+      Measure == "VE_depth" ~  "Congruent VE",
+      Measure == "VE_width" ~  "Congruent VE",
+      Measure == "VE_height" ~ "Congruent VE",
+    )) %>%
+  mutate(
+    Dimension = case_when(
+      Measure == "No_visual_info_depth" ~ "Depth",
+      Measure == "No_visual_info_width" ~ "Width",
+      Measure == "No_visual_info_height" ~ "Height",
+      Measure == "VE_depth" ~ "Depth",
+      Measure == "VE_width" ~ "Width",
+      Measure == "VE_height" ~ "Height",
+    ))  %>%
+  select(c("Subject","Condition", "Dimension", "Value")) %>%
+  group_by(Condition) %>%
+  arrange(c("Subject")) %>%
+  mutate( Experiment = 3)
 
 
+# exp 4 -------------------------------------------------------------------
 
-# all
+tabla.exp_4 <- read.csv(file ="./Experiment_4/Exp_4_VDP/data/visual_exp_4_con_outliers.csv", sep =' ')
 
-df_vdp <- rbind(tabla.exp_1_vdp, tabla.exp_2.all)
+tabla.exp_4.depth <- tabla.exp_4 %>%
+  pivot_longer(cols = c("No_visual_info_depth", "Virtual_environment_depth"),
+               names_to = "Measure",
+               values_to = "Value") %>%
+  select(c("Subject", "Measure", "Value"))
+
+tabla.exp_4.width <- tabla.exp_4 %>%
+  pivot_longer(cols = c("No_visual_info_width", "Virtual_environment_width"),
+               names_to = "Measure",
+               values_to = "Value")  %>%
+  select(c("Subject", "Measure", "Value"))
+
+tabla.exp_4.height <- tabla.exp_4 %>%
+  pivot_longer(cols = c("No_visual_info_height", "Virtual_environment_height"),
+               names_to = "Measure",
+               values_to = "Value")  %>%
+  select(c("Subject", "Measure", "Value"))
+
+tabla.exp_4.all <- rbind(tabla.exp_4.depth, tabla.exp_4.width, tabla.exp_4.height)
+
+tabla.exp_4.all <- tabla.exp_4.all %>%
+  mutate(
+    Condition = case_when(
+      Measure == "No_visual_info_depth" ~ "No visual info",
+      Measure == "No_visual_info_width" ~ "No visual info",
+      Measure == "No_visual_info_height" ~ "No visual info",
+      Measure == "Virtual_environment_depth" ~  "Large VE",
+      Measure == "Virtual_environment_width" ~  "Large VE",
+      Measure == "Virtual_environment_height" ~ "Large VE",
+    )) %>%
+  mutate(
+    Dimension = case_when(
+      Measure == "No_visual_info_depth" ~ "Depth",
+      Measure == "No_visual_info_width" ~ "Width",
+      Measure == "No_visual_info_height" ~ "Height",
+      Measure == "Virtual_environment_depth" ~ "Depth",
+      Measure == "Virtual_environment_width" ~ "Width",
+      Measure == "Virtual_environment_height" ~ "Height",
+    ))  %>%
+  select(c("Subject","Condition", "Dimension", "Value")) %>%
+  group_by(Condition) %>%
+  arrange(c("Subject")) %>%
+  mutate( Experiment = 4)
+
+
+# outliers all ----------------------------------------------------------------
+
+df_vdp <- rbind(tabla.exp_1_vdp, tabla.exp_2.all, tabla.exp_3.all,tabla.exp_4.all)
+
+df_vdp <- df_vdp %>%
+  filter(!(Dimension == "Depth" & Value >= 20))
+
+df_vdp <- df_vdp %>%
+  filter(!(Dimension == "Width" & Value >= 10))
+
+df_vdp <- df_vdp %>%
+  filter(!(Dimension == "Height" & Value >= 6))
+
+
+# save all ---------------------------------------------------------------
+
+
+write.csv(df_vdp, file = "./final/data/VDP.csv")
