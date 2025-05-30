@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-## ADP analisis of Experiment 1 Cervino et al. 2025
+## ADP analysis of Experiment 1 Cervino et al. 2025
 
 ```{r load dependencies}
 #| echo: false
@@ -58,7 +58,8 @@ This section fits a Linear Mixed Effects Model with:
 
 -   Considering subject as random effect for random slope and intercept
 
-##### Model 
+##### Model
+
 ```{r LMEM}
 #| warning: false
 m.Dist1 <-  lmer(log10(perc_dist) ~ log10(target_distance)*room_condition+
@@ -70,21 +71,26 @@ mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
 
 tab_model(m.Dist1, file ="./stats/exp_1_lmem.html")
 ```
-##### Anova 
+
+##### Anova
+
 ```{r LMEM ANOVA}
 anov1 = anova(m.Dist1)
-write.csv(anov1 , file = "./stats/anova.csv")
+write.csv(anov1 , file = "./stats/exp_1_anova.csv")
 knitr::kable(anov1, "html")
 ```
-##### Effect size 
-``` {r LMEM effect size}
+
+##### Effect size
+
+```{r LMEM effect size}
 eta_sqrd = eta_squared(anov1)
-write.csv(eta_sqrd, file="./stats/efect_size_partial_eta_sqrd.csv")
+write.csv(eta_sqrd, file="./stats/exp_1_efect_size_partial_eta_sqrd.csv")
 #eta_sqrd
 knitr::kable(eta_sqrd, "html")
 ```
 
-##### Individual fits 
+##### Individual fits
+
 ```{r individual fits}
 #| echo: true
 #| message: false
@@ -112,7 +118,7 @@ filename = paste(figures_folder, .Platform$file.sep, "inidividual-fits", ".png",
 #dev.off()
 ```
 
-``` {r show individual fits}
+```{r show individual fits}
 #| fig-height: 40
 plot(FittedlmPlot1)
 ```
@@ -177,6 +183,7 @@ f1
 ```
 
 #### Logarithmic signed bias (precision)
+
 ```{r Signed bias LMEM}
 #| message: false
 #| warning: false
@@ -185,9 +192,11 @@ m.logSignedBias <-  lmer(log_bias_m ~target_distance*room_condition+
                            (0+room_condition|subject),
                          data = df.experiment_1)
 
-tab_model(m.logSignedBias, file ="./stats/logsignedbias_model.html")
+tab_model(m.logSignedBias, file ="./stats/log_signed_bias_model.html")
 ```
+
 ##### Anova
+
 ```{r log signed bias anova}
 #| message: false
 #| warning: false
@@ -201,7 +210,9 @@ anovlogSB <- anova(m.logSignedBias)
 write_csv(anovlogSB, file ="./stats/log_signed_bias_anova.csv")
 knitr::kable(anovlogSB, "html")
 ```
+
 ##### Effect size
+
 ```{r log signed bias effect size}
 effect_size = eta_squared(anovlogSB)
 write_csv(effect_size, file ="./stats/log_signed_bias_effect_size.csv")
@@ -209,7 +220,9 @@ knitr::kable(effect_size, "html")
 ```
 
 ```{r log signed bias figure make}
-#| include: false
+#| echo: true
+#| message: false
+#| warning: false
 
 tabla.pob_logSB <- df.experiment_1 %>% group_by(target_distance,room_condition) %>%
   summarise(MlogSB  = mean(log_bias_m),
@@ -240,11 +253,12 @@ f2 <- ggplot(tabla.pob_logSB, aes(x=target_distance,
 
 ```
 
-``` {r log signed bias figure view}
+```{r log signed bias figure view}
 f2
 ```
 
 ##### Logarithmic signed bias Variability
+
 ```{r log signed bias variability model }
 #| message: false
 #| warning: false
@@ -253,9 +267,11 @@ m.logSignedBiasVar <-  lmer(log_bias_var~target_distance*room_condition
                             +(0+room_condition|subject),
                             data = df.experiment_1)
 
-tab_model(m.logSignedBiasVar, file ="./stats/logsignedbias_var_model.html")
+tab_model(m.logSignedBiasVar, file ="./stats/log_signed_bias_var_model.html")
 ```
-###### Anova 
+
+###### Anova
+
 ```{r log signed bias variability model anova}
 #| message: false
 #| warning: false
@@ -266,15 +282,15 @@ Final.FixedlogSBVar<-as.data.frame(Final.FixedlogSBVar)
 #logSignedBiasVarStats <- extract_stats(ggcoefstats(m.logSignedBiasVar))
 
 anovlogSBVar <- anova(m.logSignedBiasVar)
-write_csv(anovlogSBVar, file = "./stats/logsignedbias_var_anova.csv")
+write_csv(anovlogSBVar, file = "./stats/log_signed_bias_var_anova.csv")
 knitr::kable(anovlogSBVar, "html")
 
 ```
 
 ```{r log signed bias variability make figure}
+#| echo: false
 #| message: false
 #| warning: false
-#| include: false
 tabla.pob_logSBVar <- df.experiment_1 %>% group_by(target_distance,room_condition) %>%
   summarise(MlogSBVar  = mean(log_bias_var),
             SDlogSBVar= sd(log_bias_var)/sqrt(n()))  %>%
@@ -306,7 +322,7 @@ f2_var <- ggplot(tabla.pob_logSBVar, aes(x=target_distance,
 ```{r log signed bias variability show figure}
 f2_var
 ```
- 
+
 #### Logarithmic unsigned bias (accuracy)
 
 ```{r logarithmic unsigned bias model}
@@ -317,9 +333,11 @@ m.logUnsignedBias <-  lmer(log_bias_unsigned_m~target_distance*room_condition
                            +(0+room_condition|subject),
                          data = df.experiment_1)
 
-tab_model(m.logUnsignedBias, file ="./stats/logUnsignedbias_model.html")
+tab_model(m.logUnsignedBias, file ="./stats/log_unsigned_bias_model.html")
 ```
-##### ANOVA 
+
+##### ANOVA
+
 ```{r logarithmic unsigned bias anova}
 Final.FixedlogUB <-effect(c("target_distance*room_condition"), m.logUnsignedBias)
 
@@ -328,17 +346,17 @@ Final.FixedlogUB<-as.data.frame(Final.FixedlogUB)
 #logUnsignedBiasStats <- extract_stats(ggcoefstats(m.logUnsignedBias))
 
 anovlogUB <- anova(m.logUnsignedBias)
-write_csv(anovlogUB, file="./stats/logunsigned_bias_anova.csv")
+write_csv(anovlogUB, file="./stats/log_unsigned_bias_anova.csv")
 knitr::kable(anovlogUB, "html")
 ```
 
 ##### Effect size
+
 ```{r logarithmic unsigned bias effect size}
 effect_sizeUB = eta_squared(anovlogUB)
-write_csv(effect_sizeUB, file="./stats/logunsigned_bias_effect_size.csv")
+write_csv(effect_sizeUB, file="./stats/log_unsigned_bias_effect_size.csv")
 knitr::kable(effect_sizeUB, "html")
 ```
-
 
 ```{r logarithmic unsigned bias make figure}
 #| echo: true
