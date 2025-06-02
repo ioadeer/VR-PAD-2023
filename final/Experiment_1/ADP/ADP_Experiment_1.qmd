@@ -123,6 +123,7 @@ filename = paste(figures_folder, .Platform$file.sep, "inidividual-fits", ".png",
 plot(FittedlmPlot1)
 ```
 
+##### Model figure
 ```{r ADP model}
 #| message: false
 #| warning: false
