@@ -5,23 +5,92 @@ format: html
 editor: visual
 ---
 
-## Quarto
+## Correlation analysis of Experiment 1 Cervino et al. 2025
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
-```{r}
-1 + 1
+```{r dependencies}
+#| message: false
+#| warning: false
+library(dplyr)
+library(tidyr)
+library(rstatix) # stat.test
+library(ggplot2)
+library(ggpubr)
+library(ggstatsplot)
+library(sjPlot)
+library(effectsize)
 ```
 
-You can add options to executable code like this
+```{r load data}
+tabla.exp_1.corr <- read.csv(
+  "../../data/correlation.csv", 
+  header = TRUE, sep = ',',
+  stringsAsFactors = TRUE) %>%
+  filter(experiment == 1)
 
-```{r}
-#| echo: false
-2 * 2
+smaller_ve <- tabla.exp_1.corr %>%
+  filter(room_condition == 'Small VE')
+# N 42. df = n -2 = 40
+
+congruent_ve <- tabla.exp_1.corr %>%
+  filter(room_condition == 'Congruent VE')
+
+corr_smaller_ve <- cor.test(
+  smaller_ve$log_auditory_max_dist,
+  smaller_ve$log_visual_perc_depth , 
+  method= 'pearson')
+
+eqn1_cor <- sprintf(
+  "SVE: R = %.2g, p =  %.2g",
+  corr_smaller_ve[4][[1]][[1]],
+  corr_smaller_ve[3][[1]][[1]])
+
+corr_congruent_ve <- cor.test(
+  congruent_ve$log_auditory_max_dist,
+  congruent_ve$log_visual_perc_depth , 
+  method= 'pearson')
+
+eqn2_cor <- sprintf(
+  "CVE: R = %.2g, p =  %.2g",
+  corr_congruent_ve[4][[1]][[1]],
+  corr_congruent_ve[3][[1]][[1]])
+
+myViridis <- viridisLite::viridis(alpha=0.75, n= 3)
+
+correlation_plot <- ggplot(tabla.exp_1.corr, 
+                           aes(x =log_visual_perc_depth, 
+                               y = log_auditory_max_dist,
+                               colour = room_condition)) +
+  scale_colour_manual(values = c(myViridis[2], myViridis[1]),
+                      labels = c("Congruent VE", "Small VE")) +
+  scale_fill_manual(values = c(myViridis[2], myViridis[1])) +
+  geom_point() +
+  geom_smooth(alpha=0.3, method= "lm")+
+  annotate("label",                        # Add text for mean
+           x = 0.9, # para fig compuesta
+           y = 2.55,
+           label = eqn1_cor,
+           size = 4,
+           hjust = 0,
+           color = myViridis[1],
+           ) +
+  annotate("label",                        # Add text for mean
+           x = 0.9, # para fig compuesta
+           y = 3,
+           label = eqn2_cor,
+           size = 4,
+           hjust = 0,
+           color = myViridis[2],
+           ) +
+  #ggtitle("Correlation between visual and auditory distance assesments (log log)") +
+  xlab("Visually Perceived Virtual Room Depth (m)") +
+  ylab("Maximum Perceived \n Auditory Distance (m)")+
+  labs(color = "Visual condition") +  # Change legend title
+  theme_minimal()+
+  theme(legend.position = "top",
+        legend.title = element_blank(),
+        #text=element_text(family="Arial", size=10)
+        ) 
+
+
+plot(correlation_plot)
 ```
-
-The `echo: false` option disables the printing of code (only output is displayed).

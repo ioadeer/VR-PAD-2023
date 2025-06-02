@@ -5,7 +5,7 @@ format: html
 editor: visual
 ---
 
-## VDP Analysis of Experiment 1 Cervino et al. 2025 
+## VDP Analysis of Experiment 1 Cervino et al. 2025
 
 ```{r load dependencies}
 #| message: false
@@ -32,7 +32,7 @@ myViridis <- viridisLite::viridis(alpha=.75, n= 3)
 
 ```
 
-### Perceived depth 
+### Perceived depth
 
 ```{r perceived depth}
 dimensions.depth <- df.experiment_1_vdp %>%
@@ -62,6 +62,7 @@ eqn2 <- sprintf(
 ```
 
 #### Model
+
 ```{r statistics depth}
 
 lm.depth <- lm(Depth ~ room_condition, 
@@ -72,6 +73,7 @@ tab_model(lm.depth, file ="./stats/depth/depth-lm.html")
 ```
 
 #### Model ANOVA
+
 ```{r perceived depth model anova}
 anova.depth <- anova(lm.depth)
 
@@ -90,6 +92,7 @@ knitr::kable(eta_sqrd.depth, "html")
 ```
 
 #### T test
+
 ```{r percieved depth t test}
 t_test.depth <- t.test(Depth~room_condition, data= dimensions.depth)
 
@@ -102,6 +105,7 @@ knitr::kable(t_test.depth, "html")
 ```
 
 #### Make figure
+
 ```{r violin depth}
 violin_depth <- ggplot(dimensions.depth, aes(x=room_condition, y=Depth,  fill=room_condition)) +
   geom_violin(trim=FALSE) +
@@ -139,7 +143,7 @@ violin_depth <- ggplot(dimensions.depth, aes(x=room_condition, y=Depth,  fill=ro
     axis.title.y = element_text(hjust = 0)) 
 ```
 
-### Perceived width 
+### Perceived width
 
 ```{r perceived width}
 dimensions.width <- df.experiment_1_vdp %>%
@@ -170,6 +174,7 @@ eqn2 <- sprintf(
 ```
 
 #### Model
+
 ```{r statistics width}
 
 lm.width <- lm(Width ~ room_condition, 
@@ -180,6 +185,7 @@ tab_model(lm.width, file ="./stats/width/width-lm.html")
 ```
 
 #### Model ANOVA
+
 ```{r perceived width model anova}
 anova.width <- anova(lm.width)
 
@@ -198,6 +204,7 @@ knitr::kable(eta_sqrd.width, "html")
 ```
 
 #### T test
+
 ```{r percieved width t test}
 t_test.width <- t.test(Width~room_condition, data= dimensions.width)
 
@@ -210,6 +217,7 @@ knitr::kable(t_test.width, "html")
 ```
 
 #### Make figure width
+
 ```{r make figure with}
 # Use single color
 violin_width <- ggplot(dimensions.width, aes(x=room_condition, y=Width,  fill=room_condition)) +
@@ -248,6 +256,7 @@ violin_width <- ggplot(dimensions.width, aes(x=room_condition, y=Width,  fill=ro
 ```
 
 ### Perceived height
+
 ```{r perceived height}
 dimensions.height <- df.experiment_1_vdp %>%
   filter(dimension == "Height") %>%
@@ -277,6 +286,7 @@ eqn2 <- sprintf(
 ```
 
 #### Model
+
 ```{r statistics height}
 
 lm.height <- lm(Height ~ room_condition, 
@@ -287,6 +297,7 @@ tab_model(lm.height, file ="./stats/height/height-lm.html")
 ```
 
 #### Model ANOVA
+
 ```{r perceived height model anova}
 anova.height <- anova(lm.height)
 
@@ -305,6 +316,7 @@ knitr::kable(eta_sqrd.height, "html")
 ```
 
 #### T test
+
 ```{r percieved height t test}
 t_test.height <- t.test(Height~room_condition, data= dimensions.height)
 
@@ -317,6 +329,7 @@ knitr::kable(t_test.height, "html")
 ```
 
 #### Make figure height
+
 ```{r make figure height}
 violin_height <- ggplot(dimensions.height, aes(x=room_condition, y=Height,  fill=room_condition)) +
   geom_violin(trim=FALSE)+
@@ -352,9 +365,12 @@ violin_height <- ggplot(dimensions.height, aes(x=room_condition, y=Height,  fill
     axis.title.x = element_blank()) 
 
 ```
+
 ### Perceived volume
 
 ```{r propagate volume}
+#| message: false
+#| warning: false
 dimensions.aggr <- dimensions.depth_sum
 dimensions.aggr$type = "Depth"
 
@@ -380,6 +396,8 @@ dimensions.volume <- dimensions.vol_aggr %>%
 ```
 
 ```{r vol 2}
+#| message: false
+#| warning: false
 dimensions.volume
 
 eqn1 <- sprintf(
@@ -447,6 +465,7 @@ dim_barchart <- dimensions.volume %>%
   theme(#axis.line = element_blank(),
     axis.title.x = element_blank())
 ```
+
 ### Figure
 
 ```{r print all }
@@ -465,7 +484,6 @@ figures_folder = "./figures"
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "Exp_1_Perceived_room.png", sep = '')
 ggsave(mi_nombre_de_archivo, plot =figure, width = 1400, height=1000, dpi=200, units = "px")
 ```
-
 
 ```{r view figure}
 #| fig-height: 10

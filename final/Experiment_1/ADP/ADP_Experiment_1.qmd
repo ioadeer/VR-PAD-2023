@@ -50,7 +50,7 @@ myViridis <- viridisLite::viridis(alpha=1, n= 3)
 
 This section fits a Linear Mixed Effects Model with:
 
--   Logarithm of percieved distance as dependent variable
+-   Logarithm of perceived distance as dependent variable
 
 -   Logarithm of target distance as fixed effect
 
@@ -124,6 +124,7 @@ plot(FittedlmPlot1)
 ```
 
 ##### Model figure
+
 ```{r ADP model}
 #| message: false
 #| warning: false

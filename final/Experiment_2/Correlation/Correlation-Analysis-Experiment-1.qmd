@@ -1,0 +1,96 @@
+---
+title: "Correlation Experiment 2"
+author: "Cervino et al"
+format: html
+editor: visual
+---
+
+## Correlation analysis of Experiment 2 Cervino et al. 2025
+
+```{r dependencies}
+#| message: false
+#| warning: false
+library(dplyr)
+library(tidyr)
+library(rstatix) # stat.test
+library(ggplot2)
+library(ggpubr)
+library(ggstatsplot)
+library(sjPlot)
+library(effectsize)
+```
+
+```{r load data}
+tabla.exp_1.corr <- read.csv(
+  "../../data/correlation.csv", 
+  header = TRUE, sep = ',',
+  stringsAsFactors = TRUE) %>%
+  filter(experiment == 2)
+
+no_visual <- tabla.exp_1.corr %>%
+  filter(room_condition == 'No visual info')
+# N 42. df = n -2 = 40
+
+visual_info <- tabla.exp_1.corr %>%
+  filter(room_condition == 'Visual info')
+
+corr_no_visual <- cor.test(
+  no_visual$log_auditory_max_dist,
+  no_visual$log_visual_perc_depth , 
+  method= 'pearson')
+
+eqn1_cor <- sprintf(
+  "NVI: R = %.2g, p =  %.2g",
+  corr_no_visual[4][[1]][[1]],
+  corr_no_visual[3][[1]][[1]])
+
+corr_visual_info <- cor.test(
+  visual_info$log_auditory_max_dist,
+  visual_info$log_visual_perc_depth , 
+  method= 'pearson')
+
+eqn2_cor <- sprintf(
+  "VI: R = %.2g, p =  %.2g",
+  corr_visual_info[4][[1]][[1]],
+  corr_visual_info[3][[1]][[1]])
+
+myViridis <- viridisLite::viridis(alpha=0.75, n= 3)
+
+correlation_plot <- ggplot(tabla.exp_1.corr, 
+                           aes(x =log_visual_perc_depth, 
+                               y = log_auditory_max_dist,
+                               colour = room_condition)) +
+  scale_colour_manual(values = c(myViridis[2], myViridis[1]),
+                      labels = c("No visual info", "Visual info")) +
+  scale_fill_manual(values = c(myViridis[2], myViridis[1])) +
+  geom_point() +
+  geom_smooth(alpha=0.3, method= "lm")+
+  annotate("label",                        # Add text for mean
+           x = 1.1, # para fig compuesta
+           y = 2.55,
+           label = eqn1_cor,
+           size = 4,
+           hjust = 0,
+           color = myViridis[2],
+           ) +
+  annotate("label",                        # Add text for mean
+           x = 1.1, # para fig compuesta
+           y = 3,
+           label = eqn2_cor,
+           size = 4,
+           hjust = 0,
+           color = myViridis[1],
+           ) +
+  #ggtitle("Correlation between visual and auditory distance assesments (log log)") +
+  xlab("Visually Perceived Virtual Room Depth (m)") +
+  ylab("Maximum Perceived \n Auditory Distance (m)")+
+  labs(color = "Visual condition") +  # Change legend title
+  theme_minimal()+
+  theme(legend.position = "top",
+        legend.title = element_blank(),
+        #text=element_text(family="Arial", size=10)
+        ) 
+
+
+plot(correlation_plot)
+```

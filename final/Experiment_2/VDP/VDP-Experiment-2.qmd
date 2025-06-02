@@ -1,0 +1,499 @@
+---
+title: "VDP - Experiment 2"
+author: "Cervino et al."
+format: html
+editor: visual
+---
+
+## VDP Analysis of Experiment 2 Cervino et al. 2025
+
+```{r load dependencies}
+#| message: false
+#| warning: false
+library(dplyr)
+library(tidyr)
+library(rstatix) # stat.test
+library(ggplot2)
+library(ggthemes)
+library(ggpubr)
+library(ggstatsplot)
+library(sjPlot)
+library(BSDA)
+```
+
+```{r load data}
+df.experiment_1_vdp <- read.csv(
+  "../../data/VDP.csv", 
+  header = TRUE, sep = ',',
+  stringsAsFactors = TRUE) %>%
+  filter(experiment == 2)
+  
+myViridis <- viridisLite::viridis(alpha=.75, n= 3)
+
+```
+
+### Perceived depth
+
+```{r perceived depth}
+dimensions.depth <- df.experiment_1_vdp %>%
+  filter(dimension == "Depth") %>%
+  select(c("subject","room_condition", "value")) %>%
+  rename("Depth" = "value")
+
+dimensions.depth_sum <- dimensions.depth %>%
+  group_by(room_condition) %>%
+  summarise(
+    mean = mean(Depth),
+    median = median(Depth),
+    sd = sd(Depth),
+    se = sd / sqrt(n()),
+    n = n()
+  )
+
+eqn1 <- sprintf(
+  "M = %.3g \n ± %.2g",
+  dimensions.depth_sum$mean[1],
+  dimensions.depth_sum$se[1])
+
+eqn2 <- sprintf(
+  "M = %.3g \n ± %.2g",
+  dimensions.depth_sum$mean[2],
+  dimensions.depth_sum$se[2])
+```
+
+#### Model
+
+```{r statistics depth}
+
+lm.depth <- lm(Depth ~ room_condition, 
+                    data = dimensions.depth)
+
+tab_model(lm.depth, file ="./stats/depth/depth-lm.html")
+
+```
+
+#### Model ANOVA
+
+```{r perceived depth model anova}
+anova.depth <- anova(lm.depth)
+
+write.csv(anova.depth, file="./stats/depth/depth-lm-anova.csv")
+knitr::kable(anova.depth, "html")
+```
+
+#### Effect size
+
+```{r perceived depth effect size}
+eta_sqrd.depth = eta_squared(anova.depth)
+
+write.csv(eta_sqrd.depth, file="./stats/depth/depth-lm-effect-size.csv")
+
+knitr::kable(eta_sqrd.depth, "html")
+```
+
+#### T test
+
+```{r percieved depth t test}
+t_test.depth <- t.test(Depth~room_condition, data= dimensions.depth)
+
+t_test.depth <- tidy(t_test.depth)
+
+write.csv(t_test.depth, file="./stats/depth/depth-t-test.csv")
+
+knitr::kable(t_test.depth, "html")
+
+```
+
+#### Make figure
+
+```{r violin depth}
+violin_depth <- ggplot(dimensions.depth, aes(x=room_condition, y=Depth,  fill=room_condition)) +
+  geom_violin(trim=FALSE) +
+  geom_errorbar(data= dimensions.depth_sum, mapping = aes(y= mean , ymin=mean - se,
+          ymax=mean + se),
+          color = "#22292F",
+          width = .1) +
+    geom_signif(comparisons = list(c("No visual info",
+                                   "Visual info")),   
+              map_signif_level=TRUE,
+              tip_length = 0.0, 
+              size = 0.5,
+              y_position = 13,
+              extend_line = -0.4)+
+  geom_jitter(alpha = 0.1) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.450, # para fig compuesta
+           y = 15.5,
+           label = eqn1,
+           size = 2.35,
+           hjust = 0) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 1.4, 
+           y = 15.5,
+           label = eqn2,
+           size = 2.35,
+           hjust = 0) +
+    labs(
+    y = "Depth (m)",
+  )+
+  theme_minimal() +
+  guides(fill = "none") +
+  geom_hline(yintercept=12,linetype="dashed") +
+  scale_colour_manual(values =myViridis) +
+  scale_fill_manual(values = myViridis) +
+  annotate("text", x=0.5, y=10, label= "12 m", size=2.5) +
+  theme(
+    #axis.text.x = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(hjust = 0)) 
+```
+
+### Perceived width
+
+```{r perceived width}
+dimensions.width <- df.experiment_1_vdp %>%
+  filter(dimension == "Width") %>%
+  select(c("subject","room_condition", "value")) %>%
+  rename("Width" = "value")
+
+dimensions.width_sum <- dimensions.width %>%
+  group_by(room_condition) %>%
+  summarise(
+    mean = mean(Width),
+    median = median(Width),
+    sd = sd(Width),
+    se = sd / sqrt(n()),
+    n = n()
+  )
+
+eqn1 <- sprintf(
+  "M = %.3g \n ± %.2g",
+  dimensions.width_sum$mean[1],
+  dimensions.width_sum$se[1])
+
+eqn2 <- sprintf(
+  "M = %.3g \n ± %.2g",
+  dimensions.width_sum$mean[2],
+  dimensions.width_sum$se[2])
+
+```
+
+#### Model
+
+```{r statistics width}
+
+lm.width <- lm(Width ~ room_condition, 
+                    data = dimensions.width)
+
+tab_model(lm.width, file ="./stats/width/width-lm.html")
+
+```
+
+#### Model ANOVA
+
+```{r perceived width model anova}
+anova.width <- anova(lm.width)
+
+write.csv(anova.width, file="./stats/width/width-lm-anova.csv")
+knitr::kable(anova.width, "html")
+```
+
+#### Effect size
+
+```{r perceived width effect size}
+eta_sqrd.width = eta_squared(anova.width)
+
+write.csv(eta_sqrd.width, file="./stats/width/width-lm-effect-size.csv")
+
+knitr::kable(eta_sqrd.width, "html")
+```
+
+#### T test
+
+```{r percieved width t test}
+t_test.width <- t.test(Width~room_condition, data= dimensions.width)
+
+t_test.width <- tidy(t_test.width)
+
+write.csv(t_test.width, file="./stats/width/width-t-test.csv")
+
+knitr::kable(t_test.width, "html")
+
+```
+
+#### Make figure width
+
+```{r make figure with}
+# Use single color
+violin_width <- ggplot(dimensions.width, aes(x=room_condition, y=Width,  fill=room_condition)) +
+  geom_violin(trim=FALSE)+
+  geom_jitter(alpha = 0.1) +
+  geom_errorbar(data= dimensions.width_sum, mapping = aes(y= mean , ymin=mean - se,
+        ymax=mean + se),
+        color = "#22292F",
+        width = .1) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.50, # para fig compuesta
+           y = 10.0,
+           label = eqn1,
+           size = 2.35,
+           hjust = 0) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 1.40, # para fig compuesta
+           y = 10.0,
+           label = eqn2,
+           size = 2.35,
+           hjust = 0) +
+  theme_minimal() +
+  guides(fill = "none") +
+  scale_colour_manual(values =myViridis) +
+  scale_fill_manual(values = myViridis) +
+  geom_hline(yintercept=7,linetype="dashed")+
+  annotate("text", x=0.5, y=6, label= "7 m", size=2.5) +
+  labs(
+    y = "Width (m)",
+  ) +
+  theme(
+    axis.text.x=element_blank(),
+    axis.title.x = element_blank()) 
+```
+
+### Perceived height
+
+```{r perceived height}
+dimensions.height <- df.experiment_1_vdp %>%
+  filter(dimension == "Height") %>%
+  select(c("subject","room_condition", "value")) %>%
+  rename("Height" = "value")
+
+dimensions.height_sum <- dimensions.height %>%
+  group_by(room_condition) %>%
+  summarise(
+    mean = mean(Height),
+    median = median(Height),
+    sd = sd(Height),
+    se = sd / sqrt(n()),
+    n = n()
+  )
+
+eqn1 <- sprintf(
+  "M = %.3g \n ± %.2g",
+  dimensions.height_sum$mean[1],
+  dimensions.height_sum$se[1])
+
+eqn2 <- sprintf(
+  "M = %.3g \n ± %.2g",
+  dimensions.height_sum$mean[2],
+  dimensions.height_sum$se[2])
+
+```
+
+#### Model
+
+```{r statistics height}
+
+lm.height <- lm(Height ~ room_condition, 
+                    data = dimensions.height)
+
+tab_model(lm.height, file ="./stats/height/height-lm.html")
+
+```
+
+#### Model ANOVA
+
+```{r perceived height model anova}
+anova.height <- anova(lm.height)
+
+write.csv(anova.height, file="./stats/height/width-lm-anova.csv")
+knitr::kable(anova.height, "html")
+```
+
+#### Effect size
+
+```{r perceived height effect size}
+eta_sqrd.height = eta_squared(anova.height)
+
+write.csv(eta_sqrd.height, file="./stats/height/height-lm-effect-size.csv")
+
+knitr::kable(eta_sqrd.height, "html")
+```
+
+#### T test
+
+```{r percieved height t test}
+t_test.height <- t.test(Height~room_condition, data= dimensions.height)
+
+t_test.height <- tidy(t_test.height)
+
+write.csv(t_test.height, file="./stats/height/height-t-test.csv")
+
+knitr::kable(t_test.height, "html")
+
+```
+
+#### Make figure height
+
+```{r make figure height}
+violin_height <- ggplot(dimensions.height, aes(x=room_condition, y=Height,  fill=room_condition)) +
+  geom_violin(trim=FALSE)+
+  geom_errorbar(data= dimensions.height_sum, mapping = aes(y= mean , ymin=mean - se,
+      ymax=mean + se),
+      color = "#22292F",
+      width = .1) +
+  geom_jitter(alpha = 0.1) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.50, # para fig compuesta
+           y = 5.75,
+           label = eqn1,
+           size = 2.35,
+           hjust = 0) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 1.40, # para fig compuesta
+           y = 5.75,
+           label = eqn2,
+           size = 2.35,
+           hjust = 0) +
+  theme_minimal() +
+    scale_colour_manual(values =myViridis) +
+  scale_fill_manual(values = myViridis) +
+  guides(fill = "none") +
+  geom_hline(yintercept=3,linetype="dashed") +
+  annotate("text", x=0.5, y=2.5, label= "3 m", size=2.5) +
+  labs(
+    y = "Height (m)",
+  ) +
+  theme(
+    axis.title.x = element_blank()) 
+
+```
+
+### Perceived volume
+
+```{r propagate volume}
+#| message: false
+#| warning: false
+dimensions.aggr <- dimensions.depth_sum
+dimensions.aggr$type = "Depth"
+
+dimensions.width_sum$type = "Width"
+
+dimensions.height_sum$type = "Height"
+
+rbind(dimensions.aggr, dimensions.width_sum, dimensions.height_sum)
+dimensions.vol_aggr <- rbind(dimensions.aggr, dimensions.width_sum, dimensions.height_sum)
+
+dimensions.vol_aggr <- dimensions.vol_aggr %>%
+  mutate(rel_error = (sd/mean)^2) %>%
+  mutate(ses_error = (se/mean)^2)
+
+dimensions.volume <- dimensions.vol_aggr %>%
+  group_by(room_condition) %>%
+  summarise(
+    mean = prod(mean),
+    sd = mean * sqrt(sum(rel_error)),
+    se = mean * sqrt(sum(ses_error)),
+    n = sum(n)
+  )
+```
+
+```{r vol 2}
+#| message: false
+#| warning: false
+dimensions.volume
+
+eqn1 <- sprintf(
+  "M = %.3g ± %.4g",
+  dimensions.volume$mean[1],
+  dimensions.volume$se[1])
+
+eqn2 <- sprintf(
+  "M = %.3g ± %.4g",
+  dimensions.volume$mean[2],
+  dimensions.volume$se[2])
+
+
+sve_cve_t_test.volume <- tsum.test(mean.x=dimensions.volume$mean[1],
+          s.x= dimensions.volume$sd[1],
+          n.x=dimensions.volume$n[1],
+          mean.y=dimensions.volume$mean[2],
+          s.y= dimensions.volume$sd[2],
+          n.y=dimensions.volume$n[2],
+          )
+
+sve_cve_t_test_vol.tidy <- tidy(sve_cve_t_test.volume)
+
+write.csv(sve_cve_t_test_vol.tidy, file="stats/volume/volume-t-test.csv")
+
+knitr::kable(sve_cve_t_test_vol.tidy, "html")
+```
+
+```{r make figure}
+dim_barchart <- dimensions.volume %>%
+  ggplot(aes(room_condition, mean)) +
+  geom_col(aes(fill = room_condition), color ="black", width =0.85) +
+  geom_errorbar(aes(ymin=mean - se,
+                    ymax=mean + se),
+                color = "#22292F",
+                width = .1) +
+  scale_y_continuous(limits = c(0, 310), expand = c(0, 0)) +
+  geom_hline(yintercept=252,linetype="dashed") +
+  annotate("text", x=0.75, y=259, label= expression("252 m"^3*" ")) +
+  guides(fill = "none") +
+  theme_minimal() +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 0.25, # para fig compuesta
+           y = 290.0,
+           label = eqn1,
+           size = 3.25,
+           hjust = 0) +
+  annotate("text",                        # Add text for mean
+           #x = 1.5, # para fig sola
+           x = 1.250, # para fig compuesta
+           y = 280.0,
+           label = eqn2,
+           size = 3.25,
+           hjust = 0) +
+  scale_colour_manual(values =myViridis) +
+  scale_fill_manual(values = myViridis) +
+  #annotate("text", x = 1.5, y = 215,  label = "***", size = 3) +
+  #annotate("segment", x = 1.1, xend = 1.9, y = 210, yend = 210, colour = "black", size=.5, alpha=1,)+
+  #annotate("text", x = 2, y = 235,  label = "***", size = 3) +
+  #annotate("segment", x = 1.1, xend = 2.9, y = 230, yend = 230, colour = "black", size=.5, alpha=1,)+
+  labs(
+    y = expression("Perceived volume (m"^3*")"),
+  )+
+  theme(#axis.line = element_blank(),
+    axis.title.x = element_blank())
+```
+
+### Figure
+
+```{r print all }
+# figure <- ggarrange(violin_depth, violin_width,violin_height,
+#                     ncol = 3, labels = c("B", "C", "D"))
+
+figure <- ggarrange(dim_barchart, 
+                    ggarrange(violin_depth, violin_width,violin_height, widths = c(1.5,2),
+                              nrow = 3, labels = c("B", "C", "D")),
+                    ncol = 2, 
+                    labels ="A",
+                    heights = c(1, 0.75))
+#figure
+
+figures_folder = "./figures"
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "Exp_2_Perceived_room.png", sep = '')
+ggsave(mi_nombre_de_archivo, plot =figure, width = 1400, height=1000, dpi=200, units = "px")
+```
+
+```{r view figure}
+#| fig-height: 10
+#| fig-width: 10
+plot(figure)
+```
