@@ -15,68 +15,82 @@ tabla.exp_1 <- rbind(tabla.exp_1_a, tabla.exp_1_b, tabla.exp_1_c)
 
 # solo del bloque 1
 tabla.exp_1.cve_depth <- tabla.exp_1 %>%
-  filter(block_1 == "Sala Grande") %>%
   pivot_longer(cols = c( "SG_RV_depth"),
                names_to = "Measure",
                values_to = "Value") %>%
-  select("nsub", "block_1", "Measure", "Value") %>%
+  mutate(Block = case_when(
+    block_1 == "Sala Grande" ~ 1,
+    block_1 != "Sala Grande" ~ 2,
+  )) %>%
+  select("nsub", "Measure", "Value", "Block") %>%
+  mutate(Condition = "Sala Grande") %>%
   rename("Subject" = "nsub",
-         "Condition" = "block_1",
          "Dimension" = "Measure")
 
 tabla.exp_1.cve_width <- tabla.exp_1 %>%
-  filter(block_1 == "Sala Grande") %>%
   pivot_longer(cols = c("SG_RV_width"),
                names_to = "Measure",
                values_to = "Value") %>%
-  select("nsub", "block_1", "Measure", "Value") %>%
+  mutate(Block = case_when(
+    block_1 == "Sala Grande" ~ 1,
+    block_1 != "Sala Grande" ~ 2)) %>%
+  select("nsub", "Measure", "Value", "Block") %>%
+  mutate(Condition = "Sala Grande") %>%
   rename("Subject" = "nsub",
-         "Condition" = "block_1",
          "Dimension" = "Measure")
 
 tabla.exp_1.cve_height <- tabla.exp_1 %>%
-  filter(block_1 == "Sala Grande") %>%
   pivot_longer(cols = c("SG_RV_height"),
                names_to = "Measure",
                values_to = "Value") %>%
-  select("nsub", "block_1", "Measure", "Value") %>%
+  mutate(Block = case_when(
+    block_1 == "Sala Grande" ~ 1,
+    block_1 != "Sala Grande" ~ 2)) %>%
+  select("nsub", "Measure", "Value", "Block") %>%
+  mutate(Condition = "Sala Grande") %>%
   rename("Subject" = "nsub",
-         "Condition" = "block_1",
          "Dimension" = "Measure")
-
+  
 tabla.exp_1_cve.all <- rbind(tabla.exp_1.cve_depth, tabla.exp_1.cve_width, tabla.exp_1.cve_height)
 
 tabla.exp_1_cve.all <- tabla.exp_1_cve.all %>%
   arrange(Subject)
 
 tabla.exp_1.sve_depth <- tabla.exp_1 %>%
-  filter(block_1 == "Sala Chica") %>%
   pivot_longer(cols = c("SC_RV_depth"),
                names_to = "Measure",
                values_to = "Value") %>%
-  select("nsub", "block_1", "Measure", "Value") %>%
+  mutate(Block = case_when(
+    block_1 == "Sala Chica" ~ 1,
+    block_1 != "Sala Chica" ~ 2)) %>%
+  select("nsub", "Measure", "Value", "Block") %>%
+  mutate(Condition = "Sala Chica") %>%
   rename("Subject" = "nsub",
-         "Condition" = "block_1",
          "Dimension" = "Measure")
 
+
 tabla.exp_1.sve_width <- tabla.exp_1 %>%
-  filter(block_1 == "Sala Chica") %>%
   pivot_longer(cols = c("SC_RV_width"),
                names_to = "Measure",
                values_to = "Value") %>%
-  select("nsub", "block_1", "Measure", "Value") %>%
+  mutate(Block = case_when(
+    block_1 == "Sala Chica" ~ 1,
+    block_1 != "Sala Chica" ~ 2)) %>%
+  select("nsub", "Measure", "Value", "Block") %>%
+  mutate(Condition = "Sala Chica") %>%
   rename("Subject" = "nsub",
-         "Condition" = "block_1",
          "Dimension" = "Measure")
 
 tabla.exp_1.sve_height <- tabla.exp_1 %>%
-  filter(block_1 == "Sala Chica") %>%
   pivot_longer(cols = c("SC_RV_height"),
                names_to = "Measure",
                values_to = "Value") %>%
-  select("nsub", "block_1", "Measure", "Value") %>%
+  mutate(Block = case_when(
+    block_1 == "Sala Chica" ~ 1,
+    block_1 != "Sala Chica" ~ 2)) %>%
+  select("nsub", "Measure", "Value", "Block") %>%
+  mutate(Condition = "Sala Chica") %>%
   rename("Subject" = "nsub",
-         "Condition" = "block_1",
          "Dimension" = "Measure")
 
 tabla.exp_1_sve.all <- rbind(tabla.exp_1.sve_depth, tabla.exp_1.sve_width, tabla.exp_1.sve_height)
@@ -105,7 +119,7 @@ tabla.exp_1_vdp <- tabla.exp_1_vdp %>%
       Dimension == "SC_RV_width" ~ "Width",
       Dimension == "SC_RV_height" ~ "Height",
     ))  %>%
-  select(c("Subject","Condition", "Dimension", "Value")) %>%
+  select(c("Subject","Condition", "Dimension", "Value", "Block")) %>%
   group_by(Condition) %>%
   arrange(c("Subject")) %>%
   mutate(
@@ -121,19 +135,31 @@ tabla.exp_2.depth <- tabla.exp_2 %>%
   pivot_longer(cols = c("No_Visual_depth", "Visual_depth"),
                names_to = "Measure",
                values_to = "Value") %>%
-  select(c("Subject", "Measure", "Value"))
+  select(c("Subject", "Measure", "Value")) %>%
+  mutate(Block = case_when(
+    Measure == "No_Visual_depth" ~ 1,
+    Measure == "Visual_depth" ~ 2
+  ))
 
 tabla.exp_2.width <- tabla.exp_2 %>%
   pivot_longer(cols = c("No_Visual_width", "Visual_width"),
                names_to = "Measure",
                values_to = "Value")  %>%
-  select(c("Subject", "Measure", "Value"))
+  select(c("Subject", "Measure", "Value")) %>%
+  mutate(Block = case_when(
+    Measure == "No_Visual_width" ~ 1,
+    Measure == "Visual_width" ~ 2
+  ))
 
 tabla.exp_2.height <- tabla.exp_2 %>%
   pivot_longer(cols = c("No_Visual_height", "Visual_height"),
                names_to = "Measure",
                values_to = "Value")  %>%
-  select(c("Subject", "Measure", "Value"))
+  select(c("Subject", "Measure", "Value")) %>%
+  mutate(Block = case_when(
+    Measure == "No_Visual_height" ~ 1,
+    Measure == "Visual_height" ~ 2
+  ))
 
 tabla.exp_2.all <- rbind(tabla.exp_2.depth, tabla.exp_2.width, tabla.exp_2.height)
 
@@ -156,7 +182,7 @@ tabla.exp_2.all <- tabla.exp_2.all %>%
       Measure == "Visual_width" ~ "Width",
       Measure == "Visual_height" ~ "Height",
   ))  %>%
-  select(c("Subject","Condition", "Dimension", "Value")) %>%
+  select(c("Subject","Condition", "Dimension", "Value", "Block")) %>%
   group_by(Condition) %>%
   arrange(c("Subject")) %>%
   mutate( Experiment = 2)
@@ -169,19 +195,31 @@ tabla.exp_3.depth <- tabla.exp_3 %>%
   pivot_longer(cols = c("No_visual_info_depth", "VE_depth"),
                names_to = "Measure",
                values_to = "Value") %>%
-  select(c("Subject", "Measure", "Value"))
+  select(c("Subject", "Measure", "Value"))  %>%
+  mutate(Block = case_when(
+    Measure == "No_visual_info_depth" ~ 1,
+    Measure == "VE_depth" ~ 2
+  ))
 
 tabla.exp_3.width <- tabla.exp_3 %>%
   pivot_longer(cols = c("No_visual_info_width", "VE_width"),
                names_to = "Measure",
                values_to = "Value")  %>%
-  select(c("Subject", "Measure", "Value"))
+  select(c("Subject", "Measure", "Value")) %>%
+  mutate(Block = case_when(
+    Measure == "No_visual_info_width" ~ 1,
+    Measure == "VE_width" ~ 2
+  ))
 
 tabla.exp_3.height <- tabla.exp_3 %>%
   pivot_longer(cols = c("No_visual_info_height", "VE_height"),
                names_to = "Measure",
                values_to = "Value")  %>%
-  select(c("Subject", "Measure", "Value"))
+  select(c("Subject", "Measure", "Value")) %>%
+  mutate(Block = case_when(
+    Measure == "No_visual_info_height" ~ 1,
+    Measure == "VE_height" ~ 2
+  ))
 
 tabla.exp_3.all <- rbind(tabla.exp_3.depth, tabla.exp_3.width, tabla.exp_3.height)
 
@@ -204,7 +242,7 @@ tabla.exp_3.all <- tabla.exp_3.all %>%
       Measure == "VE_width" ~ "Width",
       Measure == "VE_height" ~ "Height",
     ))  %>%
-  select(c("Subject","Condition", "Dimension", "Value")) %>%
+  select(c("Subject","Condition", "Dimension", "Value", "Block")) %>%
   group_by(Condition) %>%
   arrange(c("Subject")) %>%
   mutate( Experiment = 3)
@@ -218,19 +256,32 @@ tabla.exp_4.depth <- tabla.exp_4 %>%
   pivot_longer(cols = c("No_visual_info_depth", "Virtual_environment_depth"),
                names_to = "Measure",
                values_to = "Value") %>%
-  select(c("Subject", "Measure", "Value"))
+  select(c("Subject", "Measure", "Value")) %>%
+  mutate(Block = case_when(
+    Measure == "No_visual_info_depth" ~ 1,
+    Measure == "Virtual_environment_depth" ~ 2
+  ))
 
 tabla.exp_4.width <- tabla.exp_4 %>%
   pivot_longer(cols = c("No_visual_info_width", "Virtual_environment_width"),
                names_to = "Measure",
                values_to = "Value")  %>%
-  select(c("Subject", "Measure", "Value"))
+  select(c("Subject", "Measure", "Value"))  %>%
+  mutate(Block = case_when(
+    Measure == "No_visual_info_width" ~ 1,
+    Measure == "Virtual_environment_width" ~ 2
+  ))
 
 tabla.exp_4.height <- tabla.exp_4 %>%
   pivot_longer(cols = c("No_visual_info_height", "Virtual_environment_height"),
                names_to = "Measure",
                values_to = "Value")  %>%
-  select(c("Subject", "Measure", "Value"))
+  select(c("Subject", "Measure", "Value")) %>%
+  mutate(Block = case_when(
+    Measure == "No_visual_info_height" ~ 1,
+    Measure == "Virtual_environment_height" ~ 2
+  ))
+
 
 tabla.exp_4.all <- rbind(tabla.exp_4.depth, tabla.exp_4.width, tabla.exp_4.height)
 
@@ -253,7 +304,7 @@ tabla.exp_4.all <- tabla.exp_4.all %>%
       Measure == "Virtual_environment_width" ~ "Width",
       Measure == "Virtual_environment_height" ~ "Height",
     ))  %>%
-  select(c("Subject","Condition", "Dimension", "Value")) %>%
+  select(c("Subject","Condition", "Dimension", "Value", "Block")) %>%
   group_by(Condition) %>%
   arrange(c("Subject")) %>%
   mutate( Experiment = 4)
@@ -279,7 +330,8 @@ df_vdp <- df_vdp %>%
     "room_condition" = "Condition",
     "dimension" = "Dimension",
     "value" = "Value",
-    "experiment" = "Experiment"
+    "experiment" = "Experiment",
+    "block" = "Block"
   )
 # save all ---------------------------------------------------------------
 
