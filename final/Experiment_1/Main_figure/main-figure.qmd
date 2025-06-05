@@ -1,0 +1,273 @@
+---
+title: "Main figure"
+author: "Cervino et al"
+format: html
+editor: visual
+---
+
+## Main figure of experiment 1
+
+Figure showcases
+
+-   ADP model
+-   Logarithmic signed bias
+-   Perceived depth
+
+```{r dependencies}
+#| include: false
+library(tidyverse)
+library(lme4)
+library(nlme)
+library(sjPlot)
+library(MuMIn)
+library(lmerTest)
+library(jtools)
+library(gdtools)
+library(broom)
+library(ggstatsplot)
+library(modelsummary)
+library(ggpubr)
+library(effects)
+library(dplyr)
+library(tidyr)
+library(rstatix) # stat.test
+library(ggplot2)
+
+```
+
+```{r load data ADP}
+#| message: false
+#| warning: false
+results_tbl <- read.csv(
+  "../../data/ADP.csv", 
+  header = TRUE, sep = ',',
+  stringsAsFactors = TRUE) %>%
+  filter(experiment == 1)
+```
+
+```{r make ADP figure}
+#| message: false
+#| warning: false
+
+myViridis <- viridisLite::viridis(alpha=1, n= 3)
+
+m.Dist1 <-  lmer(log10(perc_dist) ~ log10(target_distance)*room_condition +
+                   (1+log10(target_distance)|subject)+
+                   (0+room_condition|subject),
+                 data = results_tbl) 
+
+mDist1stats <- extract_stats(ggcoefstats(m.Dist1))
+
+#anov1 = anova(m.Dist1)
+
+results_tbl$Modelfitted1<-predict(m.Dist1)
+
+Final.Fixed<-effect(c("log10(target_distance)*room_condition"), m.Dist1)
+
+Final.Fixed<-as.data.frame(Final.Fixed)
+
+eq1 <- substitute("Congruent VE:" ~~~ italic(y) == k %.% italic(X)^italic(a),
+                  list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
+                       a = round(mDist1stats$tidy_data$estimate[[2]], digits = 2)))
+
+eq2 <- substitute("Small VE:"~~~italic(y) == k %.% italic(X)^italic(a),
+                  list(k=round(10^(mDist1stats$tidy_data$estimate[[1]]+
+                                   mDist1stats$tidy_data$estimate[[3]]), 
+                               digits = 2),
+                       a= round(mDist1stats$tidy_data$estimate[[2]]+
+                                  mDist1stats$tidy_data$estimate[[4]], 
+                                digits = 2)))
+
+results_tbl <- results_tbl %>%
+  mutate(
+    perc_dist_log_10 = log10(perc_dist)
+  )
+
+tabla.pob <- results_tbl %>% group_by(target_distance,room_condition) %>%
+  summarise(Mperc_dist  = mean(perc_dist_log_10),
+            SDperc_dist = sd(perc_dist_log_10)/sqrt(n()))  %>%
+  ungroup()
+
+fig.adp <- ggplot(tabla.pob, aes(x=target_distance, 
+                            y =10^Mperc_dist, 
+                            group = room_condition, 
+                            color  = room_condition)) +
+  geom_pointrange(aes(x = target_distance, 
+                      y = 10^Mperc_dist, 
+                      ymin = 10^(Mperc_dist-SDperc_dist), 
+                      ymax = 10^(Mperc_dist+SDperc_dist)),
+                  alpha = 1,
+                  position = position_jitterdodge(jitter.width = .1,
+                                                  jitter.height = 0,
+                                                  dodge.width = .1 ))+
+  geom_abline(intercept = 0, slope = 1, linetype=2) +
+  scale_colour_manual(values = c(myViridis[1], myViridis[2])) +
+  scale_fill_manual(values = c(myViridis[1], myViridis[2])) +
+  geom_line(data = Final.Fixed, aes(
+    x = target_distance, 
+    y =10^fit, 
+    group=room_condition, 
+    color=room_condition))+
+  geom_label(x = -0.1, y = 4.75, 
+             label = as.character(as.expression(eq1)), 
+             hjust = 0, 
+             nudge_x =0, 
+             parse = TRUE, 
+             size = 4, 
+             color = myViridis[2])+
+  geom_label(x = -0.1, 
+             y = 3.8, 
+             label = as.character(as.expression(eq2)), 
+             hjust = 0, 
+             nudge_x =0,
+             parse = TRUE, 
+             size = 4, 
+             color = myViridis[1])+
+  scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
+  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,5)) +
+  scale_color_manual(labels = c("Congruent VE", "Small VE"), 
+                     values =c(myViridis[2], myViridis[1]))+
+  theme_minimal() +
+  theme(legend.position = "top",
+        legend.title = element_blank(),
+        size = 10
+        ) 
+```
+
+```{r logarithmic signed bias}
+#| message: false
+#| warning: false
+
+m.logSignedBias <-  lmer(log_bias_m ~target_distance*room_condition+
+                           (1+target_distance|subject)+
+                           (0+room_condition|subject),
+                         data = results_tbl)
+
+Final.FixedlogSB <-effect(c("target_distance*room_condition"), m.logSignedBias)
+
+Final.FixedlogSB<-as.data.frame(Final.FixedlogSB)
+
+tabla.pob_logSB <- results_tbl %>% group_by(target_distance,room_condition) %>%
+  summarise(MlogSB  = mean(log_bias_m),
+            SDlogSB = sd(log_bias_m)/sqrt(n()))  %>%
+  ungroup()
+
+fig.logBias <- ggplot(tabla.pob_logSB, aes(x=target_distance, 
+                                  y =(10^MlogSB-1)*100,
+                                  group = room_condition, 
+                                  color  = room_condition)) +
+  geom_pointrange(aes(x = target_distance, 
+                      y =(10^MlogSB-1)*100, 
+                      ymin = (10^(MlogSB-SDlogSB)-1)*100, 
+                      ymax = (10^(MlogSB+SDlogSB)-1)*100),
+                  alpha = 1,
+                  position = position_jitterdodge(jitter.width = .1,
+                                                  jitter.height = 0,
+                                                  dodge.width = .1 ))+
+  geom_line(data = Final.FixedlogSB, aes(x = target_distance, 
+                                         y =(10^fit-1)*100, 
+                                         group=room_condition, 
+                                         color=room_condition))+
+  scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
+  scale_y_continuous(name="Mean log signed bias (%)",   limits = c(-100,0)) +
+  scale_colour_manual(values = c(myViridis[2], myViridis[1])) + 
+  scale_fill_manual(values = c(myViridis[2], myViridis[1])) + 
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 11, hjust = 0.0),
+        plot.margin = unit(c(.75,0.25,.75,0.0), "cm"))
+
+```
+
+```{r violin depth plot}
+
+dimensions.depth <- read.csv("../../data/VDP.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE) %>%
+  filter(experiment == 1 & dimension == "Depth") %>%
+  select(-c("dimension", "block", "experiment"))
+
+dimensions.depth <- dimensions.depth %>%
+  rename("Depth" = "value",
+         "Condition" = "room_condition")
+
+dimensions.depth$Condition = factor(dimensions.depth$Condition, 
+                                    levels=c("Small VE", 
+                                             "Congruent VE"))
+
+dimensions.depth_sum <- dimensions.depth %>%
+  group_by(Condition) %>%
+  summarise(
+    mean = mean(Depth),
+    median = median(Depth),
+    sd = sd(Depth),
+    se = sd / sqrt(n()),
+    n = n()
+  )
+
+eqn1 <- sprintf(
+  "M = %.3g \n ± %.2g",
+  dimensions.depth_sum$mean[1],
+  dimensions.depth_sum$se[1])
+
+eqn2 <- sprintf(
+  "M = %.3g \n ± %.2g",
+  dimensions.depth_sum$mean[2],
+  dimensions.depth_sum$se[2])
+
+myViridis <- viridisLite::viridis(alpha=0.5, n= 3)
+
+violin_depth <- ggplot(dimensions.depth, aes(x=Condition, y=Depth,  fill=Condition)) +
+  geom_violin(trim=FALSE) +
+  geom_point(data= dimensions.depth_sum, mapping = aes(y=mean))+
+  geom_errorbar(data= dimensions.depth_sum, mapping = aes(y= mean, 
+                                                          ymin=mean - se,
+                                                          ymax=mean + se),
+                color = "#22292F",
+                width = .25) +
+  annotate("text", x = 1.5, y = 18.5,  label = "**", size = 3) +
+  annotate("segment", x = 1.1, xend = 1.9, y = 18, yend = 18, colour = "black", size=.5, alpha=1,)+
+  labs(
+    y = "Mean perceived depth \n± SEM (m)",
+  )+
+  theme_minimal() +
+  guides(fill = "none") +
+  geom_hline(yintercept=12,linetype="dashed") +
+  annotate("text", x=1.5, y=13, label= "12 m", size=3.5) +
+  scale_colour_manual(values =myViridis) +
+  scale_fill_manual(values = myViridis) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 11, hjust = 0.0),
+    plot.margin = unit(c(.75,0.25,.75,0.0), "cm")# top right botom left
+    ) 
+
+```
+
+```{r make main figure}
+#| include: false
+main_figure <- ggarrange(
+                         fig.adp,
+                         ggarrange(
+                           fig.logBias,
+                           violin_depth,
+                           nrow = 2, 
+                           labels =c("B","C"),
+                           heights = c(.5,.5)),
+                         ncol = 2, 
+                         labels ="A",
+                         widths = c(1.25, .75),
+                         common.legend = TRUE)
+
+figures_folder = "./figure/"
+mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "main", ".png", sep = '')
+
+png(mi_nombre_de_archivo, res=600, units="cm", width=20, height=15)
+plot(main_figure)
+dev.off()
+```
+
+```{r show figure}
+#| message: false
+#| warning: false
+plot(main_figure)
+```
