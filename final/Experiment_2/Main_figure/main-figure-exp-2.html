@@ -58,16 +58,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="main-figure_files/libs/clipboard/clipboard.min.js"></script>
-<script src="main-figure_files/libs/quarto-html/quarto.js"></script>
-<script src="main-figure_files/libs/quarto-html/popper.min.js"></script>
-<script src="main-figure_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="main-figure_files/libs/quarto-html/anchor.min.js"></script>
-<link href="main-figure_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="main-figure_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="main-figure_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="main-figure_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="main-figure_files/libs/bootstrap/bootstrap-42529af947ee8cff5c1210c215262130.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="main-figure-exp-2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="main-figure-exp-2_files/libs/quarto-html/quarto.js"></script>
+<script src="main-figure-exp-2_files/libs/quarto-html/popper.min.js"></script>
+<script src="main-figure-exp-2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="main-figure-exp-2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="main-figure-exp-2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="main-figure-exp-2_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="main-figure-exp-2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="main-figure-exp-2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="main-figure-exp-2_files/libs/bootstrap/bootstrap-42529af947ee8cff5c1210c215262130.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -103,8 +103,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="main-figure-of-experiment-1" class="level2">
-<h2 class="anchored" data-anchor-id="main-figure-of-experiment-1">Main figure of experiment 1</h2>
+<section id="main-figure-of-experiment-2" class="level2">
+<h2 class="anchored" data-anchor-id="main-figure-of-experiment-2">Main figure of experiment 2</h2>
 <p>Figure showcases</p>
 <ul>
 <li>ADP model</li>
@@ -116,7 +116,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"../../data/ADP.csv"</span>, </span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">','</span>,</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(experiment <span class="sc">==</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(experiment <span class="sc">==</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>myViridis <span class="ot">&lt;-</span> viridisLite<span class="sc">::</span><span class="fu">viridis</span>(<span class="at">alpha=</span><span class="dv">1</span>, <span class="at">n=</span> <span class="dv">3</span>)</span>
@@ -136,11 +136,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>Final.Fixed<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(Final.Fixed)</span>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>eq1 <span class="ot">&lt;-</span> <span class="fu">substitute</span>(<span class="st">"Congruent VE:"</span> <span class="sc">~</span><span class="er">~~</span> <span class="fu">italic</span>(y) <span class="sc">==</span> k <span class="sc">%.%</span> <span class="fu">italic</span>(X)<span class="sc">^</span><span class="fu">italic</span>(a),</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>eq1 <span class="ot">&lt;-</span> <span class="fu">substitute</span>(<span class="st">"No visual info:"</span> <span class="sc">~</span><span class="er">~~</span> <span class="fu">italic</span>(y) <span class="sc">==</span> k <span class="sc">%.%</span> <span class="fu">italic</span>(X)<span class="sc">^</span><span class="fu">italic</span>(a),</span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">list</span>(<span class="at">k =</span> <span class="fu">round</span>(<span class="dv">10</span><span class="sc">^</span>mDist1stats<span class="sc">$</span>tidy_data<span class="sc">$</span>estimate[[<span class="dv">1</span>]],<span class="at">digits =</span> <span class="dv">2</span>),</span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                       <span class="at">a =</span> <span class="fu">round</span>(mDist1stats<span class="sc">$</span>tidy_data<span class="sc">$</span>estimate[[<span class="dv">2</span>]], <span class="at">digits =</span> <span class="dv">2</span>)))</span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>eq2 <span class="ot">&lt;-</span> <span class="fu">substitute</span>(<span class="st">"Small VE:"</span><span class="sc">~</span><span class="er">~~</span><span class="fu">italic</span>(y) <span class="sc">==</span> k <span class="sc">%.%</span> <span class="fu">italic</span>(X)<span class="sc">^</span><span class="fu">italic</span>(a),</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>eq2 <span class="ot">&lt;-</span> <span class="fu">substitute</span>(<span class="st">"Visual info:"</span><span class="sc">~</span><span class="er">~~</span><span class="fu">italic</span>(y) <span class="sc">==</span> k <span class="sc">%.%</span> <span class="fu">italic</span>(X)<span class="sc">^</span><span class="fu">italic</span>(a),</span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">list</span>(<span class="at">k=</span><span class="fu">round</span>(<span class="dv">10</span><span class="sc">^</span>(mDist1stats<span class="sc">$</span>tidy_data<span class="sc">$</span>estimate[[<span class="dv">1</span>]]<span class="sc">+</span></span>
 <span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>                                   mDist1stats<span class="sc">$</span>tidy_data<span class="sc">$</span>estimate[[<span class="dv">3</span>]]), </span>
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>                               <span class="at">digits =</span> <span class="dv">2</span>),</span>
@@ -178,7 +178,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span><span class="dv">10</span><span class="sc">^</span>fit, </span>
 <span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">group=</span>room_condition, </span>
 <span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>room_condition))<span class="sc">+</span></span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="at">x =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">y =</span> <span class="fl">4.75</span>, </span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="at">x =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">y =</span> <span class="fl">6.5</span>, </span>
 <span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>             <span class="at">label =</span> <span class="fu">as.character</span>(<span class="fu">as.expression</span>(eq1)), </span>
 <span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>             <span class="at">hjust =</span> <span class="dv">0</span>, </span>
 <span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>             <span class="at">nudge_x =</span><span class="dv">0</span>, </span>
@@ -186,7 +186,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">4</span>, </span>
 <span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> myViridis[<span class="dv">2</span>])<span class="sc">+</span></span>
 <span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="at">x =</span> <span class="sc">-</span><span class="fl">0.1</span>, </span>
-<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>             <span class="at">y =</span> <span class="fl">4.25</span>, </span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>             <span class="at">y =</span> <span class="fl">5.75</span>, </span>
 <span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>             <span class="at">label =</span> <span class="fu">as.character</span>(<span class="fu">as.expression</span>(eq2)), </span>
 <span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>             <span class="at">hjust =</span> <span class="dv">0</span>, </span>
 <span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>             <span class="at">nudge_x =</span><span class="dv">0</span>,</span>
@@ -194,8 +194,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">4</span>, </span>
 <span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> myViridis[<span class="dv">1</span>])<span class="sc">+</span></span>
 <span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">name=</span><span class="st">"Distance source (m)"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>)) <span class="sc">+</span></span>
-<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">name=</span><span class="st">"Perceived distance (m)"</span>,   <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Congruent VE"</span>, <span class="st">"Small VE"</span>), </span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">name=</span><span class="st">"Perceived distance (m)"</span>,   <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">7</span>)) <span class="sc">+</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No visual info"</span>, <span class="st">"Visual info"</span>), </span>
 <span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values =</span><span class="fu">c</span>(myViridis[<span class="dv">2</span>], myViridis[<span class="dv">1</span>]))<span class="sc">+</span></span>
 <span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>,</span>
@@ -246,7 +246,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dimensions.depth <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../../data/VDP.csv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">','</span>, <span class="at">stringsAsFactors =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(experiment <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> dimension <span class="sc">==</span> <span class="st">"Depth"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(experiment <span class="sc">==</span> <span class="dv">2</span> <span class="sc">&amp;</span> dimension <span class="sc">==</span> <span class="st">"Depth"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(<span class="st">"dimension"</span>, <span class="st">"block"</span>, <span class="st">"experiment"</span>))</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>dimensions.depth <span class="ot">&lt;-</span> dimensions.depth <span class="sc">%&gt;%</span></span>
@@ -254,8 +254,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>         <span class="st">"Condition"</span> <span class="ot">=</span> <span class="st">"room_condition"</span>)</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>dimensions.depth<span class="sc">$</span>Condition <span class="ot">=</span> <span class="fu">factor</span>(dimensions.depth<span class="sc">$</span>Condition, </span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"Congruent VE"</span>, </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">"Small VE"</span>))</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"No visual info"</span>, </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">"Visual info"</span>))</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>dimensions.depth_sum <span class="ot">&lt;-</span> dimensions.depth <span class="sc">%&gt;%</span></span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Condition) <span class="sc">%&gt;%</span></span>
@@ -313,7 +313,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="main-figure_files/figure-html/show%20figure-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="main-figure-exp-2_files/figure-html/show%20figure-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>

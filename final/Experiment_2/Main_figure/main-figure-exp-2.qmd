@@ -5,7 +5,7 @@ format: html
 editor: visual
 ---
 
-## Main figure of experiment 1
+## Main figure of experiment 2
 
 Figure showcases
 
@@ -42,7 +42,7 @@ results_tbl <- read.csv(
   "../../data/ADP.csv", 
   header = TRUE, sep = ',',
   stringsAsFactors = TRUE) %>%
-  filter(experiment == 1)
+  filter(experiment == 2)
 ```
 
 ```{r make ADP figure}
@@ -66,11 +66,11 @@ Final.Fixed<-effect(c("log10(target_distance)*room_condition"), m.Dist1)
 
 Final.Fixed<-as.data.frame(Final.Fixed)
 
-eq1 <- substitute("Congruent VE:" ~~~ italic(y) == k %.% italic(X)^italic(a),
+eq1 <- substitute("No visual info:" ~~~ italic(y) == k %.% italic(X)^italic(a),
                   list(k = round(10^mDist1stats$tidy_data$estimate[[1]],digits = 2),
                        a = round(mDist1stats$tidy_data$estimate[[2]], digits = 2)))
 
-eq2 <- substitute("Small VE:"~~~italic(y) == k %.% italic(X)^italic(a),
+eq2 <- substitute("Visual info:"~~~italic(y) == k %.% italic(X)^italic(a),
                   list(k=round(10^(mDist1stats$tidy_data$estimate[[1]]+
                                    mDist1stats$tidy_data$estimate[[3]]), 
                                digits = 2),
@@ -108,7 +108,7 @@ fig.adp <- ggplot(tabla.pob, aes(x=target_distance,
     y =10^fit, 
     group=room_condition, 
     color=room_condition))+
-  geom_label(x = -0.1, y = 4.75, 
+  geom_label(x = -0.1, y = 6.5, 
              label = as.character(as.expression(eq1)), 
              hjust = 0, 
              nudge_x =0, 
@@ -116,7 +116,7 @@ fig.adp <- ggplot(tabla.pob, aes(x=target_distance,
              size = 4, 
              color = myViridis[2])+
   geom_label(x = -0.1, 
-             y = 4.25, 
+             y = 5.75, 
              label = as.character(as.expression(eq2)), 
              hjust = 0, 
              nudge_x =0,
@@ -124,8 +124,8 @@ fig.adp <- ggplot(tabla.pob, aes(x=target_distance,
              size = 4, 
              color = myViridis[1])+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
-  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,5)) +
-  scale_color_manual(labels = c("Congruent VE", "Small VE"), 
+  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,7)) +
+  scale_color_manual(labels = c("No visual info", "Visual info"), 
                      values =c(myViridis[2], myViridis[1]))+
   theme_minimal() +
   theme(legend.position = "top",
@@ -183,7 +183,7 @@ fig.logBias <- ggplot(tabla.pob_logSB, aes(x=target_distance,
 ```{r violin depth plot}
 
 dimensions.depth <- read.csv("../../data/VDP.csv", header = TRUE, sep = ',', stringsAsFactors = TRUE) %>%
-  filter(experiment == 1 & dimension == "Depth") %>%
+  filter(experiment == 2 & dimension == "Depth") %>%
   select(-c("dimension", "block", "experiment"))
 
 dimensions.depth <- dimensions.depth %>%
@@ -191,8 +191,8 @@ dimensions.depth <- dimensions.depth %>%
          "Condition" = "room_condition")
 
 dimensions.depth$Condition = factor(dimensions.depth$Condition, 
-                                    levels=c("Congruent VE", 
-                                             "Small VE"))
+                                    levels=c("No visual info", 
+                                             "Visual info"))
 
 dimensions.depth_sum <- dimensions.depth %>%
   group_by(Condition) %>%
@@ -258,7 +258,7 @@ main_figure <- ggarrange(
                          widths = c(1.25, .75),
                          common.legend = TRUE)
 
-figures_folder = "./figure/"
+figures_folder = "./figure"
 mi_nombre_de_archivo = paste(figures_folder, .Platform$file.sep, "main", ".png", sep = '')
 
 png(mi_nombre_de_archivo, res=600, units="cm", width=20, height=15)

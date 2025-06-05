@@ -58,16 +58,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="main-figure_files/libs/clipboard/clipboard.min.js"></script>
-<script src="main-figure_files/libs/quarto-html/quarto.js"></script>
-<script src="main-figure_files/libs/quarto-html/popper.min.js"></script>
-<script src="main-figure_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="main-figure_files/libs/quarto-html/anchor.min.js"></script>
-<link href="main-figure_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="main-figure_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="main-figure_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="main-figure_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="main-figure_files/libs/bootstrap/bootstrap-42529af947ee8cff5c1210c215262130.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="main-figure-exp-3_files/libs/clipboard/clipboard.min.js"></script>
+<script src="main-figure-exp-3_files/libs/quarto-html/quarto.js"></script>
+<script src="main-figure-exp-3_files/libs/quarto-html/popper.min.js"></script>
+<script src="main-figure-exp-3_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="main-figure-exp-3_files/libs/quarto-html/anchor.min.js"></script>
+<link href="main-figure-exp-3_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="main-figure-exp-3_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="main-figure-exp-3_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="main-figure-exp-3_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="main-figure-exp-3_files/libs/bootstrap/bootstrap-42529af947ee8cff5c1210c215262130.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -103,8 +103,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="main-figure-of-experiment-1" class="level2">
-<h2 class="anchored" data-anchor-id="main-figure-of-experiment-1">Main figure of experiment 1</h2>
+<section id="main-figure-of-experiment-3" class="level2">
+<h2 class="anchored" data-anchor-id="main-figure-of-experiment-3">Main figure of experiment 3</h2>
 <p>Figure showcases</p>
 <ul>
 <li>ADP model</li>
@@ -116,7 +116,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"../../data/ADP.csv"</span>, </span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">','</span>,</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(experiment <span class="sc">==</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(experiment <span class="sc">==</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>myViridis <span class="ot">&lt;-</span> viridisLite<span class="sc">::</span><span class="fu">viridis</span>(<span class="at">alpha=</span><span class="dv">1</span>, <span class="at">n=</span> <span class="dv">3</span>)</span>
@@ -136,11 +136,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>Final.Fixed<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(Final.Fixed)</span>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>eq1 <span class="ot">&lt;-</span> <span class="fu">substitute</span>(<span class="st">"Congruent VE:"</span> <span class="sc">~</span><span class="er">~~</span> <span class="fu">italic</span>(y) <span class="sc">==</span> k <span class="sc">%.%</span> <span class="fu">italic</span>(X)<span class="sc">^</span><span class="fu">italic</span>(a),</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>eq1 <span class="ot">&lt;-</span> <span class="fu">substitute</span>(<span class="st">"No visual info:"</span> <span class="sc">~</span><span class="er">~~</span> <span class="fu">italic</span>(y) <span class="sc">==</span> k <span class="sc">%.%</span> <span class="fu">italic</span>(X)<span class="sc">^</span><span class="fu">italic</span>(a),</span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">list</span>(<span class="at">k =</span> <span class="fu">round</span>(<span class="dv">10</span><span class="sc">^</span>mDist1stats<span class="sc">$</span>tidy_data<span class="sc">$</span>estimate[[<span class="dv">1</span>]],<span class="at">digits =</span> <span class="dv">2</span>),</span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                       <span class="at">a =</span> <span class="fu">round</span>(mDist1stats<span class="sc">$</span>tidy_data<span class="sc">$</span>estimate[[<span class="dv">2</span>]], <span class="at">digits =</span> <span class="dv">2</span>)))</span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>eq2 <span class="ot">&lt;-</span> <span class="fu">substitute</span>(<span class="st">"Small VE:"</span><span class="sc">~</span><span class="er">~~</span><span class="fu">italic</span>(y) <span class="sc">==</span> k <span class="sc">%.%</span> <span class="fu">italic</span>(X)<span class="sc">^</span><span class="fu">italic</span>(a),</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>eq2 <span class="ot">&lt;-</span> <span class="fu">substitute</span>(<span class="st">"Congruent VE:"</span><span class="sc">~</span><span class="er">~~</span><span class="fu">italic</span>(y) <span class="sc">==</span> k <span class="sc">%.%</span> <span class="fu">italic</span>(X)<span class="sc">^</span><span class="fu">italic</span>(a),</span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">list</span>(<span class="at">k=</span><span class="fu">round</span>(<span class="dv">10</span><span class="sc">^</span>(mDist1stats<span class="sc">$</span>tidy_data<span class="sc">$</span>estimate[[<span class="dv">1</span>]]<span class="sc">+</span></span>
 <span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>                                   mDist1stats<span class="sc">$</span>tidy_data<span class="sc">$</span>estimate[[<span class="dv">3</span>]]), </span>
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>                               <span class="at">digits =</span> <span class="dv">2</span>),</span>
@@ -195,7 +195,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> myViridis[<span class="dv">1</span>])<span class="sc">+</span></span>
 <span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">name=</span><span class="st">"Distance source (m)"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>)) <span class="sc">+</span></span>
 <span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">name=</span><span class="st">"Perceived distance (m)"</span>,   <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Congruent VE"</span>, <span class="st">"Small VE"</span>), </span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No visual info"</span>, <span class="st">"Congruent VE"</span>), </span>
 <span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values =</span><span class="fu">c</span>(myViridis[<span class="dv">2</span>], myViridis[<span class="dv">1</span>]))<span class="sc">+</span></span>
 <span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>,</span>
@@ -246,7 +246,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dimensions.depth <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../../data/VDP.csv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">','</span>, <span class="at">stringsAsFactors =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(experiment <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> dimension <span class="sc">==</span> <span class="st">"Depth"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(experiment <span class="sc">==</span> <span class="dv">3</span> <span class="sc">&amp;</span> dimension <span class="sc">==</span> <span class="st">"Depth"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(<span class="st">"dimension"</span>, <span class="st">"block"</span>, <span class="st">"experiment"</span>))</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>dimensions.depth <span class="ot">&lt;-</span> dimensions.depth <span class="sc">%&gt;%</span></span>
@@ -254,8 +254,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>         <span class="st">"Condition"</span> <span class="ot">=</span> <span class="st">"room_condition"</span>)</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>dimensions.depth<span class="sc">$</span>Condition <span class="ot">=</span> <span class="fu">factor</span>(dimensions.depth<span class="sc">$</span>Condition, </span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"Congruent VE"</span>, </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">"Small VE"</span>))</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"No visual info"</span>, </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">"Congruent VE"</span>))</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>dimensions.depth_sum <span class="ot">&lt;-</span> dimensions.depth <span class="sc">%&gt;%</span></span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Condition) <span class="sc">%&gt;%</span></span>
@@ -287,33 +287,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>                                                          <span class="at">ymax=</span>mean <span class="sc">+</span> se),</span>
 <span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>                <span class="at">color =</span> <span class="st">"#22292F"</span>,</span>
 <span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> .<span class="dv">25</span>) <span class="sc">+</span></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fl">1.5</span>, <span class="at">y =</span> <span class="fl">18.5</span>,  <span class="at">label =</span> <span class="st">"**"</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"segment"</span>, <span class="at">x =</span> <span class="fl">1.1</span>, <span class="at">xend =</span> <span class="fl">1.9</span>, <span class="at">y =</span> <span class="dv">18</span>, <span class="at">yend =</span> <span class="dv">18</span>, <span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">size=</span>.<span class="dv">5</span>, <span class="at">alpha=</span><span class="dv">1</span>,)<span class="sc">+</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Mean perceived depth </span><span class="sc">\n</span><span class="st">± SEM (m)"</span>,</span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">12</span>,<span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x=</span><span class="fl">1.5</span>, <span class="at">y=</span><span class="dv">14</span>, <span class="at">label=</span> <span class="st">"12 m"</span>, <span class="at">size=</span><span class="fl">3.5</span>) <span class="sc">+</span></span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span><span class="fu">c</span>(myViridis[<span class="dv">2</span>], myViridis[<span class="dv">1</span>])) <span class="sc">+</span></span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(myViridis[<span class="dv">2</span>], myViridis[<span class="dv">1</span>])) <span class="sc">+</span></span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>, <span class="at">hjust =</span> <span class="fl">0.0</span>),</span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">unit</span>(<span class="fu">c</span>(.<span class="dv">75</span>,<span class="fl">0.25</span>,.<span class="dv">75</span>,<span class="fl">0.0</span>), <span class="st">"cm"</span>)<span class="co"># top right botom left</span></span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>    ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-ℹ Please use `linewidth` instead.</code></pre>
-</div>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Mean perceived depth </span><span class="sc">\n</span><span class="st">± SEM (m)"</span>,</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">12</span>,<span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x=</span><span class="fl">1.5</span>, <span class="at">y=</span><span class="dv">14</span>, <span class="at">label=</span> <span class="st">"12 m"</span>, <span class="at">size=</span><span class="fl">3.5</span>) <span class="sc">+</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span><span class="fu">c</span>(myViridis[<span class="dv">2</span>], myViridis[<span class="dv">1</span>])) <span class="sc">+</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(myViridis[<span class="dv">2</span>], myViridis[<span class="dv">1</span>])) <span class="sc">+</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>, <span class="at">hjust =</span> <span class="fl">0.0</span>),</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">unit</span>(<span class="fu">c</span>(.<span class="dv">75</span>,<span class="fl">0.25</span>,.<span class="dv">75</span>,<span class="fl">0.0</span>), <span class="st">"cm"</span>)<span class="co"># top right botom left</span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>    ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(main_figure)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(main_figure)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="main-figure_files/figure-html/show%20figure-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="main-figure-exp-3_files/figure-html/show%20figure-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
