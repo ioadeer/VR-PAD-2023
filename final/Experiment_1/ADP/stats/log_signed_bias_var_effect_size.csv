@@ -1,0 +1,4 @@
+Parameter,Eta2_partial,CI,CI_low,CI_high
+target_distance,0.13974725839251467,0.95,0.0352752341315207,1
+room_condition,0.002594409014537449,0.95,0,1
+target_distance:room_condition,6.085552373307404e-4,0.95,0,1

@@ -1,0 +1,12 @@
+effect,group,term,estimate,std.error,statistic,df,p.value
+fixed,NA,(Intercept),-0.41783253657979974,0.05477357737238726,-7.628359450380534,58.84783462184833,2.365670324315837e-10
+fixed,NA,log10(target_distance),1.0284799258648074,0.046838728020206714,21.957896154248903,78.90187405609062,2.3725118199056634e-35
+fixed,NA,room_conditionSmall VE,-0.004743397882878412,0.03671738799977161,-0.12918669168155197,273.1005955318548,0.8973050170174699
+fixed,NA,log10(target_distance):room_conditionSmall VE,-0.010760992361096913,0.04682698854905817,-0.22980321166335924,427.7893569890427,0.8183545278860573
+ran_pars,subject,sd__(Intercept),0.3134976478066207,NA,NA,NA,NA
+ran_pars,subject,cor__(Intercept).log10(target_distance),-0.5449117852204279,NA,NA,NA,NA
+ran_pars,subject,sd__log10(target_distance),0.2325300197106409,NA,NA,NA,NA
+ran_pars,subject.1,sd__room_conditionCongruent VE,0.1573824851575145,NA,NA,NA,NA
+ran_pars,subject.1,cor__room_conditionCongruent VE.room_conditionSmall VE,0.5742407285005964,NA,NA,NA,NA
+ran_pars,subject.1,sd__room_conditionSmall VE,0.12453676187796617,NA,NA,NA,NA
+ran_pars,Residual,sd__Observation,0.12469684522538944,NA,NA,NA,NA
