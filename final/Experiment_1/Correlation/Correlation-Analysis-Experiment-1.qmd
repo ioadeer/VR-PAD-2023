@@ -29,7 +29,7 @@ tabla.exp_1.corr <- read.csv(
 
 smaller_ve <- tabla.exp_1.corr %>%
   filter(room_condition == 'Small VE')
-# N 42. df = n -2 = 40
+
 
 congruent_ve <- tabla.exp_1.corr %>%
   filter(room_condition == 'Congruent VE')
