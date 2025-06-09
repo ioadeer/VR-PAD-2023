@@ -173,7 +173,7 @@ f1 <- ggplot(tabla.pob,
              color = myViridis[1]
              )+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
-  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,5)) +
+  scale_y_continuous(name="Perceived distance (m)",   limits = c(0,7)) +
   scale_color_manual(labels = c("No Visual Info", "Visual Info"), values =c(myViridis[2], myViridis[1]))+
   theme_minimal() +
   theme(legend.position = "top",
@@ -233,20 +233,23 @@ tabla.pob_logSB <- df.experiment_1 %>% group_by(target_distance,room_condition) 
 
 
 f2 <- ggplot(tabla.pob_logSB, aes(x=target_distance, 
-                                  y =MlogSB, 
+                                  y =(10^MlogSB-1)*100, 
                                   group = room_condition, 
                                   color  = room_condition)) +
   geom_pointrange(aes(x = target_distance, 
-                      y = MlogSB, 
-                      ymin = (MlogSB-SDlogSB), 
-                      ymax = (MlogSB+SDlogSB)),
+                      y =(10^MlogSB-1)*100, 
+                      ymin = (10^(MlogSB-SDlogSB)-1)*100, 
+                      ymax = (10^(MlogSB+SDlogSB)-1)*100),
                   alpha = 1,
                   position = position_jitterdodge(jitter.width = .1,
                                                   jitter.height = 0,
                                                   dodge.width = .1 ))+
-  geom_line(data = Final.FixedlogSB, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
+  geom_line(data = Final.FixedlogSB, aes(x = target_distance, 
+                                         y =(10^fit-1)*100, 
+                                         group=room_condition, 
+                                         color=room_condition))+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
-  scale_y_continuous(name="Mean log bias (m)",   limits = c(-1,0)) +
+  scale_y_continuous(name="Mean log bias (m)",   limits = c(-100,0)) +
   scale_color_manual(labels = c("NVI", "VI"), values =c(myViridis[2], myViridis[1]))+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
@@ -370,20 +373,23 @@ tabla.pob_logUB <- df.experiment_1 %>% group_by(target_distance,room_condition) 
   ungroup()
 
 f3 <- ggplot(tabla.pob_logUB, aes(x=target_distance, 
-                                  y =MlogUB, 
+                                  y =(10^MlogUB-1)*100, 
                                   group = room_condition, 
                                   color  = room_condition)) +
   geom_pointrange(aes(x = target_distance, 
-                      y = MlogUB, 
-                      ymin = (MlogUB-SDlogUB), 
-                      ymax = (MlogUB+SDlogUB)),
+                      y =(10^MlogUB-1)*100, 
+                      ymin = (10^(MlogUB-SDlogUB)-1)*100, 
+                      ymax = (10^(MlogUB+SDlogUB)-1)*100), 
                   alpha = 1,
                   position = position_jitterdodge(jitter.width = .1,
                                                   jitter.height = 0,
                                                   dodge.width = .1 ))+
-  geom_line(data = Final.FixedlogUB, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
+  geom_line(data = Final.FixedlogUB, aes(x = target_distance, 
+                                         y =(10^fit-1)*100, 
+                                         group=room_condition, 
+                                         color=room_condition))+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
-  scale_y_continuous(name="Unsigned log bias (m)",   limits = c(0,.7)) +
+  scale_y_continuous(name="Mean percentual unsigned log bias (%)",   limits = c(0,300)) +
   scale_color_manual(labels = c("NVI", "VI"), values =c(myViridis[2], myViridis[1]))+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
