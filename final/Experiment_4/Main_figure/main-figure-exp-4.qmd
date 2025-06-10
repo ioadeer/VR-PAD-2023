@@ -43,6 +43,10 @@ results_tbl <- read.csv(
   header = TRUE, sep = ',',
   stringsAsFactors = TRUE) %>%
   filter(experiment == 4)
+
+
+results_tbl$room_condition = factor(results_tbl$room_condition, 
+                                      levels=c("No visual info", "Large VE"))
 ```
 
 ```{r make ADP figure}

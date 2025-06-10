@@ -193,7 +193,7 @@ f1 <- ggplot(tabla.pob,
 f1
 ```
 
-#### Logarithmic signed bias (precision)
+#### Logarithmic signed bias (accuracy)
 
 ```{r Signed bias LMEM}
 #| message: false
@@ -240,22 +240,24 @@ tabla.pob_logSB <- df.experiment_1 %>% group_by(target_distance,room_condition) 
             SDlogSB = sd(log_bias_m)/sqrt(n()))  %>%
   ungroup()
 
-
 f2 <- ggplot(tabla.pob_logSB, aes(x=target_distance, 
-                                  y =MlogSB, 
+                                  y =(10^MlogSB-1)*100, 
                                   group = room_condition, 
                                   color  = room_condition)) +
   geom_pointrange(aes(x = target_distance, 
-                      y = MlogSB, 
-                      ymin = (MlogSB-SDlogSB), 
-                      ymax = (MlogSB+SDlogSB)),
+                      y =(10^MlogSB-1)*100, 
+                      ymin = (10^(MlogSB-SDlogSB)-1)*100, 
+                      ymax = (10^(MlogSB+SDlogSB)-1)*100),
                   alpha = 1,
                   position = position_jitterdodge(jitter.width = .1,
                                                   jitter.height = 0,
                                                   dodge.width = .1 ))+
-  geom_line(data = Final.FixedlogSB, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
+  geom_line(data = Final.FixedlogSB, aes(x = target_distance, 
+                                         y =(10^fit-1)*100, 
+                                         group=room_condition, 
+                                         color=room_condition))+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
-  scale_y_continuous(name="Mean log bias (m)",   limits = c(-1,0)) +
+  scale_y_continuous(name="Mean log bias (m)",   limits = c(-100,0)) +
   scale_color_manual(labels = c("NVI", "CVE"), values =c(myViridis[2], myViridis[1]))+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
@@ -268,7 +270,7 @@ f2 <- ggplot(tabla.pob_logSB, aes(x=target_distance,
 f2
 ```
 
-##### Logarithmic signed bias Variability
+##### Logarithmic signed bias Variability (precision)
 
 ```{r log signed bias variability model }
 #| message: false
@@ -296,6 +298,14 @@ anovlogSBVar <- anova(m.logSignedBiasVar)
 write_csv(anovlogSBVar, file = "./stats/log_signed_bias_var_anova.csv")
 knitr::kable(anovlogSBVar, "html")
 
+```
+
+###### Effect size
+
+```{r log signed bias var effect size}
+effect_size.SBVar = eta_squared(anovlogSBVar)
+write_csv(effect_size.SBVar, file ="./stats/log_signed_bias_var_effect_size.csv")
+knitr::kable(effect_size.SBVar, "html")
 ```
 
 ```{r log signed bias variability make figure}
@@ -379,20 +389,23 @@ tabla.pob_logUB <- df.experiment_1 %>% group_by(target_distance,room_condition) 
   ungroup()
 
 f3 <- ggplot(tabla.pob_logUB, aes(x=target_distance, 
-                                  y =MlogUB, 
+                                  y =(10^MlogUB-1)*100, 
                                   group = room_condition, 
                                   color  = room_condition)) +
   geom_pointrange(aes(x = target_distance, 
-                      y = MlogUB, 
-                      ymin = (MlogUB-SDlogUB), 
-                      ymax = (MlogUB+SDlogUB)),
+                      y =(10^MlogUB-1)*100, 
+                      ymin = (10^(MlogUB-SDlogUB)-1)*100, 
+                      ymax = (10^(MlogUB+SDlogUB)-1)*100), 
                   alpha = 1,
                   position = position_jitterdodge(jitter.width = .1,
                                                   jitter.height = 0,
                                                   dodge.width = .1 ))+
-  geom_line(data = Final.FixedlogUB, aes(x = target_distance, y =fit, group=room_condition, color=room_condition))+
+  geom_line(data = Final.FixedlogUB, aes(x = target_distance, 
+                                         y =(10^fit-1)*100, 
+                                         group=room_condition, 
+                                         color=room_condition))+
   scale_x_continuous(name="Distance source (m)", limits = c(0,10)) +
-  scale_y_continuous(name="Unsigned log bias (m)",   limits = c(0,.7)) +
+  scale_y_continuous(name="Mean percentual unsigned log bias (%)",   limits = c(0,300)) +
   scale_color_manual(labels = c("NVI", "CVE"), values =c(myViridis[2], myViridis[1]))+
   theme_pubr(base_size = 12, margin = TRUE)+
   theme(legend.position = "top",
