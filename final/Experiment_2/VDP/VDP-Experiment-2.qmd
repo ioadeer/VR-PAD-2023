@@ -104,6 +104,12 @@ knitr::kable(t_test.depth, "html")
 
 ```
 
+#### Cohen's d
+
+```{r perceived depth cohens d}
+effectsize::cohens_d(Depth~room_condition, data= dimensions.depth)
+```
+
 #### Make figure
 
 ```{r violin depth}
@@ -376,6 +382,7 @@ violin_height <- ggplot(dimensions.height, aes(x=room_condition, y=Height,  fill
 ### Perceived volume
 
 ```{r propagate volume}
+#| echo: true
 #| message: false
 #| warning: false
 dimensions.aggr <- dimensions.depth_sum
@@ -385,7 +392,7 @@ dimensions.width_sum$type = "Width"
 
 dimensions.height_sum$type = "Height"
 
-rbind(dimensions.aggr, dimensions.width_sum, dimensions.height_sum)
+#rbind(dimensions.aggr, dimensions.width_sum, dimensions.height_sum)
 dimensions.vol_aggr <- rbind(dimensions.aggr, dimensions.width_sum, dimensions.height_sum)
 
 dimensions.vol_aggr <- dimensions.vol_aggr %>%
@@ -402,6 +409,7 @@ dimensions.volume <- dimensions.vol_aggr %>%
   )
 ```
 
+#### T Test
 ```{r vol 2}
 #| message: false
 #| warning: false
@@ -425,12 +433,31 @@ sve_cve_t_test.volume <- tsum.test(mean.x=dimensions.volume$mean[1],
           s.y= dimensions.volume$sd[2],
           n.y=dimensions.volume$n[2],
           )
+```
 
+```{r show t test vol}
+sve_cve_t_test.volume
+```
+
+```{r save volume t test}
 sve_cve_t_test_vol.tidy <- tidy(sve_cve_t_test.volume)
 
 write.csv(sve_cve_t_test_vol.tidy, file="stats/volume/volume-t-test.csv")
 
 knitr::kable(sve_cve_t_test_vol.tidy, "html")
+```
+
+
+#### Cohen's d
+
+```{r volume t test cohens d}
+#pooled_sd <- sqrt(((n1 - 1) * sd1^2 + (n2 - 1) * sd2^2) / (n1 + n2 - 2))
+pooled_sd <- sqrt(((dimensions.volume$n[1] - 1) * dimensions.volume$sd[1]^2 + 
+                   (dimensions.volume$n[2] - 1) * dimensions.volume$sd[2]^2) / 
+                    (dimensions.volume$n[1] + dimensions.volume$n[2] - 2))
+# Cohen's d for independent samples
+cohensd <- (dimensions.volume$mean[1] - dimensions.volume$mean[2]) / pooled_sd
+cohensd
 ```
 
 ```{r make figure}

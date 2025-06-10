@@ -103,7 +103,9 @@ write.csv(t_test.depth, file="./stats/depth/depth-t-test.csv")
 knitr::kable(t_test.depth, "html")
 
 ```
+
 #### Cohen's d
+
 ```{r perceived depth cohens d}
 effectsize::cohens_d(Depth~room_condition, data= dimensions.depth)
 ```
@@ -426,6 +428,7 @@ sve_cve_t_test.volume
 ```
 
 #### Cohen's d
+
 ```{r volume t test cohens d}
 #pooled_sd <- sqrt(((n1 - 1) * sd1^2 + (n2 - 1) * sd2^2) / (n1 + n2 - 2))
 pooled_sd <- sqrt(((dimensions.volume$n[1] - 1) * dimensions.volume$sd[1]^2 + 
