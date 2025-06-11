@@ -107,6 +107,12 @@ knitr::kable(t_test.depth, "html")
 
 ```
 
+#### Cohen's d
+
+```{r perceived depth cohens d}
+effectsize::cohens_d(Depth~room_condition, data= dimensions.depth)
+```
+
 #### Make figure
 
 ```{r violin depth}
